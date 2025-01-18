@@ -45,6 +45,28 @@
 
 
    - __Intended Audience__
+        ##### this section was AI generated for ideas before we start fine tuning  do not leave this in!!
+
+
+        This document is intended for all involved in the design, development, and implementation of the AI-Based Multiplayer RPG Game. The primary audience includes:
+
+        - Game Developers: Responsible for coding and implementing the core mechanics, AI functionality, and server-client architecture.
+
+        - Game Designers: Define game mechanics, balance, and AI-driven interactions to create an engaging and immersive experience.
+
+        - UX/UI Designers: Work on the user interface, ensuring accessibility, clarity, and ease of use for all players.
+
+        - AI Engineers: Focus on the machine learning and procedural generation aspects of the game, ensuring the AI provides dynamic and engaging gameplay.
+
+        - End Users (Players): The individuals who will play and interact with the game, providing feedback and contributing to future iterations.
+
+        - Investors & Stakeholders: Individuals or organizations funding the project, requiring a clear understanding of the game’s objectives, target audience, and business model.
+
+        - System Administrators & IT Support: Responsible for managing servers, databases, and ensuring the game runs efficiently and securely.
+
+        - By providing clear and structured requirements, this document serves as a reference for all involved parties, ensuring alignment and clarity throughout the development process.
+
+
 
    - __Definitions & Acronyms__
 
