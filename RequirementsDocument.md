@@ -3,11 +3,11 @@
 # **Table of Contents**
 1. **Introduction**
    - __Purpose of the Document__
-    - The purpose of this document is to define the requirements for the AI-zbased Multiplayer RPG Game. It serves as a reference for the developers when testing and designing the game.By outlining the functional, and nonfunctional,business and user requirements, this document aims to establish a structred approach to development while maintaining clarity and consistency. 
+        - The purpose of this document is to define the requirements for the AI-zbased Multiplayer RPG Game. It serves as a reference for the developers when testing and designing the game.By outlining the functional, and nonfunctional,business and user requirements, this document aims to establish a structred approach to development while maintaining clarity and consistency. 
 
-    - This document provides detailed specifications regarding User interactions, system behavior, and AI-driven mechanics. It ensures that the game's core elements, such as dynamic storytelling, role-based gameplay, and Ai generated conent are well-defined and verifiable. Additionally, this document aims to follow industry best practices by using the MoSCoW method. 
+        - This document provides detailed specifications regarding User interactions, system behavior, and AI-driven mechanics. It ensures that the game's core elements, such as dynamic storytelling, role-based gameplay, and Ai generated conent are well-defined and verifiable. Additionally, this document aims to follow industry best practices by using the MoSCoW method. 
 
-    - By referencing this document the develpment team will be able to effectivley build a robust and immersive multiplayer experience, where AI dynamically adapts to the game play creating a unique and engaging experience for players. the document will also serve as a foundation for the project evaluation, testing and future expansion of the game. 
+        - By referencing this document the develpment team will be able to effectivley build a robust and immersive multiplayer experience, where AI dynamically adapts to the game play creating a unique and engaging experience for players. the document will also serve as a foundation for the project evaluation, testing and future expansion of the game. 
 
 
    - __Scope of the Project__
