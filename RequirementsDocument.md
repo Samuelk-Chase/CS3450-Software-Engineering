@@ -11,6 +11,38 @@
 
 
    - __Scope of the Project__
+        - The AI-Based Multiplayer RPG Game is designed as a real-time, AI-driven, multiplayer role-playing game that allows players to engage in dynamic, procedurally generated adventures. The game will be hosted on a central server, with players joining through a web-based client. The AI will act as both a game master and an adaptive element that personalizes gameplay based on player decisions.
+        -  Key aspects of the project’s scope include:
+
+            - __Multiplayer Integration__: Players can join the game via web-based connections, interacting with AI-generated scenarios and other players in a shared world.
+
+            - __AI-Driven Gameplay__: AI will dynamically generate quests, characters, and world-building elements, ensuring a unique experience each session.
+
+            - __Genre Customization__: Players can select from multiple game genres (Fantasy, Cyberpunk, Horror, etc.), affecting the story, setting, and mechanics.
+
+            - __Character Development__: Players can create, customize, and develop their characters with ability trees, leveling systems, and inventory management.
+
+            - __Game Master & Watcher Roles__: Some players may take on facilitator roles, allowing them to shape the game’s events or interact indirectly with active participants.
+
+            - __Surprise Elements__: AI-driven randomness will introduce unpredictable twists, moral dilemmas, and unique decision-making paths.
+
+            - __Cross-Device Accessibility__: The game will be playable from desktops, laptops, tablets, and smartphones through a browser-based interface.
+
+            - __User Progress & Persistence__: Players will have the option to save their character progress and resume gameplay in future sessions.
+
+        - __Out of Scope:__
+
+            - VR or AR features (considered for future versions)
+
+            - Console support (the game will be browser-based)
+
+            - Fully scripted campaigns (the game relies on AI-driven dynamic storytelling rather than pre-written quests)
+
+            - Blockchain-based rewards or in-game purchases
+
+            - The scope of this project ensures a scalable, engaging, and AI-enhanced role-playing experience while remaining achievable within the given development timeframe. Future updates may expand the project’s capabilities, but the initial version will focus on delivering a high-quality, replayable, AI-driven multiplayer game.
+
+
 
    - __Intended Audience__
 
