@@ -112,12 +112,59 @@ The **AI Bot** serves as a computer-controlled entity that mimics player behavio
 - **Behavior Adaptation** – Respond to player actions and adjust its strategies accordingly.  
 - **Combat & Assistance** – Collaborate in battles, compete in mini-games, and roleplay its character.  
 - **Dialogue Interaction** – Engage in meaningful conversations and react to player choices.  
-- **Inventory & Progression** – Manage its own items, remember past interactions, and make decisions that affect gameplay.  
-3. **Requirements Overview**
-   - Functional Requirements
-   - Nonfunctional Requirements
-   - Business Requirements
-   - User Requirements
+- **Inventory & Progression** – Manage its own items, remember past interactions, and make decisions that affect gameplay.
+
+
+# 3. Requirements Overview  
+
+This section outlines the essential requirements for the AI-based Multiplayer RPG Game. The requirements are categorized into **functional, nonfunctional, business, and user requirements** to ensure a clear and structured development approach.
+
+## 3.1 Functional Requirements  
+Functional requirements define the specific behaviors and features the game must implement to meet user expectations.
+
+- **User Authentication & Profile Management** – Players must be able to **create, log in, and manage their profiles**.
+- **Character Customization** – Players should be able to **create, modify, and save their characters**.
+- **Multiplayer Session Management** – The game must support **real-time multiplayer interactions**.
+- **AI-Driven Content Generation** – AI should **dynamically generate** quests, environments, and NPC interactions.
+- **Game Progression & Saving** – Players must be able to **save and load** their progress.
+- **Combat & Gameplay Mechanics** – The system should support **turn-based and/or real-time** combat mechanics.
+- **Game Master & Watcher Roles** – Players should have the option to **act as facilitators** and influence the game.
+- **Genre Customization** – The game should allow players to **choose a genre** (Fantasy, Cyberpunk, Horror, etc.).
+- **Dynamic Storytelling** – The AI must provide **adaptive storytelling**, responding to player decisions.
+- **Exploration & Achievements** – Players should be able to **discover hidden areas, complete quests, and unlock achievements**.
+
+## 3.2 Nonfunctional Requirements  
+Nonfunctional requirements define the system's quality attributes and constraints.
+
+- **Scalability** – The game must support **multiple concurrent players** without performance degradation.
+- **Performance** – The game should maintain **low-latency interactions** to ensure smooth gameplay.
+- **Cross-Platform Accessibility** – The game must be **playable on desktops, tablets, and smartphones** via a browser.
+- **Security & Data Privacy** – The system must implement **secure authentication and encryption** for player data.
+- **Reliability** – The game must ensure **consistent uptime and minimal server downtime**.
+- **Usability** – The interface should be **intuitive and accessible**, with clear UI/UX design.
+- **AI Adaptability** – The AI should be **flexible enough to adapt to different player choices** in real-time.
+- **Maintainability** – The system must allow for **future updates, bug fixes, and expansions**.
+
+## 3.3 Business Requirements  
+Business requirements outline the project’s high-level objectives and alignment with strategic goals.
+
+- **Target Audience** – The game is designed for **RPG enthusiasts, online gamers, and AI-driven experience seekers**.
+- **Revenue Model** – The game will be **free-to-play initially**.
+- **Competitive Differentiation** – The game aims to stand out by offering **AI-driven, player-adaptive gameplay**.
+- **Scalability for Future Expansions** – The system should be **designed to support new features** and updates over time.
+- **Community Engagement** – The game should foster a **strong online community** with leaderboards.
+
+## 3.4 User Requirements  
+User requirements focus on what the players and other game participants need to experience in the game.
+
+- **Players must be able to log in, save progress, and manage multiple characters.**
+- **Players should have the freedom to explore, engage in combat, and interact with NPCs.**
+- **The AI should respond dynamically to player choices, making each session unique.**
+- **The game should provide intuitive controls and clear visual feedback.**
+- **Players should have the ability to influence the game’s narrative through their actions.**
+- **Game Masters must be able to adjust game difficulty and events in real time.**
+- **Game Watchers should have interactive elements to influence gameplay.**
+- **AI Bots must simulate real-player behavior and adapt dynamically to the game.**
 4. **Requirements Details**
    - Functional Requirements
      - Feature Descriptions
