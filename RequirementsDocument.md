@@ -71,10 +71,48 @@
    - __Definitions & Acronyms__
 
 2. **Roles & Responsibilities**
-   - Identified User Classes
-     - Customer
-     - Admin
-     - Maintenance Worker
+        This section outlines the different user roles within the game and their associated responsibilities. Each role has a distinct function that contributes to the overall gameplay experience.
+## 2.1 Identified User Classes  
+
+### Player  
+The **Player** is the primary participant in the game, responsible for making choices, interacting with the environment, and progressing through the story. Players engage with the game through exploration, character customization, and decision-making.
+
+#### Responsibilities:  
+- **Gameplay Progression** – Navigate the game world, complete quests.  
+- **Customization** – Create and modify their character, choose names, and upgrade items.  
+- **Decision Making** – Choose dialogue options, engage in moral dilemmas, and influence the storyline.  
+- **Game Interaction** – Roll dice for attacks, open chests, craft items, and interact with the environment.  
+- **Game Management** – Save progress, load previous sessions, and log in to manage multiple characters.  
+- **Exploration & Discovery** – Unlock achievements, explore hidden areas, and track past movements.  
+- **Collaboration** – Participate in team challenges, interact with other players, and share progress.  
+
+### Game Master  
+The **Game Master (GM)** serves as the orchestrator of the game, guiding the story, setting the difficulty, and introducing challenges. The GM has control over certain game mechanics to ensure a balanced and immersive experience.
+
+#### Responsibilities:  
+- **Game Balancing** – Adjust difficulty levels and veto actions that could disrupt game balance.  
+- **Scenario Control** – Modify game rules mid-session, introduce special effects, and set unique challenges.  
+- **Guidance & Oversight** – Monitor players' stats, provide hints, and rewind or replay events if needed.  
+- **Adaptive Storytelling** – Communicate with the AI to dynamically change the storyline based on player actions.  
+- **Immersion Management** – Enhance engagement through environmental changes, surprise events, and in-game restrictions.  
+
+### Game Watcher  
+The **Game Watcher** is a spectator role with interactive capabilities, allowing them to influence the game in minor but meaningful ways. Watchers can act as neutral observers or engage with players through various mechanics.
+
+#### Responsibilities:  
+- **Passive Observation** – View the game through a spectator mode without distracting active players.  
+- **Interactive Support** – Drop valuable items, reward players with in-game currency, or activate humorous events.  
+- **Dynamic Influence** – Introduce random events, challenge players with puzzles or traps, and interact as a ghost.  
+- **Stat Monitoring** – Track player progression and adjust interactions accordingly.  
+
+### AI Bot  
+The **AI Bot** serves as a computer-controlled entity that mimics player behavior, ensuring a dynamic and engaging experience in single-player or AI-assisted multiplayer modes.
+
+#### Responsibilities:  
+- **Behavior Adaptation** – Respond to player actions and adjust its strategies accordingly.  
+- **Combat & Assistance** – Collaborate in battles, compete in mini-games, and roleplay its character.  
+- **Dialogue Interaction** – Engage in meaningful conversations and react to player choices.  
+- **Inventory & Progression** – Manage its own items, remember past interactions, and make decisions that affect gameplay.  
 3. **Requirements Overview**
    - Functional Requirements
    - Nonfunctional Requirements
