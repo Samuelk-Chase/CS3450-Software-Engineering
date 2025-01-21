@@ -61,7 +61,23 @@ Here are some other ideas that could potentially be implemented in this framewor
 * **Consistent Elements**
   * We could allow players to occasionally save a card design that the AI has generated, putting it into a database so that the same card could appear in later runs
   * We could implement some sort of persistent upgrade system that allows the player to enhance their starting character over time 
-
+  
  
 
- 
+## Cool Mechanics We Want to Implement
+
+* Singleplayer roguelike mode
+  * You can develop different decks to reuse later in multiplayer
+  * You can choose the setting/genre at the start of every run
+* Multiplayer Co-op mode
+  * You can fight a large boss together using decks you've created in the past
+  * You can play through a normal roguelike run together
+* Multiplayer Competitive
+  * You battle using decks you have made in the past
+* AI has total thematic freedom within a structured framework
+  * i.e. Medieval knight sword is totally compatible with a separate cyberpunk world
+* Card rarities
+* Win condition possibilities
+  * Fight to a certain goal
+  * See how long you can survive
+  * Over-arching goal that spans between runs
