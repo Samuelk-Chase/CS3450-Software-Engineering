@@ -165,48 +165,335 @@ User requirements focus on what the players and other game participants need to 
 - **Game Masters must be able to adjust game difficulty and events in real time.**
 - **Game Watchers should have interactive elements to influence gameplay.**
 - **AI Bots must simulate real-player behavior and adapt dynamically to the game.**
-4. **Requirements Details**
-   - Functional Requirements
-     - Feature Descriptions
-     - System Interactions
-   - Nonfunctional Requirements
-     - Performance Requirements
-     - Security Considerations
-     - Usability Guidelines
-   - Business Requirements
-     - Organizational Goals
-     - Market Positioning
-   - User Requirements
-     - User Interaction Expectations
-     - Accessibility Features
-5. **Requirement Characteristics**
-   - Clear
-   - Unambiguous
-   - Limited in Scope
-   - Consistent
-   - Verifiable
-   - MoSCoW Prioritization
-6. **MoSCoW Analysis**
-   - Must Have
-   - Should Have
-   - Could Have
-   - Will Not Have
+
+# 4. Requirements Details  
+
+This section provides an in-depth breakdown of the functional, nonfunctional, business, and user requirements. It elaborates on specific features, system interactions, performance expectations, and user experience considerations.
+
+## 4.1 Functional Requirements  
+
+Functional requirements specify the system's capabilities and behaviors necessary to meet user needs.
+
+### 4.1.1 Feature Descriptions  
+- **User Authentication & Profile Management** – Players must be able to create accounts, log in, and manage their profiles securely.
+- **Character Customization** – Users can create, name, and modify their characters, selecting attributes, abilities, and appearances.
+- **Multiplayer Session Management** – The system must support real-time connections, allowing players to join and interact dynamically.
+- **AI-Driven Content Generation** – The AI will generate procedural quests, NPCs, and environmental elements based on player actions.
+- **Game Saving & Loading** – Players should be able to save progress, reload previous sessions, and track quest history.
+- **Combat & Gameplay Mechanics** – The system should include combat mechanics like rolling dice for attacks, leveling up, and team-based challenges.
+- **Game Master Controls** – Game Masters should have tools to modify rules, introduce events, and oversee player progress.
+- **Dynamic Storytelling** – AI should adapt the story based on player choices, allowing branching narratives.
+- **Exploration & Achievements** – The game should encourage discovery of hidden areas, moral dilemmas, and progression-based rewards.
+
+### 4.1.2 System Interactions  
+- **Player Interactions** – Players will interact with NPCs, other players, and the environment through text, combat, and decision-making.
+- **Game Master Influence** – The Game Master can adjust world rules and difficulty settings.
+- **Game Watcher Actions** – Spectators can drop items, trigger events, or observe in spectator mode.
+- **AI Adaptability** – The AI will monitor player behavior and adjust dynamically to keep the experience engaging.
+
+---
+
+## 4.2 Nonfunctional Requirements  
+
+Nonfunctional requirements define system qualities that impact performance, security, and usability.
+
+### 4.2.1 Performance Requirements  
+- The system should support **low-latency gameplay**, ensuring smooth multiplayer interactions.
+- AI-driven content generation should process within **milliseconds** to avoid gameplay delays.
+- The game should handle **at least 100 concurrent players per session**.
+
+### 4.2.2 Security Considerations  
+- Implement **secure authentication** to protect user accounts.
+- Encrypt all user data, including **saved progress and character details**.
+- Prevent unauthorized access through **role-based permissions** (e.g., Game Masters cannot manipulate player profiles).
+
+### 4.2.3 Usability Guidelines  
+- The UI should be **intuitive and accessible**, following modern design principles.
+- Text should be **clear and readable**, with adjustable font sizes for accessibility.
+- The game should support **keyboard, mouse, and touchscreen inputs**.
+- Tutorials and tooltips should be provided to onboard new players effectively.
+
+---
+
+## 4.3 Business Requirements  
+
+Business requirements ensure that the project aligns with organizational goals and market positioning.
+
+### 4.3.1 Organizational Goals  
+- **Enhance player engagement** by leveraging AI-driven mechanics for replayability.
+- **Increase accessibility** by making the game browser-based.
+- **Encourage community interaction** with social features like leaderboards, chat, and cooperative gameplay.
+- **Establish a scalable foundation** for potential expansions and future monetization.
+
+### 4.3.2 Market Positioning  
+- Target audience includes **RPG enthusiasts, online multiplayer gamers, and AI-driven experience seekers**.
+- The game differentiates itself through **AI-generated storytelling and adaptive mechanics**.
+- The initial release will be **free-to-play**, with the potential for **premium content in future versions**.
+
+---
+
+## 4.4 User Requirements  
+
+User requirements focus on player expectations, accessibility, and interaction design.
+
+### 4.4.1 User Interaction Expectations  
+- Players should have **full control over their character’s progression, inventory, and decision-making**.
+- AI should react **dynamically** to player choices, ensuring a unique experience in every session.
+- Players must be able to **track stats, save progress, and resume gameplay easily**.
+
+### 4.4.2 Accessibility Features  
+- **Adjustable text size** and **color contrast settings** to accommodate visual impairments.
+- **Audio cues and subtitles** for players with hearing impairments.
+- **Customizable controls** for different playstyles and mobility needs.
+- **Support for screen readers** where applicable to assist visually impaired players.
+
+
+# 5. Requirement Characteristics  
+
+This section outlines the key characteristics that all requirements in this document must adhere to, ensuring clarity, feasibility, and prioritization.
+
+## 5.1 Clear  
+- Each requirement must be **precisely defined** to avoid misinterpretation.  
+- The language should be **simple and direct**, avoiding technical jargon unless necessary.  
+- Example: Instead of "Players should have a way to manage their game state," use "Players must be able to save and load their game progress."  
+
+## 5.2 Unambiguous  
+- Requirements should be **interpreted in only one way** to prevent confusion.  
+- Avoid vague terms like *"should be fast"*, instead specify: *"The game should have a response time of under 200ms for all interactions."*  
+- Use concrete descriptions with **quantifiable criteria** where applicable.  
+
+## 5.3 Limited in Scope  
+- Each requirement must be **specific and achievable within the project's constraints**.  
+- Features outside the defined scope (e.g., VR support) should be explicitly excluded to maintain focus.  
+- Requirements should align with **realistic development timelines and technical feasibility**.  
+
+## 5.4 Consistent  
+- Requirements should **not contradict each other** or introduce conflicting expectations.  
+- Functional, nonfunctional, business, and user requirements must align to ensure a **cohesive game experience**.  
+- Example: If "Players can create their own character" is a requirement, another requirement should not restrict this by forcing predefined characters.  
+
+## 5.5 Verifiable  
+- Each requirement must be **measurable and testable**, ensuring that it can be validated.  
+- Use **specific metrics** where applicable (e.g., "The AI should generate new quests in under 3 seconds.").  
+- Requirements should allow for automated testing, manual validation, or objective evaluation.  
+
+## 5.6 MoSCoW Prioritization  
+The **MoSCoW method** is used to categorize requirements based on their importance:
+
+- **Must Have** – Critical requirements that are essential for the game’s core functionality.
+  - Example: "Players must be able to save and load their progress."
+  
+- **Should Have** – Important features that enhance gameplay but are not essential for the initial release.
+  - Example: "Players should have an in-game journal to track completed quests."
+
+- **Could Have** – Features that would be nice to include but are lower priority.
+  - Example: "Dynamic weather effects could enhance immersion."
+
+- **Won't Have (for now)** – Features that are explicitly out of scope but may be considered in future updates.
+  - Example: "The game will not support VR integration at launch."
+
+By following these characteristics, the development team ensures that all requirements are **well-defined, achievable, and properly prioritized** for implementation.
+
+# 6. MoSCoW Analysis  
+
+The MoSCoW method categorizes requirements into four priority levels: **Must Have**, **Should Have**, **Could Have**, and **Will Not Have**. This ensures a structured development approach, focusing on critical features while acknowledging potential future enhancements.
+
+## 6.1 Must Have  
+These are the **critical features** required for the game to function. Without them, the core experience would be incomplete or unplayable.
+
+- **User Authentication & Profile Management** – Players must be able to create accounts, log in, and manage their profiles.
+- **Character Creation & Customization** – Players must be able to create, name, and modify their characters.
+- **Multiplayer Connectivity** – The game must support real-time multiplayer interactions.
+- **AI-Generated Content** – The AI must dynamically create quests, NPC interactions, and world elements.
+- **Game Progression & Saving** – Players must be able to save and load their game progress.
+- **Combat System** – The game must include an interactive combat system (turn-based or real-time).
+- **Game Master Role** – The Game Master must have tools to modify rules and events in real time.
+- **Dynamic Storytelling** – The AI must adapt the game’s narrative based on player choices.
+- **Cross-Device Accessibility** – The game must be playable via web browsers on desktops, tablets, and smartphones.
+- **Security & Data Protection** – User authentication and data must be securely managed.
+
+## 6.2 Should Have  
+These are **important features** that enhance the experience but are not mandatory for the initial release.
+
+- **In-Game Economy** – Players should be able to earn and spend in-game currency.
+- **AI-Controlled Party Members** – AI companions should assist players in battles.
+- **Game Watcher Role** – Spectators should be able to interact with the game through minor influence.
+- **Achievements & Progress Tracking** – Players should be able to unlock achievements and track stats.
+- **Genre Customization** – Players should be able to select different game themes (Fantasy, Cyberpunk, Horror, etc.).
+- **Multiple Save Slots** – Players should be able to manage multiple saved games.
+- **Day/Night Cycle** – The game world should transition between different times of day.
+- **Weather Effects** – AI should introduce environmental changes like rain or fog.
+- **Character Animations** – Character actions should be visually represented with animations.
+
+## 6.3 Could Have  
+These are **non-essential features** that would improve immersion or engagement but can be added in later updates.
+
+- **Voice Chat or Text Chat** – Players could communicate in real-time within the game.
+- **Advanced AI Learning** – The AI could learn from past player choices to improve future interactions.
+- **Crafting System** – Players could combine resources to create items.
+- **Customizable UI** – Players could modify the interface layout and HUD.
+- **Player-Owned Housing** – Players could own and decorate in-game spaces.
+- **Expanding Game Master Controls** – More advanced tools for world customization.
+- **Minigames & Side Activities** – Additional small-scale challenges within the game.
+
+## 6.4 Will Not Have  
+These are **out-of-scope features** for the current development cycle but may be considered in future iterations.
+
+- **VR & AR Support** – The game will not support virtual reality or augmented reality at launch.
+- **Console Versions** – The game will not have versions for PlayStation, Xbox, or Switch.
+- **Blockchain Integration** – No NFTs, crypto-based transactions, or blockchain rewards.
+- **Fully Scripted Campaigns** – The game will not have pre-written storylines; it relies on AI-driven storytelling.
+- **Pay-to-Win Mechanics** – There will be no in-game purchases that give competitive advantages.
+- **Licensed Content** – The game will not include characters or settings from copyrighted franchises.
+
+This **MoSCoW prioritization** ensures that the most critical elements are implemented first, while future updates may introduce additional enhancements.
+
 7. **User Stories**
-   - Format: "As a [role], I want [an action] so that [benefit/value]"
-   - List of User Stories (minimum 19)
+
+here are some potential user stories 
+
+##### Player 
+
+- As a player, I want to choose from multiple options or do my own thing so that I can be led or choose my own way
+
+- As a player, I want to be able to read the text clearly so that I can understand what’s going on 
+
+- As a player, I want to be able to save my spot and go back to it so that if my game gets cut short it’s not over
+
+- As a player, I want to customize my character so that I feel like I’m in control 
+
+- As a player, I want to be able to roll a random dice so that I can have a stronger attack 
+
+- As a player, I want to be able to choose the theme of the game so that it’s more what I like 
+
+- As a player, I want to be able to have options from the chest I choose so that I have a sense of control 
+
+- As a player, I want to choose my characters name so that it matches the other characters that I play as
+
+- As a player, I want to be able to save my character so that I can play with him later 
+
+- As a player, I want to be able to save the game so that I can show my friends 
+
+- As a player, I want to be able to upgrade my items so that they are stronger 
+
+- As a player, I want to be able to see my stats at all times so I can see where I am at 
+
+- As a player, if I want to have multiple characters I want to be able to log in and choose who I am playing as so that I can level up different characters 
+
+- As a player, I should be able to see what’s currently going on but I don’t want to see the whole game so that it’s not a mess to look at 
+
+- As a player, I want to interact with NPC's so that I can gather information and progress in the story. 
+
+- As a player, i want to craft items using resources i find so that i can enhance my game play abilities. 
+
+- As a player, I want to participate in team challenges to that we can come to gether as a team and do more than just what one person is capable 
+
+- As a player, I want to explore hidden areas so that i can discover unique items or quests. 
+
+- As a player, I want to have a journal that logs quests so that i can easily track my progress
+
+- As a player, I want to engage in moral dilemmas so that my choices influence the story. 
+
+- As a player, I want to be able see where I have been so that I can see where I want to go. 
+
+- as a player, I want to unlock achievements so that i can feel a sense of accomplishments. 
+
+##### Game Master  
+this is not set in stone but the game master could just be the leader of the group 
+
+- As a game master, I want to set the difficulty level of the game so that it matches the players’ skill levels.
+
+- As a game master, I want to modify game rules mid-session so that I can adapt to unexpected situations.
+
+- As a game master, I want to introduce unique challenges so that I can keep the game engaging.
+
+- As a game master, I want to oversee players’ stats so that I can guide them when needed.
+
+- As a game master, I want to veto certain actions so that I can maintain balance in the game.
+
+- As a game master, I want to communicate privately with the AI so that I can adjust scenarios without players knowing.
+
+- As a game master, I want to rewind or replay events so that I can fix mistakes or try different outcomes.
+
+- As a game master, I want to enable special effects (e.g., weather changes or surprise events) so that I can make the game more immersive.
+
+
+##### Game Watcher 
+
+- As a game watcher, I want to drop valuable items into the game so that I can help the players.
+
+- As a game watcher, I want to trigger random events so that I can add excitement to the game.
+
+- As a game watcher, I want to become a ghost so that I can interact with players in a fun and unpredictable way.
+
+- As a game watcher, I want to challenge players with puzzles or traps so that I can test their skills.
+
+- As a game watcher, I want to observe the players’ stats so that I can plan my interactions effectively.
+
+- As a game watcher, I want to use a spectator mode so that I can see the game without distracting the players.
+
+- As a game watcher, I want to reward players with in-game currency so that I can encourage teamwork or creativity.
+
+- As a game watcher, I want to activate humorous events so that I can entertain everyone.
+
+##### AI bot 
+
+- As an AI bot, I want to mimic human decision-making so that I can provide a realistic gameplay experience.
+
+- As an AI bot, I want to adapt my behavior based on the player’s actions so that the game feels dynamic.
+
+- As an AI bot, I want to collaborate with players in battles so that I can assist them in difficult scenarios.
+
+- As an AI bot, I want to roleplay my character so that I can contribute to the story.
+
+- As an AI bot, I want to respond to dialogue choices so that I can participate in conversations.
+
+- As an AI bot, I want to manage my own inventory so that I can play the game like a real player.
+
+- As an AI bot, I want to compete with players in mini-games so that I can provide additional challenges.
+
+- As an AI bot, I want to remember past interactions so that I can make consistent choices in the story.
+
+
 8. **Use Case UML Diagrams**
    - Explanation of Use Case Diagrams
    - Number of Diagrams Required (Minimum 2)
    - Formatting Guidelines for UML Diagrams
-9. **Common Mistakes to Avoid**
-   - Focus on the Problem, Not the Solution
-   - Include All Requirement Types
-   - Intent vs. Implementation
-   - Avoid Vague Requirements
+
+# 9. Common Mistakes to Avoid  
+
+This section highlights common pitfalls in requirements gathering and documentation to ensure clarity, feasibility, and completeness.
+
+## 9.1 Focus on the Problem, Not the Solution  
+- Requirements should describe **what** the system needs to achieve, not **how** it will be implemented.  
+- Example of a mistake: *"Use a MySQL database to store player data."*  
+- Correct approach: *"The system must securely store and retrieve player data with efficient performance."*  
+- **Why?** Specifying a particular technology too early may limit flexibility and prevent optimal solutions.
+
+## 9.2 Include All Requirement Types  
+- Requirements should cover **functional, nonfunctional, business, and user needs** to provide a comprehensive roadmap.  
+- Example of a mistake: Only defining gameplay mechanics without addressing **security, performance, and scalability**.  
+- **Why?** Omitting nonfunctional requirements can lead to unexpected performance bottlenecks and security risks.
+
+## 9.3 Intent vs. Implementation  
+- Clearly separate **high-level goals (intent)** from **technical implementation details**.  
+- Example of a mistake: *"The combat system must use a physics-based attack calculation with ragdoll mechanics."*  
+- Correct approach: *"The combat system should provide dynamic and realistic attack interactions."*  
+- **Why?** Developers should have the flexibility to choose the best implementation while meeting the intended goals.
+
+## 9.4 Avoid Vague Requirements  
+- Requirements must be **specific, measurable, and testable** to ensure they can be validated.  
+- Example of a mistake: *"The game should be fast."*  
+- Correct approach: *"The game should maintain a response time of under 200ms for all player interactions."*  
+- **Why?** Vague requirements lead to misinterpretation and inconsistent expectations between stakeholders.
+
+By avoiding these common mistakes, the requirements document remains **clear, actionable, and adaptable** throughout the development process.
+
 10. **Markdown & Documentation Best Practices**
    - Ensuring Proper Formatting in Markdown
    - Reviewing the Document in PyCharm, VSCode, or GitLab Before Submission
    - Improving Readability for Non-Technical Stakeholders
+   
 11. **Conclusion & Next Steps**
    - Team Responsibilities for Completion
    - Submission Deadlines
