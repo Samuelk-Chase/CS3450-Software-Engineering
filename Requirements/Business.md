@@ -39,6 +39,11 @@ The game will employ a variety of monetization options.
   
 * Character Boosts: The user may purchase character boosts that improve key stats in single-player mode.
 
+* Name Changes: Players may pay to change their user name once.
+
+* Content Pass: A monthly pass will be offered allowing users to access special co-op and multi-player battles features which may reward unique cards.
+
+
 
 
 
