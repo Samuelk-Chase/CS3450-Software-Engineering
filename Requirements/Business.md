@@ -15,12 +15,10 @@ The program will store information about users and how they engage with the plat
   * ***Player Count:*** The program will keep track of the number of active players per day.
 
 
-
-
 ### User Acquisition Strategy:
 A variety of strategies will be executed to increase user acquisition. 
 
-* ***Search Engine Optimization (SEO):*** Optimize the game’s website and app store listings with targeted keywords to rank higher in search results. (gpt)
+* ***Search Engine Optimization (SEO):*** Optimize the game’s website and app store listings with targeted keywords to rank higher in search results.
 
 * ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most such as RPG enjoyers and Card game enjoyers or from other groups identified by game analytics.
 
@@ -45,13 +43,14 @@ As part of our user acquisition strategy, we will deploy a variety of features i
 *  ***Embedded Community Youtube Videos:*** The official site for the game will have a community tab where the top-performing community videos for the month will appear to foster a community for the game on YouTube.
 
 *  ***Social Media Campaigns:*** Regularly update social media channels (Twitter, Facebook, Instagram, TikTok) with content like sneak peeks, gameplay trailers, updates, and community engagement. Social media will be linked on the official game site.
+
   
 ### User Retention Strategy
-We will employ a variety of strategies and fetures to encourage players to continue playing the game.
+We will employ a variety of strategies and features to encourage players to continue playing the game.
 
  * ***Daily and Weekly Challenges:***	Offer daily and weekly challenges that reward players with experience points, currency, or unique cards. These challenges encourage players to return regularly.
    
- * ***Progression and Achievement System:***	Include an extensive achievement system where players can unlock milestones, titles, and special rewards based on their progress and accomplishments.
+ * ***Achievement System:***	Include an extensive achievement system where players can unlock milestones, titles, and special rewards based on their progress and accomplishments.
   
  * ***Progression System:*** Implement level-based progression where players unlock new gameplay features, cards, and things to do.
   
@@ -81,7 +80,7 @@ The program will provide a method for users to give feedback to improve the prog
 ### Monetization:
 The game will employ a variety of monetization options.
 
-* ***Paid Model:*** Players must pay for the game using stripe. 
+* ***Paid Model:*** Players must pay for the game using a payment service such as Stripe. 
 
 * ***Free Demo:*** Players can download the game for free and play through 2 boss battles. After the trial expires they will be asked to upgrade to the full paid version of the game.
 
@@ -94,6 +93,38 @@ The game will employ a variety of monetization options.
 * ***Name Changes:*** Players will be able to pay to change their user name once.
 
 * ***Content Pass:*** A monthly pass will be offered allowing users to access special co-op and multi-player battles features which may reward unique cards.
+
+
+
+### Business Requirements MoSCoW Analysis:
+For version 1.0 of our project, we will largely focus on the main core single-player experience, so much of our business requirements will not be prioritized until the base gameplay of our game is finished.
+
+#### Must-Have:
+
+* Progression feature
+
+* Paid Model
+
+#### Should-Have:
+
+* Multiplayer
+
+
+
+
+#### Could-Have:
+* Leaderboards: Leaderboards could be implemented, but are likely more suitable after core gameplay features and mechanics are implemented. The game should be fun to play before trying to build a competitive scene.
+  
+* Analytics: We could implement a way to track user information for analytic purposes as that would be helpful for the business owner to make decisions, but we don't expect this will be in version 1.0. We want the game to be playable before we worry about collecting data for business decisions.
+
+#### Won't Have:
+
+* Name change monetization: We won't be implementing name change monetization because we already have more important monetization strategies and don't want over monetize the game such that users view it as a money grab.
+
+* "Next-level Marketing": This is indeed an idea, but probably a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.
+
+* "Character Boost Monetization": Like name change monetization we already have some standard monetization options and don't want to over-monetize the game.
+
 
 
 Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, and most of the user retention strategy.
