@@ -1,10 +1,10 @@
 ## Business Requirements
-The following requirements will be used to increase revenue and overall player count.
+The following business requirements will be used to increase revenue and overall player count for the customer.
 
 
 
 ### Analytics
-The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data.
+The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data. This data will serve to inform business operators of demographics to target, features that will increase play time and player count, and overall health of the game.
 
   * ***User Engagement:*** The program will keep track of users' time spent in activities such as single-player experiences, multiplayer, and co-op experiences within the game.
 
@@ -22,9 +22,9 @@ A variety of strategies will be executed to increase user acquisition.
 
 * ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most such as RPG enjoyers and Card game enjoyers or from other groups identified by game analytics.
 
-* ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to join.
+* ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to buy the game.
 
-* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
+* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they can give enter the username of the person that referred them to the game so that both receive a loot box with cards.
 
 * ***"Next-level Marketing Strategy:"*** Users will be able to pay a monthly fee to become a game distributor. For every person they get to buy the game, they will receive 10% of the game sale. They can sign up others to be game distributors under them for which they will receive 5% of any game sales their game distributors sell. Game distributors will also get a special in-game icon to represent themselves. (Definitely Won't have)
   
@@ -101,7 +101,7 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 #### Must-Have:
 
-* Progression feature: We will have some progression system in version 1.0 that will allow users to feel like they are making progress. To begin this will largly be based on card collection. Other progression features will be treated as could haves for version 1.0.
+* Progression feature: We will have some progression system in version 1.0 that will allow users to feel like they are making progress. To begin this will be based on card collection. Other progression features will be treated as could haves for version 1.0.
 
 * Paid Model: We will prioritize the paid model over all other monetization options since the customer wants to make money from the game. This implementation should be easier to implement than others and is a generally accepted monetization model. 
 
@@ -109,7 +109,7 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 * Multiplayer: We believe this is an important aspect in creating a fun game people can play. Multiplayer will help with user retention and recruiting new players, but we want the core single-player gameplay to be prioritized first since it makes up the bulk of the customer's wants. If single-player is polished we will move to Multiplayer implementation next.
   
-* 
+  
 
 
 
