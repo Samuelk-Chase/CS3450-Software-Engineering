@@ -26,7 +26,7 @@ A variety of strategies will be executed to increase user acquisition.
 
 * ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to join.
 
-* ***Referrals:*** The game will offer rewards such as loot boxes for new users they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
+* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
 
 * ***"Next-level Marketing Strategy:"*** Users will be able to pay a monthly fee to become a game distributor. For every person they get to buy the game, they will receive 10% of the game sale. They can sign up others to be game distributors under them for which they will receive 5% of any game sales their game distributors sell. Game distributors will also get a special in-game icon to represent themselves. (Definitely Won't have)
   
@@ -38,11 +38,15 @@ As part of our user acquisition strategy, we will deploy a variety of features i
 
 * ***Multi-Player Leaderboard:*** The game will provide a multiplayer leaderboard, tracking the most wins and win percentage to encourage a competitive scene.
 
-* ***Official Community Discord:*** An official discord for the game will be created and linked on the official game site. Players will then beable to communicate with others around the world and play together.
+* ***Official Community Discord:*** An official discord for the game will be created and linked on the official game site. Players will then be able to communicate with others around the world and play together.
 
-*  ***Embedded-Twitch Streams:*** The official site for the game will display the top streamers in our game, to encourage streamers to play the game and build a streaming community around the game.
+*  ***Embedded-Twitch Streams:*** The official site for the game will have a page that displays the current top streamers in our game, to encourage streamers to play the game and build a streaming community around the game.
 
 *  ***Embedded Community Youtube Videos:*** The official site for the game will have a community tab where the top-performing community videos for the month will appear to foster a community for the game on YouTube.
+
+*  ***Social Media Campaigns:*** Regularly update social media channels (Twitter, Facebook, Instagram, TikTok) with content like sneak peeks, gameplay trailers, updates, and community engagement. Social media will be linked on the official game site.
+  
+*  
 
 
 
@@ -78,6 +82,9 @@ The game will employ a variety of monetization options.
 * ***Name Changes:*** Players will be able to pay to change their user name once.
 
 * ***Content Pass:*** A monthly pass will be offered allowing users to access special co-op and multi-player battles features which may reward unique cards.
+
+
+Note: Chat-GPT was used to generate some ideas for business requirements. It also wrote a few requirements such as SEO requirement, and Social media Campaigns.
 
 
 
