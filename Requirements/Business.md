@@ -42,7 +42,7 @@ As part of our user acquisition strategy, we will deploy a variety of features i
 
 *  ***Embedded Community Youtube Videos:*** The official site for the game will have a community tab where the top-performing community videos for the month will appear to foster a community for the game on YouTube.
 
-*  ***Social Media Campaigns:*** Regularly update social media channels (Twitter, Facebook, Instagram, TikTok) with content like sneak peeks, gameplay trailers, updates, and community engagement. Social media will be linked on the official game site.
+*  ***Social Media Campaigns:*** Regularly update social media channels (Twitter, Facebook, Instagram, TikTok) with content like sneak peeks, gameplay trailers, updates, and community engagement. Social media channels will be linked on the official game site.
 
   
 ### User Retention Strategy
@@ -97,13 +97,13 @@ The game will employ a variety of monetization options.
 
 
 ### Business Requirements MoSCoW Analysis:
-For version 1.0 of our project, we will largely focus on the main core single-player experience, so many of our business requirements will not be prioritized until the base gameplay of our game is finished.
+For version 1.0 of our project, we will largely focus on the main core single-player experience, so many of our business requirements will not be prioritized until the base gameplay of our game is finished. If must have business requirements conflict with core game requirements we will prioritize the game requirements and focus on business requirements in version 2.0.
 
 #### Must-Have:
 
-* Progression feature
+* Progression feature: We will have some progression system in version 1.0 that will allow users to feel like they are making progress. To begin this will largly be based on card collection. Other progression features will be treated as could haves for version 1.0.
 
-* Paid Model
+* Paid Model: We will prioritize the paid model over all other monetization options since the customer wants to make money from the game. This implementation should be easier to implement than others and is a generally accepted monetization model. 
 
 #### Should-Have:
 
@@ -119,7 +119,7 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
   
 * Analytics: We could implement a way to track user information for analytic purposes as that would be helpful for the business owner to make decisions, but we don't expect this will be in version 1.0. We want the game to be playable before we worry about collecting data for business decisions.
 
-* User Acquisition: While user acquisition will be key for the game to be popular in the long term, we want to prioritize making the game playable and fun before implementing new ways to gain players. Focusing on making the core gameplay fun will be far more productive towards enticing new players than trying other methods of recruitment. Multiplayer will be prioritized as a useful tool for user acquisition since it is gameplay-based but will come second to the single-player base game. If single-player and multiplayer are implemented we will move on to adding some of the feature requirements listed in the User Acquisition section to begin to expand the player base.
+* User Acquisition: While user acquisition will be key for the game to be popular in the long term, we want to prioritize making the game playable and fun before implementing new ways to gain players. Focusing on making the core gameplay fun will be far more productive in enticing new players than trying other methods of recruitment. Multiplayer will be prioritized over other user acquisition strategies since it is gameplay-based but will come second to the single-player base game. If single-player and multiplayer are implemented we will move on to adding some of the feature requirements listed in the User Acquisition section to begin to expand the player base, but we don't expect these will be in version 1.0.
 
 * 
 
@@ -129,9 +129,11 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 * "Next-level Marketing": This is indeed an idea, but probably a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.
 
-* "Character Boost Monetization": Like name change monetization we already have some standard monetization options and don't want to over-monetize the game.
+* Character Boost Monetization: Like name change monetization we already have some standard monetization options and don't want to over-monetize the game, but it remains an option if the customer is not happy with other monetization options.
 
+* Free Demo: We believe this is a good idea for future versions of the game, but we will not implement in version 1.0 as our priorities are game play and basic monetization.
 
+* 
 
 Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, and most of the user retention strategy.
 
