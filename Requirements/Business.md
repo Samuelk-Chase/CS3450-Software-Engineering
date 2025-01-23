@@ -11,18 +11,32 @@
   * Player Count: The program will keep track of the number of active players per day.
 
 
-### User Acquisition:
+### User Acquisition Strategy:
 
 * Search Engine Optimization (SEO): Optimize the game’s website and app store listings with targeted keywords to rank higher in search results. (gpt)
 
-* User Targeted Ads: Use user analytics to target ads towards the demographic of people who play the game most.
+* User Targeted Ads: User analytics will be used to target ads towards the demographic of people who play the game the most.
 
-* 
+* Multiplayer: The game will include multiplayer elements to encourage friends to join.
+
+* Referrals: The game will offer rewards such as loot boxes for users they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
+
+* Single Player Leaderboard: The game will provide a global leaderboard to foster a speed-running community.
+
+* Multi-Player Leaderboard: The game will provide a multiplayer leaderboard to encourage a competitive scene.
 
 
 
-### Quality Control:
-* The program will provide a method for users to rate and give feedback to improve the program.
+### Quality Control and Feedback:
+The program will provide a method for users to give feedback to improve the program and user experience.
+
+* Bug reporting: Players will be able to report bugs and issues they come across in the game.
+
+* Game Feedback: Players will have the option in the game to send feedback for improvements.
+
+* Activity Feedback: When new features or gameplay mechanics are introduced the user will be prompted to rate the experience and send feedback if necessary.
+
+  
 
 
 
