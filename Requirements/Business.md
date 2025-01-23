@@ -1,4 +1,7 @@
 ## Business Requirements
+The following requirements will be used to increase revenue and overall player count.
+
+
 
 ### Analytics
 The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data.
@@ -13,20 +16,35 @@ The program will store information about users and how they engage with the plat
 
 
 
+
 ### User Acquisition Strategy:
 A variety of strategies will be executed to increase user acquisition. 
 
 * ***Search Engine Optimization (SEO):*** Optimize the game’s website and app store listings with targeted keywords to rank higher in search results. (gpt)
 
-* ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most.
+* ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most such as RPG enjoyers and Card game enjoyers or from other groups identified by game analytics.
 
 * ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to join.
 
 * ***Referrals:*** The game will offer rewards such as loot boxes for new users they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
 
+* ***"Next-level Marketing Strategy:"*** Users will be able to pay a monthly fee to become a game distributor. For every person they get to buy the game, they will receive 10% of the game sale. They can sign up others to be game distributors under them for which they will receive 5% of any game sales their game distributors sell. Game distributors will also get a special in-game icon to represent themselves. (Definitely Won't have)
+  
+
+#### Community Building
+As part of our user acquisition strategy, we will deploy a variety of features in order to foster a strong community for the game which will in return attract more players.
+
 * ***Single Player Leaderboard:*** The game will provide a global leaderboard that tracks the fastest time through the single-player campaign to foster a speed-running community. 
 
 * ***Multi-Player Leaderboard:*** The game will provide a multiplayer leaderboard, tracking the most wins and win percentage to encourage a competitive scene.
+
+* ***Official Community Discord:*** An official discord for the game will be created and linked on the official game site. Players will then beable to communicate with others around the world and play together.
+
+*  ***Embedded-Twitch Streams:*** The official site for the game will display the top streamers in our game, to encourage streamers to play the game and build a streaming community around the game.
+
+*  ***Embedded Community Youtube Videos:*** The official site for the game will have a community tab where the top-performing community videos for the month will appear to foster a community for the game on YouTube.
+
+
 
 
 
