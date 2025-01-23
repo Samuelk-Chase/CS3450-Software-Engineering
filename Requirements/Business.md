@@ -1,29 +1,33 @@
 ## Business Requirements
 
 ### Analytics
+The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data.
 
   * ***User Engagement:*** The program will keep track of users' time spent in activities such as single-player experiences, multiplayer, and co-op experiences within the game.
 
-  * ***User Spending:*** The program will keep track of monetary transactions within the game.
+  * ***User Spending:*** The program will keep track of the user's monetary transactions within the game. It will store when, how much, and what the user spent money on. 
 
   * ***User Information:*** The program will keep track of user demographic info such as location, age, and hardware.
 
   * ***Player Count:*** The program will keep track of the number of active players per day.
 
 
+
 ### User Acquisition Strategy:
+A variety of strategies will be executed to increase user acquisition. 
 
 * ***Search Engine Optimization (SEO):*** Optimize the game’s website and app store listings with targeted keywords to rank higher in search results. (gpt)
 
 * ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most.
 
-* ***Multiplayer:*** The game will include multiplayer elements to encourage friends to join.
+* ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to join.
 
-* ***Referrals:*** The game will offer rewards such as loot boxes for users they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
+* ***Referrals:*** The game will offer rewards such as loot boxes for new users they sign up. When a new user signs up they can give the username of the user that referred them to the game so that both receive a loot box with cards.
 
 * ***Single Player Leaderboard:*** The game will provide a global leaderboard that tracks the fastest time through the single-player campaign to foster a speed-running community. 
 
 * ***Multi-Player Leaderboard:*** The game will provide a multiplayer leaderboard, tracking the most wins and win percentage to encourage a competitive scene.
+
 
 
 
