@@ -97,7 +97,7 @@ The game will employ a variety of monetization options.
 
 
 ### Business Requirements MoSCoW Analysis:
-For version 1.0 of our project, we will largely focus on the main core single-player experience, so much of our business requirements will not be prioritized until the base gameplay of our game is finished.
+For version 1.0 of our project, we will largely focus on the main core single-player experience, so many of our business requirements will not be prioritized until the base gameplay of our game is finished.
 
 #### Must-Have:
 
@@ -107,7 +107,9 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 #### Should-Have:
 
-* Multiplayer
+* Multiplayer: We believe this is an important aspect in creating a fun game people can play. Multiplayer will help with user retention and recruiting new players, but we want the core single-player gameplay to be prioritized first since it makes up the bulk of the customer's wants. If single-player is polished we will move to Multiplayer implementation next.
+  
+* 
 
 
 
@@ -116,6 +118,10 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 * Leaderboards: Leaderboards could be implemented, but are likely more suitable after core gameplay features and mechanics are implemented. The game should be fun to play before trying to build a competitive scene.
   
 * Analytics: We could implement a way to track user information for analytic purposes as that would be helpful for the business owner to make decisions, but we don't expect this will be in version 1.0. We want the game to be playable before we worry about collecting data for business decisions.
+
+* User Acquisition: While user acquisition will be key for the game to be popular in the long term, we want to prioritize making the game playable and fun before implementing new ways to gain players. Focusing on making the core gameplay fun will be far more productive towards enticing new players than trying other methods of recruitment. Multiplayer will be prioritized as a useful tool for user acquisition since it is gameplay-based but will come second to the single-player base game. If single-player and multiplayer are implemented we will move on to adding some of the feature requirements listed in the User Acquisition section to begin to expand the player base.
+
+* 
 
 #### Won't Have:
 
