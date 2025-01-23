@@ -46,7 +46,19 @@ As part of our user acquisition strategy, we will deploy a variety of features i
 
 *  ***Social Media Campaigns:*** Regularly update social media channels (Twitter, Facebook, Instagram, TikTok) with content like sneak peeks, gameplay trailers, updates, and community engagement. Social media will be linked on the official game site.
   
-*  
+### User Retention Strategy
+We will employ a variety of strategies and fetures to encourage players to continue playing the game.
+
+ * ***Daily and Weekly Challenges:***	Offer daily and weekly challenges that reward players with experience points, currency, or unique cards. These challenges encourage players to return regularly.
+   
+ * ***Progression and Achievement System:***	Include an extensive achievement system where players can unlock milestones, titles, and special rewards based on their progress and accomplishments.
+  
+ * ***Progression System:*** Implement level-based progression where players unlock new gameplay features, cards, and things to do.
+  
+ * ***In-Game Events:*** Host limited-time events that feature exclusive content, challenges, or storylines. These events can encourage players to log in and participate during a specific time window.
+   
+ * ***Push Notifications:***	Utilize push notifications and emails to remind players of upcoming events, challenges, and important updates. Offer incentives like bonus rewards for logging in after a period of inactivity.
+
 
 
 
@@ -84,7 +96,7 @@ The game will employ a variety of monetization options.
 * ***Content Pass:*** A monthly pass will be offered allowing users to access special co-op and multi-player battles features which may reward unique cards.
 
 
-Note: Chat-GPT was used to generate some ideas for business requirements. It also wrote a few requirements such as SEO requirement, and Social media Campaigns.
+Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, and most of the user retention strategy.
 
 
 
