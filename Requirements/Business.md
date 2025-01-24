@@ -20,11 +20,11 @@ A variety of strategies will be executed to increase user acquisition.
 
 * ***Search Engine Optimization (SEO):*** Optimize the game’s website and app store listings with targeted keywords to rank higher in search results.
 
-* ***User Targeted Ads:*** User analytics will be used to target ads towards the demographic of people who play the game the most such as RPG enjoyers and Card game enjoyers or from other groups identified by game analytics.
+* ***User Targeted Ads:*** User analytics should be used to target ads towards the demographic of people who play the game the most such as RPG enjoyers and Card game enjoyers or from other groups identified by game analytics.
 
-* ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to buy the game.
+* ***Multiplayer:*** The game should include multiplayer elements such as co-op battles and player versus player battles to encourage friends to buy the game.
 
-* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they will have the option to enter the username of the person that referred them to the game so that both receive a loot box with cards.
+* ***Referrals:*** The game should offer rewards such as loot boxes for each new user they sign up. When a new user signs up they will have the option to enter the username of the person that referred them to the game so that both receive a loot box with cards.
 
 * ***"Next-level Marketing Strategy:"*** Users will be able to pay a monthly fee to become a game distributor. For every person they get to buy the game, they will receive 10% of the game sale. They can sign up others to be game distributors under them for which they will receive 5% of any game sales their game distributors sell. Game distributors will also get a special in-game icon to represent themselves. (Definitely Won't have)
   
