@@ -123,14 +123,17 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 * Achievement System: An achievement system would be a great feature to retain players and increase playtime, but will not be prioritized over core gameplay mechanics. This likely will be in version 2.0.
 
+* Bug reporting and Game Feedback: Bug reporting and game feedback will be crucial in maintaining the game, but we don't expect this to be present in version 1.0. While reporting/feedback likely won't be integrated straight into the game in this version, the business can rely on emails and app store feedback until these features are implemented.
+
+  
 #### Won't Have:
 
 
-* ***Monetization options***: We will not be implementing in-game monetization for this version. Monetization options will need to be analyzed after the business better understands how users play the game. Any of the monetization options could work, but should be limited to those that give some benefit to the player and should be limited in number so as not to ruin the reputation of the company. 
+* ***Monetization options***: We will not be implementing in-game monetization for this version. Monetization options will need to be analyzed after the business better understands how users play the game. Any of the monetization options could work but should be limited to those that give some benefit to the player and should be limited in number so as not to ruin the reputation of the company. 
 
    * Name change monetization: We won't be implementing name change monetization because we already have more important monetization strategies and don't want over monetize the game such that users view it as a money grab.
    
-   * "Next-level Marketing": This is indeed an idea, but probably a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.`
+   * "Next-level Marketing": This is indeed an idea, but likely a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.`
    
    * Character Boost Monetization: Like name change monetization we already have some standard monetization options and don't want to over-monetize the game, but it remains an option if the customer is not happy with other monetization options.
    
@@ -140,10 +143,12 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
    
    * Character Slot monetization: Depending on how many characters users make, this may be an option in future versions of the game to increase revenue from the existing player base, but we will not be implementing it at least until version 1.0 is complete and player behavior in-game is understood.
  
+   * Content Pass: As most of our development will be focused on core gameplay, we will not have extra content to use for a content pass. In future versions as the game grows and developers can focus on new content, this could serve as an excellent way to generate consistent revenue. 
+ 
 * Activity Feedback: This could be a useful feature in future versions of the game, but will not be implemented in version 1.0 since game activities will be limited. When the game is polished and can begin adding new content this will be a good way for the business to gauge what kind of activities the users are enjoying.
   
 
-
+* Push Notifications, Daily and Weekly Challenges, In-game Events: These retention features may be prioritized in future versions of the game to retain the player base, but will not be implemented in version 1.0 since improving the core game experience will be the best way to retain new players in the games infancy.
 
   
 
