@@ -14,7 +14,8 @@ The program should store information about users and how they engage with the pl
   * ***User Information:*** The program should keep track of user demographic info such as location, age, and hardware.
 
   * ***Player Count:*** The program should keep track of the number of active players per day.
-
+    
+  * ***Data Retrieval***: Business operators should be able to download data into common data formats such as .xlsx and Json for analysis.
 
 ### User Acquisition Strategy:
 A variety of strategies will be executed to increase user acquisition. 
@@ -95,16 +96,18 @@ The game should employ a variety of monetization options.
 ### Scalability
 The game should be built to allow growth in users and experiences:
 
-* ***Data-base***: The data-base must be able to scale as the player base grows. 
+* ***Data-base***: The database must be capable of scaling to millions of players. 
 
 * ***Game experiences***: The game should allow for easy implementation of future content such as DLCs and special events.
 
 * ***Servers***: Game Servers must be able to handle high traffic as much as 1 million concurrent players at a time.
 
+
+
 ### Security
 User information and game services should be secure
 
-* ***System Authorization:*** The system should only be accessible to authorized employees such as software engineers and business operators.
+* ***System Authorization:*** The system should only be accessible to authorized employees such as software engineers and business operators. The system should employ some employee verification system (employee sign-in) allowing only authorized personnel to access the site.
 
 * ***User Account Security:***: User's accounts must be secured through username and password. Passwords and emails must not be in plain text and must be encrypted.
   
@@ -163,6 +166,8 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 * ***Push Notifications, Daily and Weekly Challenges, In-game Events:*** These retention features may be prioritized in future versions of the game to retain the player base, but will not be implemented in version 1.0 since improving the core game experience will be the best way to retain new players in the games infancy.
 
 * ***Game Content Scalability:*** We think it is important to build a game that makes adding new content easy, but we are focused on the main gameplay at this time. Also, AI implementation in the game should add a fresh experience that will allow the need for new content to be minimized in the future.
+
+* ***Platform Access:*** The focus on version 1.0 will be game mechanics so we will develop for only one platform. We will choose a popular platform to reach a larger audience. If successful the game could be expanded to other platforms in version 2.0.
 
 
 
