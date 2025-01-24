@@ -101,9 +101,9 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 #### Must-Have:
 
-* Progression feature: We will have some progression system in version 1.0 that will allow users to feel like they are making progress. To begin this will be based on card collection. Other progression features will be treated as could haves for version 1.0.
+* ***Progression features:*** We will have some progression system in version 1.0 that will allow users to feel like they are making progress. To begin this will be based on card collection. Other progression features will be treated as could haves for version 1.0.
 
-* Paid Model: We will prioritize the paid model over all other monetization options since the customer wants to make money from the game. This implementation should be easier to implement than others and is a generally accepted monetization model. 
+* **Paid Model:** We will prioritize the paid model over all other monetization options since the customer wants to make money from the game. This implementation should be easier to implement than others and is a generally accepted monetization model. 
 
 #### Should-Have:
 
@@ -115,41 +115,45 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 
 #### Could-Have:
-* Leaderboards: Leaderboards could be implemented, but are likely more suitable after core gameplay features and mechanics are implemented. The game should be fun to play before trying to build a competitive scene.
+* ***Leaderboards:*** Leaderboards could be implemented, but are likely more suitable after core gameplay features and mechanics are implemented. The game should be fun to play before trying to build a competitive scene.
   
-* Analytics: We could implement a way to track user information for analytic purposes as that would be helpful for the business owner to make decisions, but we don't expect this will be in version 1.0. We want the game to be playable before we worry about collecting data for business decisions.
+* ***Analytics:*** We could implement a way to track user information for analytic purposes as that would be helpful for the business owner to make decisions, but we don't expect this will be in version 1.0. We want the game to be playable before we worry about collecting data for business decisions.
 
-* User Acquisition: While user acquisition will be key for the game to be popular in the long term, we want to prioritize making the game playable and fun before implementing new ways to gain players. Focusing on making the core gameplay fun will be far more productive in enticing new players than trying other methods of recruitment. Multiplayer will be prioritized over other user acquisition strategies since it is gameplay-based but will come second to the single-player base game. If single-player and multiplayer are implemented we will move on to adding some of the feature requirements listed in the User Acquisition section to begin to expand the player base, but we don't expect these will be in version 1.0.
+* ***User Acquisition:*** While user acquisition will be key for the game to be popular in the long term, we want to prioritize making the game playable and fun before implementing new ways to gain players. Focusing on making the core gameplay fun will be far more productive in enticing new players than trying other methods of recruitment. Multiplayer will be prioritized over other user acquisition strategies since it is gameplay-based but will come second to the single-player base game. If single-player and multiplayer are implemented we will move on to adding some of the feature requirements listed in the User Acquisition section to begin to expand the player base, but we don't expect these will be in version 1.0.
 
-* Achievement System: An achievement system would be a great feature to retain players and increase playtime, but will not be prioritized over core gameplay mechanics. This likely will be in version 2.0.
+* ***Achievement System:*** An achievement system would be a great feature to retain players and increase playtime, but will not be prioritized over core gameplay mechanics. This likely will be in version 2.0.
 
-* Bug reporting and Game Feedback: Bug reporting and game feedback will be crucial in maintaining the game, but we don't expect this to be present in version 1.0. While reporting/feedback likely won't be integrated straight into the game in this version, the business can rely on emails and app store feedback until these features are implemented.
+* ***Bug reporting and Game Feedback:*** Bug reporting and game feedback will be crucial in maintaining the game, but we don't expect this to be present in version 1.0. While reporting/feedback likely won't be integrated straight into the game in this version, the business can rely on emails and app store feedback until these features are implemented.
 
+* ***Official Community Discord:*** Discord will be important in fostering an active community for our game, but we are prioritizing gameplay during this development phase. Until we have a working product, we don't have anything to build a discord community around.
+
+* ***Social Media Campaigns:*** If by the end of this development phase, the game is ready to launch, creating social media channels will be important in community building and advertising. Our focus is on the game itself so social media will not be as highly prioritized until we have a finished product. 
   
 #### Won't Have:
 
 
 * ***Monetization options***: We will not be implementing in-game monetization for this version. Monetization options will need to be analyzed after the business better understands how users play the game. Any of the monetization options could work but should be limited to those that give some benefit to the player and should be limited in number so as not to ruin the reputation of the company. 
 
-   * Name change monetization: We won't be implementing name change monetization because we already have more important monetization strategies and don't want over monetize the game such that users view it as a money grab.
+   * ***Name change monetization:*** We won't be implementing name change monetization because we already have more important monetization strategies and don't want over monetize the game such that users view it as a money grab.
    
-   * "Next-level Marketing": This is indeed an idea, but likely a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.`
+   * ***"Next-level Marketing":*** This is indeed an idea, but likely a terrible idea that would ruin the reputation of the game, but it is always an option in the future if the customer gets desperate.`
    
-   * Character Boost Monetization: Like name change monetization we already have some standard monetization options and don't want to over-monetize the game, but it remains an option if the customer is not happy with other monetization options.
+   * ***Character Boost Monetization:*** Like name change monetization we already have some standard monetization options and don't want to over-monetize the game, but it remains an option if the customer is not happy with other monetization options.
    
-   * Free Demo: We believe this is a good idea for future versions of the game, but we will not implement it in version 1.0 as our priorities are gameplay and basic monetization.
+   * ***Free Demo:*** We believe this is a good idea for future versions of the game, but we will not implement it in version 1.0 as our priorities are gameplay and basic monetization.
    
-   * Loot boxes: Loot boxes could be used in future versions of the game to improve revenue with our existing player base, but we will not be implementing them in version 1.0 as core gameplay is more important.
+   * ***Loot boxes:*** Loot boxes could be used in future versions of the game to improve revenue with our existing player base, but we will not be implementing them in version 1.0 as core gameplay is more important.
    
-   * Character Slot monetization: Depending on how many characters users make, this may be an option in future versions of the game to increase revenue from the existing player base, but we will not be implementing it at least until version 1.0 is complete and player behavior in-game is understood.
+   * ***Character Slot monetization:*** Depending on how many characters users make, this may be an option in future versions of the game to increase revenue from the existing player base, but we will not be implementing it at least until version 1.0 is complete and player behavior in-game is understood.
  
-   * Content Pass: As most of our development will be focused on core gameplay, we will not have extra content to use for a content pass. In future versions as the game grows and developers can focus on new content, this could serve as an excellent way to generate consistent revenue. 
+   * ***Content Pass:*** As most of our development will be focused on core gameplay, we will not have extra content to use for a content pass. In future versions as the game grows and developers can focus on new content, this could serve as an excellent way to generate consistent revenue. 
  
-* Activity Feedback: This could be a useful feature in future versions of the game, but will not be implemented in version 1.0 since game activities will be limited. When the game is polished and can begin adding new content this will be a good way for the business to gauge what kind of activities the users are enjoying.
+* ***Activity Feedback:*** This could be a useful feature in future versions of the game, but will not be implemented in version 1.0 since game activities will be limited. When the game is polished and can begin adding new content this will be a good way for the business to gauge what kind of activities the users are enjoying.
   
 
-* Push Notifications, Daily and Weekly Challenges, In-game Events: These retention features may be prioritized in future versions of the game to retain the player base, but will not be implemented in version 1.0 since improving the core game experience will be the best way to retain new players in the games infancy.
+* ***Push Notifications, Daily and Weekly Challenges, In-game Events:*** These retention features may be prioritized in future versions of the game to retain the player base, but will not be implemented in version 1.0 since improving the core game experience will be the best way to retain new players in the games infancy.
 
+* ***Embedded Twitch Streams and YouTube Videos:*** Providing a place for users to find community content will be useful in future versions of the game at community building, but we don't yet have a player base or community to do this. Once the player base grows we can embed community content from Twitch and YouTube to grow the community even larger.
   
 
 Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, and most of the user retention strategy.
