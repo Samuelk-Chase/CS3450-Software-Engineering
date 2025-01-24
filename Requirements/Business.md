@@ -173,7 +173,7 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, Accessibility, Language,  and a lot of user retention strategies.
 
 
-##### Business Operator User Stories:
+#### Business Operator User Stories:
 
 * As a business operator, I want data for analytics so that I can better understand how users are playing the game and make good decisions for the game in the future.
 
