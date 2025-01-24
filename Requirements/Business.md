@@ -4,7 +4,7 @@ The following business requirements will be used to increase revenue and overall
 
 
 ### Analytics
-The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data. This data will serve to inform business operators of demographics to target, features that will increase play time and player count, and overall health of the game.
+The program will store information about users and how they engage with the platform. The following information will be tracked and sent to a separate business server for analyzing the data. This data will serve to inform business operators of demographics to target, features that will increase play time and player count, and the overall health of the game.
 
   * ***User Engagement:*** The program will keep track of users' time spent in activities such as single-player experiences, multiplayer, and co-op experiences within the game.
 
@@ -24,7 +24,7 @@ A variety of strategies will be executed to increase user acquisition.
 
 * ***Multiplayer:*** The game will include multiplayer elements such as co-op battles and player versus player battles to encourage friends to buy the game.
 
-* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they can give enter the username of the person that referred them to the game so that both receive a loot box with cards.
+* ***Referrals:*** The game will offer rewards such as loot boxes for each new user they sign up. When a new user signs up they will have the option to enter the username of the person that referred them to the game so that both receive a loot box with cards.
 
 * ***"Next-level Marketing Strategy:"*** Users will be able to pay a monthly fee to become a game distributor. For every person they get to buy the game, they will receive 10% of the game sale. They can sign up others to be game distributors under them for which they will receive 5% of any game sales their game distributors sell. Game distributors will also get a special in-game icon to represent themselves. (Definitely Won't have)
   
@@ -146,7 +146,7 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
    
    * ***Character Slot monetization:*** Depending on how many characters users make, this may be an option in future versions of the game to increase revenue from the existing player base, but we will not be implementing it at least until version 1.0 is complete and player behavior in-game is understood.
  
-   * ***Content Pass:*** As most of our development will be focused on core gameplay, we will not have extra content to use for a content pass. In future versions as the game grows and developers can focus on new content, this could serve as an excellent way to generate consistent revenue. 
+   * ***Content Pass:*** As most of our development will be focused on core gameplay, we will not have extra content to use for a content pass. In future versions, as the game grows and developers can focus on new content, this could serve as an excellent way to generate consistent revenue. 
  
 * ***Activity Feedback:*** This could be a useful feature in future versions of the game, but will not be implemented in version 1.0 since game activities will be limited. When the game is polished and can begin adding new content this will be a good way for the business to gauge what kind of activities the users are enjoying.
   
@@ -161,17 +161,17 @@ Note: Chat-GPT was used to generate some of the ideas for business requirements.
 
 ##### Business Operator User Stories:
 
-* As a business operator, I want data for analytics, so that I can better understand how users are playing the game and make good decisions for the game in the future.
+* As a business operator, I want data for analytics so that I can better understand how users are playing the game and make good decisions for the game in the future.
 
-* As a business operator, I want user feedback, so that I can make decisions that will improve the game and increase revenue.
+* As a business operator, I want user feedback so that I can make decisions that will improve the game and increase revenue.
 
-* As a business operator, I want to monetize the game, so that I can make money.
+* As a business operator, I want to monetize the game so that I can make money.
 
-* As a business operator, I want to advertise the game, so that more games are bought and I can make money.
+* As a business operator, I want to advertise the game so that more games are bought and I can make money.
 
-* As a business operator, I want to develop a community for the game, so that player acquisition is cheaper and more organic.
+* As a business operator, I want to develop a community for the game so that player acquisition is cheaper and more organic.
 
-* As a business operator, I want to increase playtime in-game, so that I can make more money.
+* As a business operator, I want to increase playtime in-game so that I can make more money.
 
 
 
