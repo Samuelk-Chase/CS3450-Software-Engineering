@@ -159,6 +159,20 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 Note: Chat-GPT was used to generate some of the ideas for business requirements. It also wrote a few requirements such as SEO requirements, Social media Campaigns, and most of the user retention strategy.
 
 
+##### Business Operator User Stories:
+
+* As a business operator, I want data for analytics, so that I can better understand how users are playing the game and make good decisions for the game in the future.
+
+* As a business operator, I want user feedback, so that I can make decisions that will improve the game and increase revenue.
+
+* As a business operator, I want to monetize the game, so that I can make money.
+
+* As a business operator, I want to advertise the game, so that more games are bought and I can make money.
+
+* As a business operator, I want to develop a community for the game, so that player acquisition is cheaper and more organic.
+
+* As a business operator, I want to increase playtime in-game, so that I can make more money.
+
 
 
 
