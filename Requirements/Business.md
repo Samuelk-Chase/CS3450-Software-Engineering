@@ -183,6 +183,8 @@ Note: Chat-GPT was used to generate some of the ideas for business requirements.
 
 * As a business operator, I want to increase playtime in-game so that I can make more money.
 
+* As a business operator, I want data to be secure so that customers trust the game and I don't get sued.
+
 
 
 
