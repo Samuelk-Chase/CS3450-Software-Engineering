@@ -1,3 +1,7 @@
+---
+header-includes:
+  - \usepackage[a4paper,margin=1in]{geometry}
+---
 # Combined Game Documentation
 
 ## 1. User Requirements
@@ -337,7 +341,86 @@ For version 1.0 of our project, we will largely focus on the main core single-pl
 
 ## Use Case Diagrams
 
-*Note: AI was used to generate the general structure and template of this document*
+```mermaid
+---
+title: General Data Flow
+config: 
+    theme: neutral 
+    themeVariables:
+        fontFamily: Inter
+---
+
+graph LR
+    subgraph Actors
+        Player
+        bot[AI bot]
+
+    end
+    subgraph Interactions
+        Start(Start Game)
+        Login(Log in)
+        CreateAccount(Create Account)
+        PlayCard(Play Card)
+        ChooseCard(Choose Card)
+        Move(Move)
+    end
+
+    Server{Game Server}
+
+    subgraph Services
+        Auth{Auth Server}
+        Database[(Database)]
+        AI[AI Model]
+    end
+
+    Player --> Login --> Server 
+    Player --> CreateAccount --> Server
+    Player --> Start --> Server 
+    Player & bot --> PlayCard --> Server
+    Player --> ChooseCard --> Server
+    Player --> Move --> Server
+
+    Server --New Game Prompt--> Player 
+    Server --New Card--> Database
+    Server <--New Game Prompt--> AI 
+    Server <--New Card Text--> AI 
+    Server <--New Card Image--> AI 
+    Server --New Game--> Database
+    Server --Player Cards--> Database
+    Server --User Stats--> Database
+    Server <--Current Game State--> Database
+    Server --New User--> Auth
+    Server --Existing User--> Auth
+
+    Auth --New User--> Database
+    Auth <--Check User--> Database
+
+```
+This graph displays the general flow of data through the game, specifically concerning the player, the game server, the authentication server, and the backend
+
+```mermaid
+---
+title: Multiplayer
+config: 
+    theme: neutral 
+    themeVariables:
+        fontFamily: Inter
+---
+
+graph LR
+    Player1
+    Server{Game Server}
+    Player2
+
+    Player1 & Player2 --Ready--> Server 
+    Player1 & Player2 --Play Card--> Server 
+    Server --Damage Calculation--> Player1 & Player2
+    Server --Stat Updates--> Player1 & Player2
+    Server --Win/Loss info o--> Player1 & Player2
+
+```
+
+This diagram is a general overview of choices players can make and the data the server sends to both users.
 
 ---
 
