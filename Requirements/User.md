@@ -114,18 +114,6 @@ By offering diverse win conditions, the game ensures that different types of pla
 - As a player, I want to see how long I can survive so that I can challenge myself to improve.
 - As a player, I want to progress towards an overarching goal that spans multiple runs so that my efforts feel meaningful over time.
 
-#### Game Master (undecided if applicable by team yet )
-- As a game master, I want to create custom challenges so that I can tailor the experience for players.
-- As a game master, I want to modify difficulty settings mid-game so that I can balance the experience.
-- As a game master, I want to introduce special events so that I can make the game more engaging.
-- As a game master, I want to oversee player stats and progress so that I can provide hints or challenges when needed.
-
-#### Game Watcher (undecided if applicable by team yet )
-- As a game watcher, I want to observe a multiplayer session so that I can see how players interact.
-- As a game watcher, I want to trigger surprise events so that I can add excitement to the game.
-- As a game watcher, I want to reward players with in-game resources so that I can encourage creative play.
-- As a game watcher, I want to activate special modifiers so that I can enhance or challenge the players.
-
 #### AI Bot
 - As an AI bot, I want to generate unique worlds so that every playthrough feels different.
 - As an AI bot, I want to adapt my encounters based on the player’s deck so that the game remains balanced.
