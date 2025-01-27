@@ -8,7 +8,42 @@ This document was generated with the help of AI, all team requirements, user sto
 - The game will support two primary users: 
     - Player: The player is the primary user of the game, they can navigate through procedurally generated text-based  rooms, battling enemies, collecting cards and shaping the world through their choices. The player can engage in different modes such as a single player roguelike runs, competetive battles and a multiplayer co-op mode 
 
-    - AI Bot: The AI bod would act as the game master, generating rooms, enemies, firends, and story elements dynamically . It also ensures that all game components, such as card interactions and enemy behaviors, remain balanced while maintaining thematic consistency across different settings. 
+    - AI Bot: The AI bot would act as the game master, generating rooms, enemies, friends, and story elements dynamically. It also ensures that all game components, such as card interactions and enemy behaviors, remain balanced while maintaining thematic consistency across different settings. 
+
+```mermaid
+classDiagram
+    User <|-- Player
+    User <|-- AI_bot
+
+    User: int health
+    User: int strength
+    User: playCard()
+    User: drawCard()
+    User: attack()
+    User: []Card deck
+    User: []Card hand
+    
+    class Player {
+        Coordinates location
+        getUserInput()
+        moveAroundLevel()
+    }
+    class AI_bot {
+        private callAPI()
+        getCard() 
+    }
+    class Card {
+        string name
+        string effect
+        image picture
+        string description
+        constructor()
+    }
+    class Game {
+        int level
+        newLevel()
+    }
+```
 
 #### Core Gameplay Mechanics
 
