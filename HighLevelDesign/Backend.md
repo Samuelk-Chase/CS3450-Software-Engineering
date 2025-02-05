@@ -120,7 +120,7 @@ This modular setup allows each component to be developed and scaled independentl
 - **Actions**:
   - **Story Generation**: Generates narrative elements in real-time based on user decisions, AI model inputs, and the theme of the game.
   - **Boss Battle Descriptions**: Provides descriptive content for boss battles, adding depth and excitement to the interactions.
-  - **Quality Control**:
+  - **Quality Control**: Ensures harmful content is not used in text generation.
   - **Story Summary**: Summarizes important story beats during the user's journey. Used for reducing storage requirements, and providing a way to inform a user of past events after returning to the game.
 - **Communication with Other Components**:
   - **Internal**:
