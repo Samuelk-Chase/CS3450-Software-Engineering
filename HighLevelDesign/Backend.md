@@ -32,6 +32,8 @@ This modular setup allows each component to be developed and scaled independentl
     - **Payment System**: Uses a payment interface to allow the user to buy the game so that paid users are given access to the game.
   - **External**:
     - None.
+   
+   ***Rational:*** 
 
 ---
 
@@ -48,6 +50,8 @@ This modular setup allows each component to be developed and scaled independentl
     - **Database**: Uses database to store the game state, player inventory, and progress, ensuring it’s updated after each action.
   - **External**:
     - **AI Language Model (LLM)**: Interacts with the external AI model (e.g., OpenAI’s GPT-4 or a custom LLM) to generate the story dynamically based on the current game state and player input. The backend sends requests to the API with the current game context, and the AI returns a new segment of the story.
+   
+- **Rationale**
 
 ---
 
@@ -64,6 +68,8 @@ This modular setup allows each component to be developed and scaled independentl
     - **Database**: Saves card data in the user’s inventory and updates the database on each card use or collection.
   - **External**:
     - **AI Image Generation**: Requests images for newly generated cards. The backend sends data to the external AI image generation service (e.g., DALL·E or other image generation models) to generate a visual representation of each card. The AI then returns an image URL which is stored in the database.
+   
+- **Rationale**
 
 ---
 
@@ -82,6 +88,8 @@ This modular setup allows each component to be developed and scaled independentl
     - **Payment System**: Stores transaction history related to Stripe payments.
   - **External**:
     - None.
+   
+- **Rationale**:
 
 ---
 
@@ -97,7 +105,10 @@ This modular setup allows each component to be developed and scaled independentl
   - **External**:
     - **Stripe API**: The backend makes requests to the Stripe API to process payments. It sends details like purchase amounts, user details, and transaction types (e.g., one-time, subscription), and Stripe returns the transaction status (e.g., success, failure). The backend updates the user’s game access based on Stripe’s response.
    
-      Rationale for internal Payment interface: We want an interface that is solely devoted to payments. We could have user auth handle payments, but in the future, if new paid game content is added, we want an interface that we can update. Its implementation now may not be strictly necessary but will allow for the game to add new paid features in the future.
+  - **Rationale**: We want an interface that is solely devoted to payments. We could have user auth handle payments, but in the future, if new paid game content is added, we want an interface that we can update. Its implementation now may not be strictly necessary but will allow for the game to add new paid features in the future.
+
+
+    
 
 ---
 
@@ -113,6 +124,7 @@ This modular setup allows each component to be developed and scaled independentl
   - **External**:
     - **Image Generation API**: Interacts with an external image generation service (e.g., DALL·E, MidJourney, or a custom model) to create images. The backend sends requests with the image description and attributes, and the service returns a URL to the generated image.
 
+- **Rationale**
 ---
 
 ### 7. **AI Language Model Interface**
@@ -129,6 +141,7 @@ This modular setup allows each component to be developed and scaled independentl
   - **External**:
     - **AI Language Model API**: Interacts with an external AI language model (e.g., OpenAI’s GPT-4 or a custom model). The backend sends requests containing the current game context, player actions, and predefined themes, and the model returns a story update that is displayed to the player.
 
+- **Rationale**
 ---
 
 ## External Interface Breakdown:
@@ -138,6 +151,9 @@ This modular setup allows each component to be developed and scaled independentl
 - **Communication**:
   - **Backend → Stripe**: API calls for initiating and processing payments for purchasing for the game.
   - **Stripe → Backend**: Stripe returns payment confirmation, success/failure responses, and transaction data.
+ 
+- **Rationale**
+  
   
 ### 2. **AI Language Model (LLM)**
 - **Purpose**: Powers dynamic, AI-generated storytelling for the game.
@@ -145,12 +161,15 @@ This modular setup allows each component to be developed and scaled independentl
   - **Backend → LLM API**: Sends context and player input to the LLM to receive a dynamically generated story.
   - **LLM → Backend**: Returns AI-generated story content to be presented to the player.
 
+- **Rationale**
+
 ### 3. **AI Image Generation Service**
 - **Purpose**: Provides unique images for cards and other in-game visuals.
 - **Communication**:
   - **Backend → Image Generation API**: Sends requests to generate images based on the attributes of newly created cards.
   - **Image Generation API → Backend**: Returns the generated image as a URL for storage.
 
+- **Rationale**:
 
  # Note: Need to figure out how we are getting images. URL is just a place holder.
 
