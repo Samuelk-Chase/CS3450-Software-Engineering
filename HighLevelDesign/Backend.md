@@ -2,17 +2,30 @@
 
 
 ## Architecture
-The system will follow a Client-Server Architecture with distinct components: the Client, the Backend Server, and external services for AI generation, card generation (images), and authentication.
+**System Overview:** The system follows a client-server architecture where the client is a web application that communicates with a backend server to handle game state, user accounts, card collections, payments, and story generation. The server-side logic will be responsible for processing game logic, generating dynamic stories using AI language models, and managing data persistence.
 
-* ***Client:*** The user interface that will allow players to interact with the game. Will allow user to interact with a text console and use items in game.
-* ***Backend Server:*** The heart of the application, responsible for maintaining game state, user management, card handling, story generation, and business logic.
-* ***External Services:***
-  * ***AI Story Generator:*** An AI system (such as a fine-tuned LLM) generates the dynamic story.
-  * ***Card Image Generator:*** An AI-based image generation API to create unique card images.
-  * ***Payment Service Stripe:*** A third-party service for user account management (OAuth, Firebase, etc.).
+**Key Components:**
 
-#### Design Rationale:
-This modular setup allows each component to be developed and scaled independently. By using a client-server architecture, we ensure that the backend logic is centralized, which makes it easier to maintain and update the game. External services are isolated so that any changes in their implementation do not affect the core game logic.
+- **Client (Web Interface):**
+
+   - **Frontend (UI):** Provides users with an interface for interacting with the game, such as creating accounts, initiating game sessions, viewing storylines, and interacting with the game world (e.g., collecting cards, battling bosses).
+   - **Game State Management:** The client stores temporary game states and interactions while interacting with the server to update game progress.
+
+- **Backend (Server):**
+
+   - **API Layer:** The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like user authentication, card collection updates, story generation, and game state management.
+   - **Internal Backend interfaces:** The core of the backend, which handles the AI-generated story, card interactions and generation, and game logic (including user progress and boss battles).
+   - **Database:** A relational database to persist game data, user accounts, card collections, game progress, and transaction history.
+- **External Services:**
+
+  - **Stripe:** For handling payments and purchasing the game.
+  - **AI Language Model:** An AI-based model that generates stories for the game. This can be an API for a pre-trained model like GPT-4 or a custom language model.
+  - **AI Image Generation:** An external service to generate card images based on AI models, providing users with unique visual content for the game.
+
+**Design Rationale:**
+Client-Server separation ensures clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience.
+REST APIs provide a standard interface for communication, ensuring scalability and ease of integration with external services (like Stripe and the AI models).
+AI-driven story generation and card image generation provide a unique and dynamic user experience.
 
 # Backend Design for Text-Based Game
 
