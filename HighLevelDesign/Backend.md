@@ -184,6 +184,6 @@ AI-driven story generation and card image generation provide a unique and dynami
 
 - **Rationale**:
 
- # Note: Need to figure out how we are getting images. URL is just a place holder.
+ # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
 
 
