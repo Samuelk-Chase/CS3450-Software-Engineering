@@ -29,7 +29,7 @@ AI-driven story generation and card image generation provide a unique and dynami
 
 # Backend Design for Text-Based Game
 
-## Internal Interfaces for Backend
+## Internal Interfaces
 
 ### 1. **User Authentication & Authorization Interface**
 - **Purpose**: Manages user registration, login, and authentication. Ensures that users can securely sign in and access their game data.
@@ -157,7 +157,7 @@ AI-driven story generation and card image generation provide a unique and dynami
 - **Rationale**
 ---
 
-## External Interface Breakdown:
+## External Interfaces:
 
 ### 1. **Stripe Integration**
 - **Purpose**: Handles all financial transactions for the game, from the initial purchase to in-game purchases.
