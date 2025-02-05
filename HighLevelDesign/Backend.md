@@ -14,6 +14,23 @@ The system will follow a Client-Server Architecture with distinct components: th
 #### Design Rationale:
 This modular setup allows each component to be developed and scaled independently. By using a client-server architecture, we ensure that the backend logic is centralized, which makes it easier to maintain and update the game. External services are isolated so that any changes in their implementation do not affect the core game logic.
 
+
+## Components
+
+### Interfaces Overview: 
+### Internal Interfaces:
+
+* ***Game State Interface:*** – Manages the current state of the game.
+* ***Card Management Interface:*** Handles card retrieval, usage, and updates.
+* ***Action Interface:*** Receives and processes player actions.
+* ***Real-Time Events Interface:*** Sends updates in real time to the client.
+
+##### External Interfaces:
+
+* ***Authentication Service Interface:*** Manages user login, registration, and session management.
+* ***AI Story Generator Interface:*** Communicates with an external AI to generate story content.
+* ***Card Image Generation Service Interface:*** Integrates with an external service to generate images for the cards.
+
 ### Internal Interfaces:
 
 
