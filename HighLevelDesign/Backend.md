@@ -136,7 +136,7 @@ This modular setup allows each component to be developed and scaled independentl
 ### 1. **Stripe Integration**
 - **Purpose**: Handles all financial transactions for the game, from the initial purchase to in-game purchases.
 - **Communication**:
-  - **Backend → Stripe**: API calls for initiating and processing payments, including purchases for the game and microtransactions.
+  - **Backend → Stripe**: API calls for initiating and processing payments for purchasing for the game.
   - **Stripe → Backend**: Stripe returns payment confirmation, success/failure responses, and transaction data.
   
 ### 2. **AI Language Model (LLM)**
@@ -149,6 +149,9 @@ This modular setup allows each component to be developed and scaled independentl
 - **Purpose**: Provides unique images for cards and other in-game visuals.
 - **Communication**:
   - **Backend → Image Generation API**: Sends requests to generate images based on the attributes of newly created cards.
-  - **Image Generation API → Backend**: Returns the generated image as a 
+  - **Image Generation API → Backend**: Returns the generated image as a URL for storage.
+
+
+ # Note: Need to figure out how we are getting images. URL is just a place holder.
 
 
