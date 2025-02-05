@@ -1,4 +1,4 @@
-
+AI Note: This document was generated with the help of Chat GPT.
 
 
 ## Architecture
