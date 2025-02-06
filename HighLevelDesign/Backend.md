@@ -21,6 +21,7 @@ AI Note: This document was generated with the help of Chat GPT.
   - **Stripe:** For handling payments and purchasing the game.
   - **AI Language Model:** An AI-based model that generates stories for the game. This can be an API for a pre-trained model like GPT-4 or a custom language model.
   - **AI Image Generation:** An external service to generate card images based on AI models, providing users with unique visual content for the game.
+  - **OAuth**: For handling authentication and to provide extra security for the user.
 
 **Design Rationale:**
 Client-Server separation ensures clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience.
@@ -32,9 +33,9 @@ AI-driven story generation and card image generation provide a unique and dynami
 ## Internal Interfaces
 
 ### 1. **User Authentication & Authorization Interface**
-- **Purpose**: Manages user registration, login, and authentication. Ensures that users can securely sign in and access their game data.
+- **Purpose**: Manages user registration, login, and authentication. Ensures that users can securely sign in and access their game data. See security section for more details on how we will protect data.
 - **Actions**:
-  - **Sign Up**: User creates an account by providing necessary details (e.g., email, password).
+  - **Sign Up**: User creates an account by providing the necessary details (e.g., email, password).
   - **Login**: Authenticates a returning user, generating a JWT (JSON Web Token) for session management.
   - **Password Reset**: Allows users to reset their password if forgotten.
   - **Authorization**: Ensures users can only access their own game data.
@@ -44,9 +45,9 @@ AI-driven story generation and card image generation provide a unique and dynami
     - **Game State Management**: Upon successful login, the user’s game state is retrieved from the database to resume gameplay.
     - **Payment System**: Uses a payment interface to allow the user to buy the game so that paid users are given access to the game.
   - **External**:
-    - None.
+    - OAuth: If OAuth is used will exchange the authorization code for an access token and possibly a refresh token.
    
-   ***Rational:*** 
+   *** Rationale:*** The User Authentication & Authorization Interface is essential for securing user accounts and ensuring that players can safely access their game data. It manages secure sign-ins, session handling via JWTs, and ensures that users only have access to their own information. By integrating with internal systems and supporting external OAuth, it provides both a seamless and secure authentication process, which is critical for maintaining player privacy, data integrity, and a personalized gaming experience. It allows the interface to be used by other interfaces in the future if needed.
 
 ---
 
@@ -61,10 +62,12 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **Internal**:
     - **Card Management**: Asks Card Management to update, create, or apply cards in the player's inventory during the course of the game.
     - **Database**: Uses database to store the game state, player inventory, and progress, ensuring it’s updated after each action.
+    -  **AI Image Interface**: Asks AI image interface for images related to the game such as an image of a boss to battle.
+    -  **AI-Language Model Interface**: Interacts with the AI-Language Model Interface (e.g., OpenAI’s GPT-4 or a custom LLM) to generate the story dynamically based on the current game state and player input. The Game engine sends requests to the interface with the current game context, and the interface returns a new segment of the story.
   - **External**:
-    - **AI Language Model (LLM)**: Interacts with the external AI model (e.g., OpenAI’s GPT-4 or a custom LLM) to generate the story dynamically based on the current game state and player input. The backend sends requests to the API with the current game context, and the AI returns a new segment of the story.
+    - none
    
-- **Rationale**
+- **Rationale:** We want some central interface that controls the game and interacts with other interfaces to update the game. This will serve as a constant entry point between the client and the server.
 
 ---
 
@@ -82,12 +85,12 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - **AI Image Generation**: Requests images for newly generated cards. The backend sends data to the external AI image generation service (e.g., DALL·E or other image generation models) to generate a visual representation of each card. The AI then returns an image URL which is stored in the database.
    
-- **Rationale**
+- **Rationale:** Cards are going to be a big feature of the game so we want to separate the card implementation from other components like the game engine. This will allow us to add new card features in the future without having to change many details in other interfaces.
 
 ---
 
 ### 4. **Database Interface**
-- **Purpose**: Manages all persistent data within the system. It stores information related to user accounts, game progress, cards, transactions, and more.
+- **Purpose**: Manages all persistent data within the system. It stores information related to user accounts, game progress, cards, transactions, and more. See Data Base Design for more details about the Database.
 - **Actions**:
   - **Store User Data**: Store user details such as usernames, passwords (hashed), email, etc.
   - **Store Game State**: Keeps track of player progress, inventory, story state, and choices.
@@ -102,7 +105,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - None.
    
-- **Rationale**:
+- **Rationale**: See Database design
 
 ---
 
@@ -114,11 +117,11 @@ AI-driven story generation and card image generation provide a unique and dynami
 - **Communication with Other Components**:
   - **Internal**:
     - **Database**: Stores transaction records, which are essential for validating user purchases and maintaining access.
-    - **User Authentication**: Once a payment is successful, update the user’s account to grant game access.
+    - **User Authentication**: Once payment is successful, update the user’s account to grant game access.
   - **External**:
-    - **Stripe API**: The backend makes requests to the Stripe API to process payments. It sends details like purchase amounts, user details, and transaction types (e.g., one-time, subscription), and Stripe returns the transaction status (e.g., success, failure). The backend updates the user’s game access based on Stripe’s response.
+    - **Stripe API**: Makes requests to the Stripe API to process payments. It sends details like purchase amounts, user details, and transaction types (e.g., one-time, subscription), and Stripe returns the transaction status (e.g., success, failure). The backend updates the user’s game access based on Stripe’s response.
    
-  - **Rationale**: We want an interface that is solely devoted to payments. We could have user auth handle payments, but in the future, if new paid game content is added, we want an interface that we can update. Its implementation now may not be strictly necessary but will allow for the game to add new paid features in the future.
+  - **Rationale**: We want an interface that is solely devoted to payments. We could have user auth handle payments, but in the future, if new paid game content is added, we want an interface that we can update and possibly have more payment options. Its implementation will not be prioritized during development since the focus will be on user experience.
 
 
     
@@ -126,22 +129,23 @@ AI-driven story generation and card image generation provide a unique and dynami
 ---
 
 ### 6. **AI Image Generation Interface**
-- **Purpose**: Generates custom images for cards that represent items, characters, or actions within the game. Ensures harmful content is not generated. Uses external image generation interface for image generation.
+- **Purpose**: Generates custom images for cards that represent items, characters, or actions within the game.  Uses external AI image generation interface for actual image generation.
 - **Actions**:
   - **Card Image Generation**: Receives requests from the Card Management component with card attributes and returns a generated image.
-  - **Image Storage**: Saves generated images to cloud storage (e.g., AWS S3, Google Cloud Storage) and returns a URL to be used in the game.
+  - **Image Storage**: Saves generated images to the Database.
+  - **Boss image Generation:** Generates images of a boss based on llm output.
 - **Communication with Other Components**:
   - **Internal**:
-    - **Card Management**: Requests image generation for newly created cards or when upgrading cards. Passes the necessary card data (e.g., type, strength, effects) to the service.
-    - **Game Engine**: Ensures that the correct image is displayed during gameplay when a player interacts with a card.
+    - **Card Management**: Requests image generation for newly created cards or when upgrading cards. Passes the necessary card data (e.g., type, effects, item description) to the service.
+    - **Game Engine**: Request a new image of a Boss based on LLM output. 
   - **External**:
-    - **Image Generation API**: Interacts with an external image generation service (e.g., DALL·E, MidJourney, or a custom model) to create images. The backend sends requests with the image description and attributes, and the service returns a URL to the generated image.
+    - **Image Generation API**: Interacts with an external image generation service (e.g., DALL·E, MidJourney, or a custom model) to create images. Sends requests with the image description and attributes, and the service returns an image to the interface.
 
-- **Rationale**
+- **Rationale:** Since we will be generating images throughout we want a component that is solely devoted to image generation, which will make it easier to upgrade or change in the future. It will also allow other interfaces added in the future a way to generate images. 
 ---
 
 ### 7. **AI Language Model Interface**
-- **Purpose**: Generates the dynamic storylines based on user input and predefined game themes using an external LLM interface. Responsible for generation and ensure harmful content is not being generated.
+- **Purpose**: Generates the dynamic storylines based on user input and predefined game themes using an external LLM interface. 
 - **Actions**:
   - **Story Generation**: Generates narrative elements in real-time based on user decisions, AI model inputs, and the theme of the game.
   - **Boss Battle Descriptions**: Provides descriptive content for boss battles, adding depth and excitement to the interactions.
@@ -154,7 +158,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - **AI Language Model API**: Interacts with an external AI language model (e.g., OpenAI’s GPT-4 or a custom model). The backend sends requests containing the current game context, player actions, and predefined themes, and the model returns a story update that is displayed to the player.
 
-- **Rationale**
+- **Rationale:** Since LLM generation is so important to the game we want to separate the functionality from the rest of our interfaces. This will allow us to extend the interface to other interfaces in the future if needed.
 ---
 
 ## External Interfaces:
@@ -174,7 +178,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **Backend → LLM API**: Sends context and player input to the LLM to receive a dynamically generated story.
   - **LLM → Backend**: Returns AI-generated story content to be presented to the player.
 
-- **Rationale**
+- **Rationale**:
 
 ### 3. **AI Image Generation Service**
 - **Purpose**: Provides unique images for cards and other in-game visuals.
