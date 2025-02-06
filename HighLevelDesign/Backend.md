@@ -199,6 +199,9 @@ AI-driven story generation and card image generation provide a unique and dynami
 - **Rationale:**
 OAuth integration allows the backend to authenticate users without managing passwords directly, improving security and simplifying the login process. This ensures that only valid, authorized users can access protected resources and game data via the backend. Also provides a user a more convenient way to log in.
 
+***Interface Interaction Overview***
+![alt text](LucidChartDiagram.png "Interface Main Interaction Overview")
+
  # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
 
 
