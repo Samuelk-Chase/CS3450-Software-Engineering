@@ -47,7 +47,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - OAuth: If OAuth is used will exchange the authorization code for an access token and possibly a refresh token.
    
-   *** Rationale:*** The User Authentication & Authorization Interface is essential for securing user accounts and ensuring that players can safely access their game data. It manages secure sign-ins, session handling via JWTs, and ensures that users only have access to their own information. By integrating with internal systems and supporting external OAuth, it provides both a seamless and secure authentication process, which is critical for maintaining player privacy, data integrity, and a personalized gaming experience. It allows the interface to be used by other interfaces in the future if needed.
+- **Rationale:** The User Authentication & Authorization Interface is essential for securing user accounts and ensuring that players can safely access their game data. It manages secure sign-ins, session handling via JWTs, and ensures that users only have access to their own information. By integrating with internal systems and supporting external OAuth, it provides both a seamless and secure authentication process, which is critical for maintaining player privacy, data integrity, and a personalized gaming experience. It allows the interface to be used by other interfaces in the future if needed.
 
 ---
 
@@ -67,7 +67,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - none
    
-- **Rationale:** We want some central interface that controls the game and interacts with other interfaces to update the game. This will serve as a constant entry point between the client and the server.
+- **Rationale:** We want some central interface that controls the game and interacts with other interfaces to update the game. This will serve as a constant entry point between the client and the server and managing the game state.
 
 ---
 
@@ -144,7 +144,7 @@ AI-driven story generation and card image generation provide a unique and dynami
 - **Rationale:** Since we will be generating images throughout we want a component that is solely devoted to image generation, which will make it easier to upgrade or change in the future. It will also allow other interfaces added in the future a way to generate images. 
 ---
 
-### 7. **AI Language Model Interface**
+### 7. **AI-Language Model Interface**
 - **Purpose**: Generates the dynamic storylines based on user input and predefined game themes using an external LLM interface. 
 - **Actions**:
   - **Story Generation**: Generates narrative elements in real-time based on user decisions, AI model inputs, and the theme of the game.
@@ -153,10 +153,10 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **Story Summary**: Summarizes important story beats during the user's journey. Used for reducing storage requirements, and providing a way to inform a user of past events after returning to the game.
 - **Communication with Other Components**:
   - **Internal**:
-    - **Game Engine**: Receives prompts for story generation (e.g., user choices, current game state) from the game engine and sends generated text for the user to interact with. The story’s progression is based on player decisions. 
+    - **Game Engine**: Receives prompts for story generation (e.g., user choices, current game state) from the game engine and sends a generated text for the user to interact with. The story’s progression is based on player decisions. 
     - **Database**: May store narrative branches and decisions for future gameplay sessions, ensuring continuity in the story.
   - **External**:
-    - **AI Language Model API**: Interacts with an external AI language model (e.g., OpenAI’s GPT-4 or a custom model). The backend sends requests containing the current game context, player actions, and predefined themes, and the model returns a story update that is displayed to the player.
+    - **AI-Language Model API**: Interacts with an external AI language model (e.g., OpenAI’s GPT-4 or a custom model). The backend sends requests containing the current game context, player actions, and predefined themes, and the model returns a story update that is displayed to the player.
 
 - **Rationale:** Since LLM generation is so important to the game we want to separate the functionality from the rest of our interfaces. This will allow us to extend the interface to other interfaces in the future if needed.
 ---
