@@ -189,10 +189,10 @@ AI-driven story generation and card image generation provide a unique and dynami
 
 - **Communication:**
 
--**Backend → OAuth Provider (e.g., Google, Facebook):** The backend exchanges the authorization code for an access token and possibly a refresh token.
--**OAuth Provider → Backend**: Returns an access token (and refresh token, if applicable), which grants the backend access to the user's profile information and other authorized resources.
+  - **UserAuth interface → OAuth Provider (e.g., Google, Facebook):** The backend exchanges the authorization code for an access token and possibly a refresh token.
+  - **OAuth Provider → Backend**: Returns an access token (and refresh token, if applicable), which grants the backend access to the user's profile information and other authorized resources.
 
-**Rationale:**
+- **Rationale:**
 OAuth integration allows the backend to authenticate users without managing passwords directly, improving security and simplifying the login process. This ensures that only valid, authorized users can access protected resources and game data via the backend. Also provides a user a more convenient way to log in.
 
  # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
