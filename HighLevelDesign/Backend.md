@@ -165,7 +165,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **Backend → Stripe**: API calls for initiating and processing payments for purchasing for the game.
   - **Stripe → Backend**: Stripe returns payment confirmation, success/failure responses, and transaction data.
  
-- **Rationale**
+- **Rationale**: Stripe won't be prioritized but if production is ahead of schedule, we will implement a way to pay for the game using Stripe, since some in our group are at least somewhat familiar with it.
   
   
 ### 2. **AI Language Model (LLM)**
@@ -183,6 +183,17 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **Image Generation API → Backend**: Returns the generated image as a URL for storage.
 
 - **Rationale**:
+
+### 4. OAuth Authentication Service
+ - **Purpose:** Authenticates users securely via OAuth and provides backend authorization to access user-specific game data and actions. It acts as a bridge between the backend system and external OAuth providers (e.g., Google, Facebook, etc.). This will not be a required way to sign in, but users will have the option besides giving an email and password.
+
+- **Communication:**
+
+-**Backend → OAuth Provider (e.g., Google, Facebook):** The backend exchanges the authorization code for an access token and possibly a refresh token.
+-**OAuth Provider → Backend**: Returns an access token (and refresh token, if applicable), which grants the backend access to the user's profile information and other authorized resources.
+
+**Rationale:**
+OAuth integration allows the backend to authenticate users without managing passwords directly, improving security and simplifying the login process. This ensures that only valid, authorized users can access protected resources and game data via the backend. Also provides a user a more convenient way to log in.
 
  # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
 
