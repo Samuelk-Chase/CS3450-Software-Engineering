@@ -1,36 +1,44 @@
 # Security Design
 This document was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
 ## Authentication and Authorization
-To secure user accounts and prevent unauthorized access, the game will implement **OAuth** for authentication. This approach offers a secure, industry-standard way to manage login credentials while ensuring user data protection. Key aspects of authentication include:
+To secure user accounts and prevent unauthorized access, I chose **OAuth** for authentication. This is an industry-standard approach that removes the need for our game to store and manage passwords directly, reducing security risks
 
-- **OAuth Implementation:** Users will log in via trusted third-party authentication providers (e.g., Google, Microsoft, Discord, Steam). OAuth is chosen because it reduces the need for the game to store and manage sensitive passwords directly, offloading security concerns to well-established authentication providers.
-- **Token-Based Authentication:** After successful login, a short-lived **access token** will be issued, while a refresh token can be used to maintain session continuity. This ensures that users remain logged in without repeatedly entering their credentials while keeping authentication secure.
-- **Two-Factor Authentication (2FA):** For additional security, users may enable **2FA** via email or authentication apps. This will only be considered if sensitive user data is collected, as it adds another layer of protection against unauthorized access, particularly for high-value accounts.
+- **OAuth Implementation:** Players will log in using trusted thrid-party authentication providers like, Google, Microsoft,or Apple. This makes it easer for players to sign in without having to remember new credentials while also leveraging the security measures that these platforms already have in place.
+- **Token-Based Authentication:** After a successful login, a short-lived access token will be issued, while a refresh token could be used to maintained session continuity. I chose this approach because it balances security and user convenience. This would keep users logged in without forcing them to re-login multiple times.
+- **Two-Factor Authentication (2FA):** This will be an optional feature for users who want to add security, particualrly for accounts with high in-game value. I included this because it mitigates account takeovers but wont be mandatory unless we store sensitive personal data like credit cards.
+
 
 ## Data Protection & Privacy
-User privacy and secure data handling are a priority. The game will adhere to industry best practices for **encryption, storage, and compliance** with data protection regulations.
+Protecting player data is a top priority. I designed our approach based on encryption best practices and compliance with industry regulations.
 
-- **Password Protection:** User passwords will be **hashed and salted** using a strong hashing algorithm if OAuth is not used. This ensures that even if the database is compromised, attackers cannot easily retrieve user passwords.
-- **Encryption of Sensitive Data:** All personally identifiable information (**PII**) and game-related data stored in the database will be encrypted (should the team deem necessary). Encryption protects user data from unauthorized access, ensuring compliance with security best practices.
-- **Anonymized Analytics:** User analytics data will be **aggregated and anonymized** before being stored for business analysis, ensuring compliance with **GDPR and CCPA**. This ensures that user data is not personally identifiable while still allowing valuable insights for improving the game.
-- **Secure Communication:** All client-server interactions will use **TLS 1.3 encryption** to protect against eavesdropping and man-in-the-middle attacks. TLS 1.3 was chosen because it is the latest and most secure; while this is just a game, TLS 1.3 was also a solid option because it only uses **1 round trip instead of 2**, making it **faster**, which may be useful in a multiplayer game.
+- **Password Protection:** If we ever need to store passwords (for example, if OAuth is unavailable), they will be hashed and salted using a secure hashing algorithm. This ensures that even if our database is compromised, attackers can’t easily retrieve the passwords.
+- **Encryption of Sensitive Data:**Any personally identifiable information (PII) or game-related data will be encrypted where necessary. I chose this because it minimizes risks in case of data leaks while ensuring compliance with security standards.
+- **Anonymized Analytics:** Analytics data will be aggregated and anonymized before storage to comply with regulations like GDPR and CCPA. This ensures that player data remains private while still allowing us to analyze game trends.
+- **Secure Communication:**  I chose TLS 1.3 encryption for client-server communication because it prevents eavesdropping and MITM (Man-in-the-Middle) attacks. TLS 1.3 is also faster than previous versions because it only requires one round trip instead of two. This is especially useful for multiplayer gaming, where latency matters.
+
+## payment Security with Stripe 
+Since we could be handling in-game transactions, I decided to use Stripe as our payment processor.
+
+- Stripe is a widely trusted payment provider with built-in security measures like PCI DSS compliance and fraud detection. It also supports multiple payment methods, including credit cards, Apple Pay, and Google Pay, making it easy for players to complete transactions securely.
+- Instead of handling credit card details directly, we will use Stripe’s tokenization system to process payments securely. This means we never store sensitive payment data ourselves, reducing our security liability.
+- Stripe includes real-time fraud detection, which helps prevent unauthorized transactions. I chose this because it adds an extra layer of security to in-game purchases and prevents chargebacks due to fraudulent activity.
+
 
 ## Mitigating Common Attacks
-The game must be resilient against various forms of cyber threats that can disrupt gameplay or compromise user data.
-
+Since online games are often targeted by cyber threats, I designed a set of security measures to protect our game from common attacks.
 ### 1. DDoS Protection
-Distributed Denial of Service (DDoS) attacks can overload game servers, causing latency issues or service disruptions. To mitigate this:
-
-- **Rate Limiting & Throttling:** API requests and multiplayer actions will be **rate-limited** to prevent excessive requests from a single source. This helps mitigate bot-driven traffic spikes that could degrade performance.
-- **Traffic Monitoring & IP Filtering:** Traffic will be monitored using **behavioral analysis and anomaly detection** to identify and block suspicious activity. This helps detect large-scale bot-driven attacks before they affect gameplay.
-- **CDN & Load Balancing:** A **Content Delivery Network (CDN)** will distribute game data efficiently, while **load balancing** ensures traffic is handled evenly across multiple servers. This helps prevent any single server from being overwhelmed.
+DDoS attacks can cause major disruptions in multiplayer games, so I implemented multiple layers of defense:
+- **Rate Limiting & Throttling:** Limits excessive requests from a single source to prevent bot-driven traffic spikes.
+- **Traffic Monitoring & IP Filtering:**  Detects unusual traffic patterns and blocks suspicious requests before they affect gameplay.
+- **CDN & Load Balancing:** A Content Delivery Network (CDN)  distributes game assets efficiently, and load balancing ensures fair distribution of incoming traffic across servers.
 
 
 ### 2. SQL Injection & Input Validation
 Malicious actors may attempt to manipulate game database queries via SQL injection. Preventative measures include:
 
-- **Parameterized Queries & ORM (Object-Relational Mapping):** Instead of raw SQL, an ORM (e.g., SQLAlchemy, Django ORM) will be used to sanitize user input. This eliminates the risk of attackers injecting malicious SQL commands.
-- **Strict Input Validation:** All user inputs (e.g., usernames, chat messages, deck names) will be **validated and sanitized** before processing. This ensures that only properly formatted input is accepted, reducing the risk of injection attacks.
+- **Parameterized Queries & ORM (Object-Relational Mapping):**  Using Django ORM or SQLAlchemy ensures all user inputs are automatically sanitized before being used in queries.
+- **Strict Input Validation:**  we would want to make sure that all user input (usernames, chat messages, deck names) is validated before being processed, reducing the risk of malicious data being injected.
+
 
 ### 3. Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF)
 To prevent unauthorized script execution and malicious actions via the web interface:
