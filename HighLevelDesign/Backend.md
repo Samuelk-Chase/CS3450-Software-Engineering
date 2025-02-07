@@ -52,7 +52,7 @@ AI-driven story generation and card image generation provide a unique and dynami
 ### 2. **Game Engine (Story Generation & Game Logic) Interface**
 - **Purpose**: Powers the dynamic AI-driven story generation, manages the game flow, handles player choices, and generates appropriate responses.
 - **Actions**:
-  - **Story Generation**: Interacts with the AI model (e.g., GPT-4 or a custom LLM) to generate text-based story content based on the theme chosen by the player.
+  - **Story Generation**: Requests internal AI Language model interface generate text-based story content based on the theme chosen by the player.
   - **Handle Player Actions**: Processes actions taken by the user (e.g., collecting items, battling bosses).
   - **Card and Buff Management**: Manages the card collection and ensures buffs and abilities apply correctly during combat or other in-game actions.
   - **Boss Battle Simulation**: Executes the logic for combat between players and bosses, updating health, energy, and game progress.
@@ -61,7 +61,7 @@ AI-driven story generation and card image generation provide a unique and dynami
     - **Card Management**: Asks Card Management to update, create, or apply cards in the player's inventory during the course of the game.
     - **Database**: Uses database to store the game state, player inventory, and progress, ensuring it’s updated after each action.
     -  **AI Image Interface**: Asks AI image interface for images related to the game such as an image of a boss to battle.
-    -  **AI-Language Model Interface**: Interacts with the AI-Language Model Interface (e.g., OpenAI’s GPT-4 or a custom LLM) to generate the story dynamically based on the current game state and player input. The Game engine sends requests to the interface with the current game context, and the interface returns a new segment of the story.
+    -  **AI-Language Model Interface**: Interacts with the AI-Language Model Interface to generate the story dynamically based on the current game state and player input. The Game engine sends requests to the interface with the current game context and action needed, and the interface returns a new segment of the story and/or possible items the user can collect which will later be turned into cards.
   - **External**:
     - none
    
@@ -72,16 +72,17 @@ AI-driven story generation and card image generation provide a unique and dynami
 ### 3. **Card Management Interface**
 - **Purpose**: Handles the collection, use, and upgrades of cards within the game. Each card has its attributes (e.g., attack, buff, cost, strength).
 - **Actions**:
-  - **Card Generation**: Creates cards when they are acquired by the player, potentially using an AI image generation service for visual representation.
+  - **Card Generation**: Creates cards when they are acquired by the player, using an AI image generation service for visual representation. When user gets an item after being prompted by ai language model, the item description will be passed on to Card Management to be turned into a card object. 
   - **Card Usage**: Allows players to use cards during combat or to buff themselves. Handles energy costs and buffs/debuffs applied.
   - **Card Collection**: Tracks which cards the user has and allows them to use them throughout the game.
-  - **Card Upgrades**: Facilitates upgrading or enhancing cards.
+  - **Card Upgrades**: Possible facilitates upgrading or enhancing cards.(This may not be in the final product for version 1.0)
 - **Communication with Other Components**:
   - **Internal**:
     - **Game Engine**: Updates card usage during events like battles, triggering specific buffs or attack damage. When the user picks up an item Game engine will ask the Card engine to create a new card. The card engine is responsible for creating cards and their attributes and returns cards and their actions to the game engine for use.
     - **Database**: Saves card data in the user’s inventory and updates the database on each card use or collection.
+    -  **AI Image Generation**: Requests images for newly generated cards. Sends card description to the interface which then returns an image which is stored in the database.
   - **External**:
-    - **AI Image Generation**: Requests images for newly generated cards. The backend sends data to the external AI image generation service (e.g., DALL·E or other image generation models) to generate a visual representation of each card. The AI then returns an image URL which is stored in the database.
+    - none
    
 - **Rationale:** Cards are going to be a big feature of the game so we want to separate the card implementation from other components like the game engine. This will allow us to add new card features in the future without having to change many details in other interfaces.
 
@@ -212,7 +213,7 @@ Supabase provides a complete backend solution that includes authentication, real
    Supabase simplifies backend management by offering pre-built solutions for authentication, real-time data handling, and database management. It is a critical external service used by your backend to manage user data securely, store game progress, and manage multiplayer features.
 
 
-
+Interface Rational: We divided our project into these interfaces to seperate the logic for different tasks. We believe this seperation will be useful for debuging and adding new features in the future. 
 
 ***Interface Interaction Overview***
 ![alt text](LucidChartDiagram.png "Interface Main Interaction Overview")
