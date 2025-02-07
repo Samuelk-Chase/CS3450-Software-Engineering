@@ -248,3 +248,295 @@ Interface Rational: We divided our project into these interfaces to seperate the
  # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
 
 
+
+ ## another Draft for comparision:
+
+ # System Overview
+
+The system follows a client-server architecture where the client is a web application that communicates with a backend server to handle game state, user accounts, card collections, payments, and story generation. The server-side logic will be responsible for processing game logic, generating dynamic stories using AI language models, and managing data persistence.
+
+---
+
+## Key Components
+
+### **Client (Web Interface)**
+
+- **Frontend (UI)**: Provides users with an interface for interacting with the game, such as creating accounts, initiating game sessions, viewing storylines, and interacting with the game world (e.g., collecting cards, battling bosses).
+  
+- **Game State Management**: The client stores temporary game states and interactions while interacting with the server to update game progress.
+
+---
+
+### **Backend (Server)**
+
+- **API Layer**: The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like card collection updates, story generation, and game state management.
+  
+- **Internal Backend Interfaces**: The core of the backend, which handles the AI-generated story, card interactions and generation, and game logic (including user progress and boss battles).
+
+- **Database**: A relational database to persist game data, user accounts, card collections, game progress, and transaction history.
+
+---
+
+### **External Services**
+
+- **Stripe**: For handling payments and purchasing the game.
+
+- **AI Language Model**: An AI-based model that generates stories for the game. This can be an API for a pre-trained model like GPT-4 or a custom language model.
+
+- **AI Image Generation**: An external service to generate card images based on AI models, providing users with unique visual content for the game.
+
+- **OAuth**: For handling authentication and providing extra security for the user. Supabase will be integrated to handle OAuth and authentication.
+
+---
+
+## Design Rationale
+
+Client-Server separation ensures a clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience. REST APIs provide a standard interface for communication, ensuring scalability and ease of integration with external services (like Stripe and the AI models). AI-driven story generation and card image generation provide a unique and dynamic user experience.
+
+---
+
+## Backend Design for Text-Based Game
+
+---
+
+### Internal Interfaces
+
+#### 1. **User Authentication & Authorization Interface**
+
+- **Purpose**: Validates user authorization using Supabase and OAuth for secure access.
+  
+- **Actions**:
+  - Uses Supabase to validate user has permission to access game data, allowing the Game Engine to retrieve user information.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Database**: Interacts with the user table to store credentials and securely hash passwords (via Supabase).
+    - **Game Engine**: Grants access to the user's game state data after successful validation.
+    - **Payment**: Confirms user’s purchase status via the Payment Interface.
+  - **External**:
+    - **OAuth**: Uses OAuth to exchange the authorization code for an access token.
+    - **Supabase**: Checks access tokens and allows the backend to retrieve user data.
+  
+- **Rationale**: The User Authentication & Authorization Interface ensures secure user access and handles user login via OAuth or email/password, depending on user choice. With Supabase managing both OAuth and database storage, there is no need for a separate internal user authentication system, simplifying both the user login and data retrieval process.
+
+---
+
+#### 2. **Game Engine (Story Generation & Game Logic) Interface**
+
+- **Purpose**: Powers dynamic story generation, manages game flow, player choices, and game logic.
+  
+- **Actions**:
+  - **Story Generation**: Requests internal AI Language Model to generate story content.
+  - **Handle Player Actions**: Processes player choices (e.g., collecting items, battling bosses).
+  - **Card & Buff Management**: Manages cards and buffs during in-game interactions.
+  - **Boss Battle Simulation**: Executes logic for combat and progression.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Card Management**: Updates card usage or creates new cards based on player actions.
+    - **Database**: Saves player’s progress and updates inventory during interactions.
+    - **AI Image Interface**: Requests images for game content like boss fights.
+    - **AI-Language Model Interface**: Generates story updates based on player input.
+  
+- **Rationale**: This interface serves as the central hub for game progression. It coordinates between multiple systems (card management, database, story generation) to deliver a consistent experience, keeping the flow of the game intact.
+
+---
+
+#### 3. **Card Management Interface**
+
+- **Purpose**: Handles the collection, use, and upgrades of cards within the game.
+  
+- **Actions**:
+  - **Card Generation**: Creates new cards based on in-game events and item descriptions.
+  - **Card Usage**: Allows players to use cards for battles or buffs.
+  - **Card Collection**: Tracks and updates the player's card inventory.
+  - **Card Upgrades**: Manages potential future upgrades of cards.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Game Engine**: Updates card collection and usage during events.
+    - **Database**: Stores card inventory and updates each card's use or collection.
+    - **AI Image Generation**: Requests images for newly generated cards.
+  
+- **Rationale**: By separating card management, the game engine remains focused on game flow, while the Card Management Interface takes care of card creation and updates independently. This allows for easy future expansion of card-related features.
+
+---
+
+#### 4. **Database Interface (with Supabase Integration)**
+
+- **Purpose**: Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase.
+
+- **Actions**:
+  - **Store User Data**: Saves user credentials (hashed passwords) and other relevant information.
+  - **Store Game State**: Tracks player’s game progress, inventory, decisions, and stats.
+  - **Transaction Logs**: Logs all payment transactions and tracks in-game purchases.
+  - **Game History**: Saves past game sessions to allow users to resume their gameplay.
+  - **Card Collection Management**: Manages and updates the player’s card collection.
+
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **User Authentication Interface**: Stores and retrieves user credentials via Supabase authentication.
+    - **Game Engine**: Retrieves and updates user game state and progress.
+    - **Card Management**: Stores and updates player’s card inventory.
+    - **Payment Interface**: Logs and verifies transactions for purchases and in-game items.
+  - **External**:
+    - **Supabase**: Handles authentication, queries, and storage of user and game-related data.
+
+- **Rationale**: Supabase provides a powerful backend-as-a-service solution with built-in database management, authentication, and real-time capabilities. By using Supabase for data storage, we can focus on building out the game mechanics and user experience. The **Database Interface** will abstract the complexity of interacting with Supabase, allowing for seamless data management.
+
+---
+
+#### **Payment Interface (Stripe with Supabase Integration)**
+
+- **Purpose**: Facilitates in-game purchases and the initial purchase of the game using **Stripe** for payments and **Supabase** for storing transaction records.
+
+- **Actions**:
+  - **Purchase Game**: Handles payment processing through the Stripe API (for one-time purchases).
+  - **In-Game Purchases**: Facilitates buying cards, upgrades, or other in-game items through Stripe.
+  - **Transaction History**: Logs all transactions, storing transaction details in Supabase.
+
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Database**: Stores payment and transaction records, verifying user’s game access.
+    - **User Authentication Interface**: Ensures that the user has purchased the game or in-game items by checking the transaction status in Supabase.
+  - **External**:
+    - **Stripe API**: Processes payment transactions securely and returns transaction statuses (e.g., success or failure).
+
+- **Rationale**: The integration with **Stripe** enables a robust payment processing flow for both initial and in-game purchases. By using Supabase to store the transaction logs, we can securely manage user purchases and track access. Supabase's database allows for easy verification of purchases without overcomplicating the transaction flow. The Payment Interface abstracts the complexities of Stripe and ensures smooth integration with the game.
+
+---
+
+
+
+#### 5. **Payment Interface (Stripe Integration)**
+
+- **Purpose**: Facilitates in-game purchases and the initial purchase of the game using Stripe.
+  
+- **Actions**:
+  - **Purchase Game**: Handles payment processing through Stripe API.
+  - **Transaction History**: Logs purchases to verify user’s game access.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Database**: Stores transaction records and verifies user access.
+    - **User Authentication**: Updates user access after a successful payment.
+  
+- **External**:
+  - **Stripe API**: Processes payments and returns transaction statuses.
+  
+- **Rationale**: A separate Payment Interface allows for clean management of financial transactions. It ensures the game can be easily updated in the future if more payment options are required.
+
+---
+
+#### 6. **AI Image Generation Interface**
+
+- **Purpose**: Generates custom images for cards and other in-game visuals.
+  
+- **Actions**:
+  - **Card Image Generation**: Requests images based on card attributes.
+  - **Image Storage**: Stores generated images to the database.
+  - **Boss Image Generation**: Generates visuals for bosses or enemies.
+  - **Validation**: Ensures generated images are valid and usable.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Card Management**: Requests images for newly generated cards.
+    - **Game Engine**: Requests images for boss encounters.
+  - **External**:
+    - **Image Generation API**: Generates images based on given descriptions.
+  
+- **Rationale**: This interface isolates image generation to a single component, allowing easy changes and enhancements in the future. It simplifies image management and keeps the logic for visual elements modular.
+
+---
+
+#### 7. **AI-Language Model Interface**
+
+- **Purpose**: Powers the AI-driven storylines for the game.
+  
+- **Actions**:
+  - **Story Generation**: Generates narrative elements based on game state and user input.
+  - **Boss Battle Descriptions**: Provides descriptions for bosses and encounters.
+  - **Quality Control/Validation**: Ensures generated stories are in the correct format.
+  - **Story Summary**: Provides summaries of major story beats.
+  
+- **Communication with Other Interfaces**:
+  - **Internal**:
+    - **Game Engine**: Requests story updates based on user choices.
+    - **Database**: Stores story progress and player decisions.
+  - **External**:
+    - **AI-Language Model API**: Communicates with the LLM to generate dynamic narratives.
+  
+- **Rationale**: The AI-Language Model is key to the game’s dynamic narrative. Separating this functionality allows easy scalability and flexibility, ensuring stories are generated seamlessly.
+
+---
+
+### External Interfaces
+
+---
+
+#### 1. **Stripe Integration**
+
+- **Purpose**: Handles all financial transactions for the game, from initial purchase to in-game purchases.
+  
+- **Communication**:
+  - **Backend → Stripe**: Sends transaction details to Stripe.
+  - **Stripe → Backend**: Returns transaction status (success/failure).
+
+- **Rationale**: Payment is handled externally to reduce security concerns within the game’s backend. Stripe allows secure, easy payment processing.
+
+---
+
+#### 2. **AI Language Model (LLM)**
+
+- **Purpose**: Generates dynamic, AI-powered storylines.
+
+- **Communication**:
+  - **Internal AI-Language Model Interface → LLM API**: Sends user input to LLM to generate stories.
+  - **LLM → Backend**: Returns generated story content.
+
+- **Rationale**: By using an external LLM, we can scale and improve the narrative quality without maintaining complex AI models in-house.
+
+---
+
+#### 3. **AI Image Generation Service**
+
+- **Purpose**: Provides unique images for cards and in-game visuals.
+
+- **Communication**:
+  - **Backend → Image Generation API**: Requests for image creation.
+  - **Image Generation API → Backend**: Returns generated image data.
+
+- **Rationale**: Isolating image generation to a single interface allows flexibility in switching image providers or refining visuals in the future.
+
+---
+
+#### 4. **OAuth Authentication Service**
+
+- **Purpose**: Manages user authentication via OAuth providers (e.g., Google, Facebook) for secure login.
+
+- **Communication**:
+  - **UserAuth Interface → OAuth Provider**: Initiates login requests.
+  - **Supabase**: Verifies user and provides session tokens.
+  
+- **Rationale**: OAuth authentication reduces the overhead of managing user passwords. Supabase will simplify OAuth handling and session management.
+
+---
+
+#### 5. **Supabase**
+
+- **Purpose**: Provides backend services for user management, including authentication (via OAuth or email) and game data storage.
+
+- **Communication**:
+  - **Backend → Supabase**: Communicates for tasks like sign-up, sign-in, game progress, and transactions.
+  - **Supabase → Backend**: Returns user data, game state, and authentication details.
+
+- **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing you to focus on game development.
+
+---
+
+### Interface Rationale
+
+We divided our project into these interfaces to separate logic and ensure flexibility. This modular approach will make debugging easier and provide a solid foundation for future feature additions. Each interface is designed to handle a specific concern, ensuring that the overall system remains organized and adaptable.
+
+
+
