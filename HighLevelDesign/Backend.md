@@ -13,7 +13,7 @@ AI Note: This document was generated with the help of Chat GPT.
 
 - **Backend (Server):**
 
-   - **API Layer:** The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like user authentication, card collection updates, story generation, and game state management.
+   - **API Layer:** The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like card collection updates, story generation, and game state management.
    - **Internal Backend interfaces:** The core of the backend, which handles the AI-generated story, card interactions and generation, and game logic (including user progress and boss battles).
    - **Database:** A relational database to persist game data, user accounts, card collections, game progress, and transaction history.
 - **External Services:**
@@ -33,21 +33,19 @@ AI-driven story generation and card image generation provide a unique and dynami
 ## Internal Interfaces
 
 ### 1. **User Authentication & Authorization Interface**
-- **Purpose**: Manages user registration, login, and authentication. Ensures that users can securely sign in and access their game data. See security section for more details on how we will protect data.
+- **Purpose**:Validates using supabase whether client has authorization.
 - **Actions**:
-  - **Sign Up**: User creates an account by providing the necessary details (e.g., email, password).
-  - **Login**: Authenticates a returning user, generating a JWT (JSON Web Token) for session management.
-  - **Password Reset**: Allows users to reset their password if forgotten.
-  - **Authorization**: Ensures users can only access their own game data.
+  - Uses supabase to validate user has permission to access game data then gives Game engine permission.
 - **Communication with Other Interfaces**:
   - **Internal**:
     - **Database**: Interacts with the user table to store credentials and securely hash passwords (e.g., using bcrypt).
-    - **Game State Management**: Upon successful login, the user’s game state is retrieved from the database to resume gameplay.
-    - **Payment System**: Uses a payment interface to allow the user to buy the game so that paid users are given access to the game.
+    - **Game State Engine**: Upon successful validation, gives game engine permission to retrieve the user’s game state from the database to resume gameplay.
+    - **Payment**: Validates user has paid for game using payment interface.
   - **External**:
     - OAuth: If OAuth is used will exchange the authorization code for an access token and possibly a refresh token.
+    - Supabase: Checks access token to allow backend to retrieve user data.
    
-- **Rationale:** The User Authentication & Authorization Interface is essential for securing user accounts and ensuring that players can safely access their game data. It manages secure sign-ins, session handling via JWTs, and ensures that users only have access to their own information. By integrating with internal systems and supporting external OAuth, it provides both a seamless and secure authentication process, which is critical for maintaining player privacy, data integrity, and a personalized gaming experience. It allows the interface to be used by other interfaces in the future if needed.
+- **Rationale:** The User Authentication & Authorization Interface is essential for securing user accounts and ensuring that players can safely access their game data. It manages secure sign-ins, session handling via JWTs, and ensures that users only have access to their own information. By integrating with internal systems and supporting external OAuth, it provides both a seamless and secure authentication process, which is critical for maintaining player privacy, data integrity, and a personalized gaming experience. It allows the interface to be used by other interfaces in the future if needed. This interface will be fairly simple it will just make sure Supabase(using OAuth) has given user access, so the game can retrieve a users data.
 
 ---
 
@@ -131,26 +129,27 @@ AI-driven story generation and card image generation provide a unique and dynami
 ### 6. **AI Image Generation Interface**
 - **Purpose**: Generates custom images for cards that represent items, characters, or actions within the game.  Uses external AI image generation interface for actual image generation.
 - **Actions**:
-  - **Card Image Generation**: Receives requests from the Card Management component with card attributes and returns a generated image.
+  - **Card Image Generation**: Receives requests from the Card Management component with card attributes and reaches out to AI generator to return a generated image.
   - **Image Storage**: Saves generated images to the Database.
-  - **Boss image Generation:** Generates images of a boss based on llm output.
+  - **Boss image Generation:** Generates images of a boss/enemies based on llm output.
+  - **Validation**: Ensures data sent back is valid format.
 - **Communication with Other Components**:
   - **Internal**:
     - **Card Management**: Requests image generation for newly created cards or when upgrading cards. Passes the necessary card data (e.g., type, effects, item description) to the service.
-    - **Game Engine**: Request a new image of a Boss based on LLM output. 
+    - **Game Engine**: Request a new image of a Boss/enemy based on LLM output. 
   - **External**:
     - **Image Generation API**: Interacts with an external image generation service (e.g., DALL·E, MidJourney, or a custom model) to create images. Sends requests with the image description and attributes, and the service returns an image to the interface.
 
-- **Rationale:** Since we will be generating images throughout we want a component that is solely devoted to image generation, which will make it easier to upgrade or change in the future. It will also allow other interfaces added in the future a way to generate images. 
+- **Rationale:** Since we will be generating images throughout we want a component that is solely devoted to image generation, which will make it easier to upgrade or change in the future. It will also allow other interfaces added in the future a way to generate images. This will allow us to validate or make changes to prompts without affecting other interfaces too much.
 ---
 
 ### 7. **AI-Language Model Interface**
-- **Purpose**: Generates the dynamic storylines based on user input and predefined game themes using an external LLM interface. 
+- **Purpose**: Generates the dynamic storylines based on user input and predefined game themes using an external LLM interface. Interface that reaches out to external AI interface to generate story.
 - **Actions**:
-  - **Story Generation**: Generates narrative elements in real-time based on user decisions, AI model inputs, and the theme of the game.
+  - **Story Generation**: Generates narrative elements in real-time based on user decisions, AI model inputs, and the theme of the game. Will prompt to sometimes include optional items that can be picked up by user and later turned into cards.
   - **Boss Battle Descriptions**: Provides descriptive content for boss battles, adding depth and excitement to the interactions.
-  - **Quality Control**: Ensures harmful content is not used in text generation.
-  - **Story Summary**: Summarizes important story beats during the user's journey. Used for reducing storage requirements, and providing a way to inform a user of past events after returning to the game.
+  - **Quality Control/validation**: Makes sure what AI sends back is correct format/ data structure.
+  - **Story Summary**: Summarizes important story beats during the user's journey. May be used for reducing storage requirements, and providing a way to inform a user of past events after returning to the game.
 - **Communication with Other Components**:
   - **Internal**:
     - **Game Engine**: Receives prompts for story generation (e.g., user choices, current game state) from the game engine and sends a generated text for the user to interact with. The story’s progression is based on player decisions. 
@@ -158,7 +157,7 @@ AI-driven story generation and card image generation provide a unique and dynami
   - **External**:
     - **AI-Language Model API**: Interacts with an external AI language model (e.g., OpenAI’s GPT-4 or a custom model). The backend sends requests containing the current game context, player actions, and predefined themes, and the model returns a story update that is displayed to the player.
 
-- **Rationale:** Since LLM generation is so important to the game we want to separate the functionality from the rest of our interfaces. This will allow us to extend the interface to other interfaces in the future if needed.
+- **Rationale:** Since LLM generation is so important to the game we want to separate the functionality from the rest of our interfaces. This will allow us to extend the interface to other interfaces in the future if needed. This interface will also importantly serve to make sure data sent back from AI is correct format so that it can be used to alter game state.
 ---
 
 ## External Interfaces:
@@ -175,7 +174,7 @@ AI-driven story generation and card image generation provide a unique and dynami
 ### 2. **AI Language Model (LLM)**
 - **Purpose**: Powers dynamic, AI-generated storytelling for the game.
 - **Communication**:
-  - **Backend → LLM API**: Sends context and player input to the LLM to receive a dynamically generated story.
+  - **Internal AI-Language Model Interface → LLM API**: Sends context and player input to the LLM to receive a dynamically generated story or list of items a player can chose from that will turn into cards later.
   - **LLM → Backend**: Returns AI-generated story content to be presented to the player.
 
 - **Rationale**:
@@ -193,14 +192,33 @@ AI-driven story generation and card image generation provide a unique and dynami
 
 - **Communication:**
 
-  - **UserAuth interface → OAuth Provider (e.g., Google, Facebook):** The backend exchanges the authorization code for an access token and possibly a refresh token.
-  - **OAuth Provider → Backend**: Returns an access token (and refresh token, if applicable), which grants the backend access to the user's profile information and other authorized resources.
+  - **UserAuth interface → OAuth Provider (e.g., Google, Facebook):** Communicates with Oauth to set up user authorization.
+ 
+  - **Supabase**: Supabase will use oauth to authenticate users.
 
 - **Rationale:**
 OAuth integration allows the backend to authenticate users without managing passwords directly, improving security and simplifying the login process. This ensures that only valid, authorized users can access protected resources and game data via the backend. Also provides a user a more convenient way to log in.
 
+
+### 5. Supabase
+- **Purpose:**
+Supabase provides a complete backend solution that includes authentication, real-time data synchronization, and a relational database. This external service is used to manage user authentication (via OAuth or email), store game data, and manage user sessions.
+
+- **Communication:**
+
+   - **Backend → Supabase:** The backend communicates with Supabase to handle tasks like user sign-ups, sign-ins, storing game progress, managing transactions, and updating user inventories.
+   **Supabase → Backend:** Supabase returns data such as the authentication token, user details, or game progress that the backend uses to authenticate and store the user’s state.
+   **Rationale:**
+   Supabase simplifies backend management by offering pre-built solutions for authentication, real-time data handling, and database management. It is a critical external service used by your backend to manage user data securely, store game progress, and manage multiplayer features.
+
+
+
+
 ***Interface Interaction Overview***
 ![alt text](LucidChartDiagram.png "Interface Main Interaction Overview")
+
+
+
 
  # Note: Need to figure out how we are getting images and llm details. URL is just a place holder. 
 
