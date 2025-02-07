@@ -32,6 +32,30 @@ AI-driven story generation and card image generation provide a unique and dynami
 
 ## Internal Interfaces
 
+
+### NEW 1. User Authentication & Authorization Interface
+- **Purpose:** Validates if the client has authorization using Supabase and OAuth.
+
+- **Actions:**
+
+   - **OAuth Integration:** Validates user credentials via Supabase using OAuth (e.g., Google, Facebook) to manage authentication tokens (JWT).
+   - **Authorization:** After successful authentication, retrieves an access token and refresh token to grant access to game data.
+   - **Session Management:** Manages user sessions, ensuring valid tokens are used and renews them when necessary.
+
+- **Communication with Other Interfaces:**
+   - **Internal:**
+
+      - **Database**: Interacts with the user table for storing user credentials, securely hashing passwords (e.g., bcrypt) if email authentication is used.
+      - **Game State Engine:** Grants permission to the game engine to retrieve the user’s game state from the database.
+      - **Payment Interface:** Confirms if the user has made a payment for the game (validating through the Stripe interface).
+-**External:**
+      - **OAuth Providers (Google/Facebook):** Handles the initial authentication and returns tokens to allow access.
+      - **Supabase:** Verifies the access token and retrieves user data.
+- **Rationale:**
+The User Authentication & Authorization Interface manages secure user sign-ins through Supabase and OAuth. By integrating these authentication systems, we ensure the secure handling of user sessions, minimizing the need for managing user passwords directly. The use of Supabase and OAuth allows for more scalable and secure user management, keeping the authentication flow streamlined and secure.
+
+
+
 ### 1. **User Authentication & Authorization Interface**
 - **Purpose**:Validates using supabase whether client has authorization.
 - **Actions**:
