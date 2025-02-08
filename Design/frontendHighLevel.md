@@ -32,8 +32,8 @@
 graph TD
     A[Main Menu] --> B[Theme Selection]
     B --> C[Game Session]
-    C --> D[Battle View]
-    C --> E[Map View]
+    C --> D[Battle View] --> F[Deck Management]
+    C --> E[Text Input/AI Response] 
     C --> F[Deck Management]
     D --> G[Results Screen]
     G --> C
@@ -75,13 +75,7 @@ graph TD
 
 ```mermaid
 graph TB
-    App --> GameProvider
-    GameProvider --> Router
-    Router --> MainMenu
-    Router --> GameSession
-    GameSession --> BattleView
-    GameSession --> MapView
-    GameSession --> DeckManager
+    
     
     subgraph "Game State Management"
         GameProvider --> ThemeContext
@@ -122,21 +116,13 @@ classDiagram
         +endTurn()
         +calculateDamage()
     }
+
+  
     
     GameProvider --> Card
     GameProvider --> BattleManager
 ```
 
-#### External Interfaces
-
-- **AI Service Integration:**
-  - WebSocket connection for real-time AI responses
-  - REST API for game state persistence
-  - GraphQL for complex data queries
-
-- **Authentication Service:**
-  - OAuth 2.0 integration for user management
-  - Session handling
 
 ## 5. Security Considerations
 
@@ -144,7 +130,6 @@ classDiagram
 - XSS protection through React's built-in escaping
 - CSRF protection for API calls
 - Input sanitization for text commands
-- Secure WebSocket connections
 
 ### Data Security
 - Local storage encryption for game state
@@ -170,17 +155,6 @@ classDiagram
 - Responsive design
 - Accessibility features
 
-## 7. Technical Debt Considerations
-- Component reusability vs. performance
-- AI response latency handling
-- State management complexity
-- Theme system flexibility
-
-## 8. Maintenance Strategy
-- Component documentation
-- Automated testing setup
-- Performance monitoring
-- Error tracking system
 
 ---
 
