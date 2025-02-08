@@ -4,14 +4,14 @@
 
 - **Primary Platform:** Web Application  
 - **Target Devices:** Desktop and Tablet browsers (minimum viewport width 768px)  
-- **Technology Stack:** React 18+, TypeScript, Tailwind CSS  
+- **Technology Stack:** React 18+, TypeScript, SASS
 - **Supported Browsers:** Chrome 90+, Firefox 90+, Safari 14+, Edge 90+
 
 ## 2. User Interface Design
 
 ### Branding & Theme
 
-**Color Scheme:**
+**Login and Theme Generator Color Scheme:**
 
 - **Primary:** `#2D3748` (Dark Blue-Gray)
 - **Secondary:** `#805AD5` (Purple)
@@ -24,7 +24,7 @@
 - **Headings:** Inter  
 - **Body:** Roboto Mono (for card text and game content)
 
-**Design System:** Dark theme with neon accents for cyberpunk, adjustable for other themes
+**Design System:** Themes will be provided by AI (with parameters regarding contrast), based on the theme the user inputs
 
 ### UI Flow
 
@@ -64,10 +64,8 @@ graph TD
 - Event outcomes
 
 #### Visual Elements
-- Card renders
-- Battle animations
-- Map visualization
-- UI feedback
+- Card Image renders
+- Color theme generation
 
 ## 4. Component Architecture
 
@@ -124,19 +122,9 @@ classDiagram
 ```
 
 
-## 5. Security Considerations
 
-### Application Security
-- XSS protection through React's built-in escaping
-- CSRF protection for API calls
-- Input sanitization for text commands
 
-### Data Security
-- Local storage encryption for game state
-- Secure transmission of player actions
-- Rate limiting for API calls
-
-## 6. Implementation Strategy
+## 5. Implementation Strategy
 
 ### Phase 1: Core Game Loop
 - Basic UI components
