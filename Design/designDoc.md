@@ -1,6 +1,7 @@
 AI Note: This Design document was created with the assistance of ChatGpt.
+# Group 5: High-Level Design Document: The Last Game
 
-**Design Summary:**
+ ### **Design Summary:**
 
 This document outlines the high-level design of a text-based AI game that offers users a dynamic, interactive experience through AI-generated stories and card collection mechanics. The system operates on a client-server architecture, where the client serves as the user interface (UI) in a web application, and the server handles the complex game logic, user data, and integration with external services. The backend features multiple interfaces to manage user authentication, AI-driven story generation, card management, game state, and payment processing.
 
@@ -10,6 +11,45 @@ The game engine interfaces with a custom AI language model for dynamic storytell
 
 
 
+## Table Of Contents
+1. Stakeholder Expectations
+
+2. Shareholder Expectations
+
+   
+4. Backend Design
+
+   
+   2.1 System Overview
+
+   
+   2.2 Internal Interfaces
+   
+      1. User Authentication Interface
+      2. Game Engine Interface
+      3. Card Management Interface
+      4. Database Interface
+      5. Payment Interface
+      6. AI Image Generation Interface
+      7. AI-Language Model Interface
+         
+   2.3 External Interfaces
+   
+      1. Stripe
+      2. AI Language Model
+      3. AI Image Generator service
+      4. OAuth
+      5. Supabase
+         
+6. Database Design
+      
+   
+7. Database Design
+   
+8. Risks and Security Design
+   
+10. UI Design
+   
 
 **Stakeholder Expectations:**
 
