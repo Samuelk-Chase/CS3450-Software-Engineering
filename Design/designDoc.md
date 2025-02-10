@@ -114,7 +114,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 #### 4. **Database Interface (with Supabase Integration)**
 
-- **Purpose**: Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase.
+- **Purpose**: Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase.(See Database Interface design for more details)
 
 - **Actions**:
   - **Store User Data**: Saves user credentials (hashed passwords) and other relevant information.
