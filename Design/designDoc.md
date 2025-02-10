@@ -14,10 +14,12 @@ The game engine interfaces with a custom AI language model for dynamic storytell
 ## Table Of Contents
 1. Stakeholder Expectations
 
-2. System overview
+2. Game Design
+
+3. System overview
 
    
-3. Backend Design
+4. Backend Design
 
    
    2.1 System Overview
@@ -87,7 +89,7 @@ Overall, each stakeholder group expects a seamless, secure, and engaging experie
 
 
 
-## 2. System Overview
+## 3. System Overview
 
 The system follows a client-server architecture where the client is a web application that communicates with a backend server to handle game state, user accounts, card collections, payments, and story generation. The server-side logic will be responsible for processing game logic, generating dynamic stories using AI language models, and managing data persistence.
 
@@ -134,7 +136,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-## 3. Backend Design
+## 4. Backend Design
 
 ---
 
@@ -361,7 +363,7 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 
 
-## 4. Database Interface
+## 5. Database Interface
 
 ### Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
@@ -521,7 +523,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 
 
-# 5. Security Design
+# 6. Security Design
 This document was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
 
 ## i. Authentication and Authorization
