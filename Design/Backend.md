@@ -266,7 +266,7 @@ The system follows a client-server architecture where the client is a web applic
 
 ### **Backend (Server)**
 
-- **API Layer**: The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like card collection updates, story generation, and game state management.
+- **API Layer**: The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like card collection updates, story generation, and game state management. Handled with Game Engine Interface.
   
 - **Internal Backend Interfaces**: The core of the backend, which handles the AI-generated story, card interactions and generation, and game logic (including user progress and boss battles).
 
@@ -282,7 +282,11 @@ The system follows a client-server architecture where the client is a web applic
 
 - **AI Image Generation**: An external service to generate card images based on AI models, providing users with unique visual content for the game.
 
-- **OAuth**: For handling authentication and providing extra security for the user. Supabase will be integrated to handle OAuth and authentication.
+- **OAuth**: For handling authentication and providing extra security for the user. Supabase will be integrated to handle OAuth and authentication.(Handled by Supabase.
+  
+- **Supabase**: Database used for authentication, storing game state, images, and card data.
+
+-  
 
 ---
 
