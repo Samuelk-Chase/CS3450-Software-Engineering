@@ -512,5 +512,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 We divided our project into these interfaces to separate logic and ensure flexibility. This modular approach will make debugging easier and provide a solid foundation for future feature additions. Each interface is designed to handle a specific concern, ensuring that the overall system remains organized and adaptable.
 
+***Interface Interaction Overview***
+![alt text](BackendDiagram.png "Interface Main Interaction Overview")
 
 
