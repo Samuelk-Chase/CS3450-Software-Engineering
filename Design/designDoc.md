@@ -1,4 +1,4 @@
-
+AI Note: This Design document was created with the assistance of ChatGpt.
 
 **Design Summary:**
 
