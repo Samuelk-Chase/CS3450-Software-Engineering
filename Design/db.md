@@ -30,7 +30,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 4. **Game History & Analytics**  
    - Optionally store each finished run or partial logs for replay, analytics, or user records.
-   - Keep track of user decisions or story branches if you want advanced analytics or a “resume” feature.
+   - Keep track of user decisions or story branches.
 
 5. **Card Collection Management**  
    - Store the user’s current deck: which cards they own, how many duplicates, any upgrades, etc.
@@ -158,6 +158,6 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
   - `created_at`  
 - **Notes:**  
   - The **Payment Interface** writes to this table upon receiving success/fail from Stripe.  
-  - If `status = 'success'`, you might set the user’s `has_paid` to `true`.
 
+!["Database Layout"](databaseRoughLayout.png "Database Layout")
 
