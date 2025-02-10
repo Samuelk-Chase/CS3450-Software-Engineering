@@ -1,4 +1,3 @@
-# High-Level Design Document: Roguelike Deck-Building Game Frontend
 
 ## 1. Hardware Platform
 
