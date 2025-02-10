@@ -158,6 +158,6 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
   - `created_at`  
 - **Notes:**  
   - The **Payment Interface** writes to this table upon receiving success/fail from Stripe.  
-
+### Visualization of Tables
 !["Database Layout"](databaseRoughLayout.png "Database Layout")
 
