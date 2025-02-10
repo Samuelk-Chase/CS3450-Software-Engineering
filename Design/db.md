@@ -15,7 +15,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 1. **Store User Data**  
    - Create new user records
-   - Store minimal profile info (username, email, etc.) and passwords securely
+   - Store minimal profile info (username, email, etc.) with the help of OAuth use
    - Maintain ban status if necissary
    - Store purchase status (accounts can be created before purchase)
 
@@ -42,7 +42,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 ### Communication With Other Components
 
 - **User Authentication Interface**  
-  - **Reads/Writes** user data (account creation, password hashes, OAuth tokens).
+  - **Reads/Writes** user data (account creation, OAuth tokens).
   - Verifies user has purchased the game before granting broader permissions.
 
 - **Game Engine**  
@@ -63,10 +63,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 - **AI Image Generation Interface** (Optional)  
   - Store references to generated images in the database (e.g., linking them to specific cards or enemies).
-  - 
-<!--NOTE THIS SPECIFICATION MAY CHANGE AS WE MIGHT USE BIT BUCKETS FOR STORAGE-->
 ---
-
 ### Tables & Entities
 
 #### 1. Users Table
@@ -74,7 +71,6 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 - **Fields:**
   - `user_id` (PK)  
   - `email` or `username`  
-  - `password_hash`
   - `created_at`, `updated_at`  
   - `purchase_status` 
 
@@ -97,7 +93,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
   - `mana_cost`  
   - `description` *(text)*  
   - `keywords` *(JSON or text)* — e.g., `["Damage(6)","Weakened(2)"]`  
-  - `image_reference` (for AI-generated images)  
+  - `image_url` (for AI-generated images stored in AWS S3 Bucket)  
 - **Notes:**  
   - This table is the **master list** of all card definitions.  
   - The actual user deck references these by `card_id`.
@@ -107,7 +103,8 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 - **Fields:**
   - `deck_entry_id` (PK)  
   - `run_id` (FK → `runs.run_id`)  
-  - `card_id` (FK → `cards.card_id`)  
+  - `card_id` (FK → `cards.card_id`) 
+  - `user_id` (FK →  `users.user_id`) 
   - `quantity`  
 - **Notes:**  
   - Many-to-many relationship: a run can have many cards, and a card can exist in many runs (with different quantities).  
@@ -137,22 +134,30 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
   - `details` (JSON: damage done, targets, etc.)  
   - `timestamp`
 
+  - **`enemies` Table**:
+  - `enemy_id ` (PK)   
+  - `description`     
+  - `status`  
+  - `health`  
+
+  - **`enemy_attacks` Table** 
+  - `attack_id` (PK)
+  - `keywords` *(JSON or text)* — e.g., `["Damage(6)","Weakened(2)"]`
+  - `enemy_id` (FK) 
+  - `animation_type` (Shake, Disappear, Charge, etc.)
+
+
 #### 6. Payments / Transactions
 
 - **Fields:**
   - `transaction_id` (PK)  
   - `user_id` (FK)  
   - `stripe_payment_id` or `transaction_ref`  
-  - `amount`  
-  - `currency`  
+  - `amount`   
   - `status` (success, failed, etc.)  
   - `created_at`  
 - **Notes:**  
   - The **Payment Interface** writes to this table upon receiving success/fail from Stripe.  
   - If `status = 'success'`, you might set the user’s `has_paid` to `true`.
 
-#### 7. Other Potential Tables
-
-- **Enemies**: Depends on how we structure these encounters determines if its worth storing these. 
-- **SessionParticipants** (for co-op): Mapping multiple users (and runs) into a single session.
 
