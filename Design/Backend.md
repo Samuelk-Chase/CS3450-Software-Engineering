@@ -286,7 +286,6 @@ The system follows a client-server architecture where the client is a web applic
   
 - **Supabase**: Database used for authentication, storing game state, images, and card data.
 
--  
 
 ---
 
