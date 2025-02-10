@@ -37,22 +37,19 @@ AI-driven story generation and card image generation provide a unique and dynami
 - **Purpose:** Validates if the client has authorization using Supabase and OAuth.
 
 - **Actions:**
-
-   - **OAuth Integration:** Validates user credentials via Supabase using OAuth (e.g., Google, Facebook) to manage authentication tokens (JWT).
-   - **Authorization:** After successful authentication, retrieves an access token and refresh token to grant access to game data.
+   - **Authorization:** After successful authentication, retrieves an access token and refresh token to grant access to game data. Checks that Supabase has JWT for user, before allowing access to data.
    - **Session Management:** Manages user sessions, ensuring valid tokens are used and renews them when necessary.
 
 - **Communication with Other Interfaces:**
    - **Internal:**
-
-      - **Database**: Interacts with the user table for storing user credentials, securely hashing passwords (e.g., bcrypt) if email authentication is used.
+      - **Database**: Interacts with the user table for storing user credentials, securely hashing passwords (if email authentication is used.)
       - **Game State Engine:** Grants permission to the game engine to retrieve the user’s game state from the database.
       - **Payment Interface:** Confirms if the user has made a payment for the game (validating through the Stripe interface).
 -**External:**
       - **OAuth Providers (Google/Facebook):** Handles the initial authentication and returns tokens to allow access.
       - **Supabase:** Verifies the access token and retrieves user data.
 - **Rationale:**
-The User Authentication & Authorization Interface manages secure user sign-ins through Supabase and OAuth. By integrating these authentication systems, we ensure the secure handling of user sessions, minimizing the need for managing user passwords directly. The use of Supabase and OAuth allows for more scalable and secure user management, keeping the authentication flow streamlined and secure.
+The User Authentication & Authorization Interface manages secure user sign-ins through Supabase and OAuth. By integrating these authentication systems, we ensure the secure handling of user sessions, minimizing the need for managing user passwords directly. The use of Supabase and OAuth allows for more scalable and secure user management, keeping the authentication flow streamlined and secure. This interface does not directly handle the authentication since that will be handled by supabase, but is used to validate that supabase has given access token for user to access their data.
 
 
 
@@ -314,10 +311,10 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
     - **Game Engine**: Grants access to the user's game state data after successful validation.
     - **Payment**: Confirms user’s purchase status via the Payment Interface.
   - **External**:
-    - **OAuth**: Uses OAuth to exchange the authorization code for an access token.
+    - **OAuth**: Supabase will uses OAuth to exchange the authorization code for an access token. Which will be used for validating whether user has access.
     - **Supabase**: Checks access tokens and allows the backend to retrieve user data.
   
-- **Rationale**: The User Authentication & Authorization Interface ensures secure user access and handles user login via OAuth or email/password, depending on user choice. With Supabase managing both OAuth and database storage, there is no need for a separate internal user authentication system, simplifying both the user login and data retrieval process.
+- **Rationale**: The User Authentication & Authorization Interface ensures secure user access and handles user login via OAuth or email/password, depending on user choice. With Supabase managing both OAuth and database storage, there is no need for a separate internal user authentication system, simplifying both the user login and data retrieval process. This interface will be fairly simple and just check that supabase has authenticated a user before granting access to user data.
 
 ---
 
@@ -386,30 +383,6 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### **Payment Interface (Stripe with Supabase Integration)**
-
-- **Purpose**: Facilitates in-game purchases and the initial purchase of the game using **Stripe** for payments and **Supabase** for storing transaction records.
-
-- **Actions**:
-  - **Purchase Game**: Handles payment processing through the Stripe API (for one-time purchases).
-  - **In-Game Purchases**: In future may facilitate buying extra content like DLC's through Stripe.
-  - **Transaction History**: Use data base to store all transactions.
-
-- **Communication with Other Interfaces**:
-  - **Internal**:
-    - **Database**: Stores payment and transaction records.
-    - **User Authentication Interface**: Ensures that the user has purchased the game or in-game items by checking the transaction status.
-  - **External**:
-    - **Stripe API**: Processes payment transactions securely and returns transaction statuses (e.g., success or failure).
-
-- **Rationale**: The integration with **Stripe** enables a robust payment processing flow for both initial and in-game purchases. By using database to store the transaction logs, we can securely manage user purchases and track access. Supabase's database allows for easy verification of purchases without overcomplicating the transaction flow. The Payment Interface abstracts the complexities of Stripe and ensures smooth integration with the game.
-
-  probably prefer one 👇 
-
----
-
-
-
 #### 5. **Payment Interface (Stripe Integration)**
 
 - **Purpose**: Facilitates in-game purchases and the initial purchase of the game using Stripe.
@@ -426,7 +399,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **External**:
   - **Stripe API**: Processes payments and returns transaction statuses.
   
-- **Rationale**: A separate Payment Interface allows for clean management of financial transactions. It ensures the game can be easily updated in the future if more payment options are required.
+- **Rationale**: A separate Payment Interface allows for clean management of financial transactions. It ensures the game can be easily updated in the future if more payment options are required. This is more of a could have for us, so it will not be highly prioritized during our implementation. 
 
 ---
 
@@ -447,7 +420,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
   - **External**:
     - **Image Generation API**: Generates images based on given descriptions.
   
-- **Rationale**: This interface isolates image generation to a single component, allowing easy changes and enhancements in the future. It simplifies image management and keeps the logic for visual elements modular.
+- **Rationale**: This interface isolates image generation to a single component, allowing easy changes and enhancements in the future. It simplifies image management and keeps the logic for visual elements modular. Having logic for image generation seperate allows other components to use the interface without needing to know how it works.
 
 ---
 
@@ -502,7 +475,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 #### 3. **AI Image Generation Service**
 
-- **Purpose**: Provides unique images for cards and in-game visuals.
+- **Purpose**: Provides unique images for cards and in-game visuals like bosses.
 
 - **Communication**:
   - **AI image generation internal interfac → Image Generation API**: Requests for image creation.
@@ -514,10 +487,9 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 #### 4. **OAuth Authentication Service**
 
-- **Purpose**: Manages user authentication via OAuth providers (e.g., Google, Facebook) for secure login.
+- **Purpose**: Manages user authentication via OAuth providers (e.g., Google, Facebook) for secure login.(note supabase will responsible for using OAuth)
 
 - **Communication**:
-  - **UserAuth Interface → OAuth Provider**: Initiates login requests.
   - **Supabase**: Verifies user and provides session tokens.
   
 - **Rationale**: OAuth authentication reduces the overhead of managing user passwords. Supabase will simplify OAuth handling and session management.
@@ -532,7 +504,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
   - **Backend → Supabase**: Communicates for tasks like sign-up, sign-in, game progress, and transactions.
   - **Supabase → Backend**: Returns user data, game state, and authentication details.
 
-- **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing you to focus on game development.
+- **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development.
 
 ---
 
