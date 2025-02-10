@@ -22,10 +22,7 @@ The game engine interfaces with a custom AI language model for dynamic storytell
 4. Backend Design
 
    
-   2.1 System Overview
-
-   
-   2.2 Internal Interfaces
+   4.1 Internal Interfaces
    
       1. User Authentication Interface
       2. Game Engine Interface
@@ -35,7 +32,7 @@ The game engine interfaces with a custom AI language model for dynamic storytell
       6. AI Image Generation Interface
       7. AI-Language Model Interface
          
-   2.3 External Interfaces
+   4.2 External Interfaces
    
       1. Stripe
       2. AI Language Model
@@ -140,7 +137,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-### Internal Interfaces
+### 4.1 Internal Interfaces
 
 #### i. **User Authentication & Authorization Interface**
 
@@ -289,7 +286,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-### External Interfaces
+### 4.2 External Interfaces
 
 ---
 
