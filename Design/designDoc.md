@@ -45,7 +45,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-## Backend Design for Text-Based Game
+## Backend Design
 
 ---
 
