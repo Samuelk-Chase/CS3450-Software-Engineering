@@ -42,13 +42,23 @@ The game engine interfaces with a custom AI language model for dynamic storytell
       5. Supabase
          
 6. Database Design
-      
    
-7. Database Design
+      1. Actions and Responsibilities
+      2. Communication with other Components
+      3. Tables and Entities
+  
    
-8. Risks and Security Design
+9. Risks and Security Design
+    
+    1. Authentication and Authorization
+    2. Data Protection and Privacy
+    3. Payment Security with Stripe
+    4. Mitigating Common Attacks
+    5. Secure Multiplayer and Fairplay
+    6. Disaster Recover & Incident Response
+    
    
-10. UI Design
+11. UI Design
    
 
 **Stakeholder Expectations:**
