@@ -14,10 +14,10 @@ The game engine interfaces with a custom AI language model for dynamic storytell
 ## Table Of Contents
 1. Stakeholder Expectations
 
-2. Shareholder Expectations
+2. System overview
 
    
-4. Backend Design
+3. Backend Design
 
    
    2.1 System Overview
@@ -61,7 +61,7 @@ The game engine interfaces with a custom AI language model for dynamic storytell
 11. UI Design
    
 
-**Stakeholder Expectations:**
+**1 . Stakeholder Expectations:**
 
 1. **Game Players:**
    - **Engagement & Enjoyment:** Players expect an immersive and evolving gaming experience powered by AI. The AI-generated stories should feel dynamic, with player choices significantly impacting the narrative, ensuring replayability.
@@ -87,8 +87,7 @@ Overall, each stakeholder group expects a seamless, secure, and engaging experie
 
 
 
-
-# System Overview
+## 2. System Overview
 
 The system follows a client-server architecture where the client is a web application that communicates with a backend server to handle game state, user accounts, card collections, payments, and story generation. The server-side logic will be responsible for processing game logic, generating dynamic stories using AI language models, and managing data persistence.
 
@@ -135,13 +134,13 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-## Backend Design
+## 3. Backend Design
 
 ---
 
 ### Internal Interfaces
 
-#### 1. **User Authentication & Authorization Interface**
+#### i. **User Authentication & Authorization Interface**
 
 - **Purpose**: Validates user authorization using Supabase and OAuth for secure access.
   
@@ -161,7 +160,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 2. **Game Engine (Story Generation & Game Logic) Interface**
+#### ii. **Game Engine (Story Generation & Game Logic) Interface**
 
 - **Purpose**: Powers dynamic story generation, manages game flow, player choices, and game logic.
   
@@ -182,7 +181,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 3. **Card Management Interface**
+#### iii. **Card Management Interface**
 
 - **Purpose**: Handles the collection, use, and upgrades of cards within the game.
   
@@ -202,7 +201,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 4. **Database Interface (with Supabase Integration)**
+#### iv. **Database Interface (with Supabase Integration)**
 
 - **Purpose**: Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase.(See Database Interface design for more details)
 
@@ -226,7 +225,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 5. **Payment Interface (Stripe Integration)**
+#### v. **Payment Interface (Stripe Integration)**
 
 - **Purpose**: Facilitates in-game purchases and the initial purchase of the game using Stripe.
   
@@ -246,7 +245,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 6. **AI Image Generation Interface**
+#### vi. **AI Image Generation Interface**
 
 - **Purpose**: Generates custom images for cards and other in-game visuals.
   
@@ -267,7 +266,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 7. **AI-Language Model Interface**
+#### vii. **AI-Language Model Interface**
 
 - **Purpose**: Powers the AI-driven storylines for the game.
   
@@ -292,7 +291,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 1. **Stripe Integration**
+#### i. **Stripe Integration**
 
 - **Purpose**: Handles all financial transactions for the game, from initial purchase to in-game purchases.
   
@@ -304,7 +303,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 2. **AI Language Model (LLM)**
+#### ii. **AI Language Model (LLM)**
 
 - **Purpose**: Generates dynamic, AI-powered storylines.
 
@@ -316,7 +315,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 3. **AI Image Generation Service**
+#### iii. **AI Image Generation Service**
 
 - **Purpose**: Provides unique images for cards and in-game visuals like bosses.
 
@@ -328,7 +327,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 4. **OAuth Authentication Service**
+#### iv. **OAuth Authentication Service**
 
 - **Purpose**: Manages user authentication via OAuth providers (e.g., Google, Facebook) for secure login.(note supabase will responsible for using OAuth)
 
@@ -339,7 +338,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
-#### 5. **Supabase**
+#### v. **Supabase**
 
 - **Purpose**: Provides backend services for user management, including authentication (via OAuth or email) and game data storage.
 
@@ -362,7 +361,7 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 
 
-## Database Interface
+## 4. Database Interface
 
 ### Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
@@ -375,7 +374,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 ---
 
-### Actions / Responsibilities
+### i. Actions / Responsibilities
 
 1. **Store User Data**  
    - Create new user records
@@ -403,7 +402,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 ---
 
-### Communication With Other Components
+### ii. Communication With Other Components
 
 - **User Authentication Interface**  
   - **Reads/Writes** user data (account creation, password hashes, OAuth tokens).
@@ -431,7 +430,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 <!--NOTE THIS SPECIFICATION MAY CHANGE AS WE MIGHT USE BIT BUCKETS FOR STORAGE-->
 ---
 
-### Tables & Entities
+### iii. Tables & Entities
 
 #### 1. Users Table
 
@@ -522,31 +521,31 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 
 
-# Security Design
+# 5. Security Design
 This document was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
 
-## Authentication and Authorization
+## i. Authentication and Authorization
 To secure user accounts and prevent unauthorized access, I chose **OAuth** for authentication. This is an industry-standard approach that removes the need for our game to store and manage passwords directly, reducing security risks.
 
 - **OAuth Implementation:** Players will log in using trusted third-party authentication providers like Google, Microsoft, or Apple. This makes it easier for players to sign in without having to remember new credentials while also leveraging the security measures that these platforms already have in place.
 - **Token-Based Authentication:** After a successful login, a short-lived access token will be issued, while a refresh token could be used to maintain session continuity. I chose this approach because it balances security and user convenience. This would keep users logged in without forcing them to re-login multiple times.
 - **Two-Factor Authentication (2FA):** This will be an optional feature for users who want to add security, particularly for accounts with high in-game value. I included this because it mitigates account takeovers but won't be mandatory unless we store sensitive personal data like credit cards.
 
-## Data Protection & Privacy
+## ii. Data Protection & Privacy
 Protecting player data is a top priority. I designed our approach based on encryption best practices and compliance with industry regulations.
 
 - **Encryption of Sensitive Data:** Any personally identifiable information (PII) or game-related data will be encrypted where necessary. I chose this because it minimizes risks in case of data leaks while ensuring compliance with security standards.
 - **Anonymized Analytics:** Analytics data will be aggregated and anonymized before storage to comply with regulations like GDPR and CCPA. This ensures that player data remains private while still allowing us to analyze game trends.
 - **Secure Communication:** I chose TLS 1.3 encryption for client-server communication because it prevents eavesdropping and MITM (Man-in-the-Middle) attacks. TLS 1.3 is also faster than previous versions because it only requires one round trip instead of two. This is especially useful for multiplayer gaming, where latency matters.
 
-## Payment Security with Stripe
+## iii. Payment Security with Stripe
 Since we could be handling in-game transactions, I decided to use Stripe as our payment processor.
 
 - Stripe is a widely trusted payment provider with built-in security measures like PCI DSS compliance and fraud detection. It also supports multiple payment methods, including credit cards, Apple Pay, and Google Pay, making it easy for players to complete transactions securely.
 - Instead of handling credit card details directly, we will use Stripe’s tokenization system to process payments securely. This means we never store sensitive payment data ourselves, reducing our security liability.
 - Stripe includes real-time fraud detection, which helps prevent unauthorized transactions. I chose this because it adds an extra layer of security to in-game purchases and prevents chargebacks due to fraudulent activity.
 
-## Mitigating Common Attacks
+## iv. Mitigating Common Attacks
 Since online games are often targeted by cyber threats, I designed a set of security measures to protect our game from common attacks.
 
 ### 1. DDoS Protection
@@ -581,14 +580,14 @@ Given the integration of AI-driven features, prompt injection attacks pose a pot
 - **Context Isolation:** The AI’s processing context will be isolated, ensuring that user-generated content cannot alter system-level instructions or modify AI behavior unexpectedly.
 - **Output Validation:** AI-generated outputs will be validated to detect and block any unauthorized commands or sensitive data disclosures before reaching the user interface.
 
-## Secure Multiplayer & Fair Play
+## v. Secure Multiplayer & Fair Play
 Since the game features **multiplayer components**, additional security measures are needed to **prevent cheating, exploits, and unauthorized modifications.**
 
 - **Server-Side Game Logic Validation:** All crucial game logic (e.g., deck-building, in-game purchases) will be validated **on the server**, preventing client-side tampering. This ensures that users cannot manipulate game data on their own devices.
 - **Cheat Detection Algorithms:** Player behavior will be **analyzed for anomalies**, such as **impossible win rates, artificially inflated resources, or modified game files.** This allows us to detect and prevent cheating.
 - **Secure WebSocket Connections:** Multiplayer communication will use **secure WebSocket connections** with end-to-end encryption to prevent interception. This ensures that player interactions remain private and tamper-proof.
 
-## Disaster Recovery & Incident Response
+## vi. Disaster Recovery & Incident Response
 A well-defined **disaster recovery plan** ensures security incidents are handled effectively:
 
 - **Automated Backups:** Game data will be backed up **daily** with encrypted storage. This ensures that data can be restored in the event of a failure.
