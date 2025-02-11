@@ -38,8 +38,14 @@ Security is prioritized throughout the design with encryption, token-based authe
       3. AI Image Generator service
       4. Database with Supabase
       5. OAuth
+
+5. Input/Output Processing for Backent
+
+    1. Input Processing
+    2. Output Processing
+    3. Error Handling & Logging
          
-5. Database Design
+6. Database Design
 
       1. Pupose
       2. Actions and Responsibilities
@@ -47,7 +53,7 @@ Security is prioritized throughout the design with encryption, token-based authe
       4. Tables and Entities
   
    
-6. Risks and Security Design
+7. Risks and Security Design
     
     1. Authentication and Authorization
     2. Data Protection and Privacy
@@ -57,7 +63,7 @@ Security is prioritized throughout the design with encryption, token-based authe
     6. Disaster Recover & Incident Response
     
    
-7. UI Design
+8. UI Design
    
    1. Hardware Platform
    2. User Interface Design
@@ -551,7 +557,120 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 ---
 
-## 6. Database Design
+## 6. Input/Output Processing for Backend
+
+### Overview
+
+The backend of "The Last Game" follows a structured Input/Output (I/O) model to facilitate communication between the client, database, external services, and internal game logic components. This section outlines the I/O processing in terms of API endpoints, data flows, and interactions between different backend components.
+
+### 1. Input Processing
+
+Input processing consists of handling requests from the frontend, validating data, and ensuring smooth interactions with external and internal interfaces.
+
+#### i. API Requests from Client
+
+The backend receives requests primarily via RESTful API endpoints, including:
+
+*   Authentication Requests (OAuth, Supabase Token Verification)
+*   Game State Updates (User actions, card plays, boss fights)
+*   AI Story Requests (Dynamic narrative updates based on user input)
+*   Payment Handling (Stripe integration for purchases)
+*   Card Collection Management (Adding/upgrading cards)
+*   Image Requests (AI-generated assets for cards and game entities)
+
+Example request: Card usage
+```json
+{
+  "user_id": "abc123",
+  "session_id": "session_xyz",
+  "card_id": "fire_spell_01",
+  "action": "play",
+  "target": "enemy_001"
+}
+```
+
+*   The Game Engine Interface validates the request and applies the effects.
+*   The Card Management Interface updates the card’s status.
+*   The Database Interface records changes in the player's inventory and logs the action.
+
+#### ii. Data Validation & Security Checks
+
+Every request undergoes:
+
+*   User Authentication & Authorization via Supabase.
+*   Input Sanitization to prevent SQL injections and XSS.
+*   Rate Limiting to avoid abuse of endpoints.
+*   Game Logic Validation to ensure requests align with defined rules.
+
+Example: Unauthorized Access Rejection
+
+If a user attempts to access a restricted endpoint without a valid session token:
+```json
+{
+  "error": "Unauthorized Access",
+  "status_code": 401
+}
+```
+
+### 2. Output Processing
+
+Once input is validated and processed, the backend responds with structured data.
+
+#### i. API Responses to Client
+
+Each API request results in:
+
+*   Game State Updates (current progress, active cards, battle state)
+*   Narrative Responses (LLM-generated story events)
+*   Payment Confirmations (Stripe verification)
+*   Card & Inventory Changes (new items, upgraded abilities)
+*   Image URLs (Generated assets for gameplay)
+
+Example Response: Game State Update
+```json
+{
+  "user_input": "Explore the dark cave",
+  "current_context": "The player is at the cave entrance with a torch.",
+  "game_state": {
+    "hp": 78,
+    "inventory": ["torch", "dagger"]
+  }
+}
+```
+
+Response from AI Language Model:
+```json
+{
+  "story_update": "You step into the damp cave, the torch flickering against the cavern walls. The sound of dripping water echoes in the darkness."
+}
+```
+
+### 3. Error Handling & Logging
+
+All backend interactions include error handling to maintain system stability.
+
+#### i. Error Categories
+
+*   Client Errors (4xx): Invalid requests, unauthorized access, missing parameters.
+*   Server Errors (5xx): Database failures, AI service timeouts, API rate limits.
+*   Game Logic Errors: Invalid card plays, rule-breaking actions.
+
+Example: Invalid Card Play Response
+```json
+{
+  "error": "Invalid Move",
+  "details": "Card 'fire_spell_01' requires 2 mana, but only 1 mana is available.",
+  "status_code": 400
+}
+```
+
+#### ii. Logging & Monitoring
+
+*   API Request Logs: Tracks all interactions for debugging.
+*   Error Logs: Catches and stores failures for analysis.
+*   Performance Metrics: Monitors API response times and external service latency.
+
+## 7. Database Design
 
 ### i. Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
@@ -726,7 +845,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 
 
-## 6. Risks and Security Design
+## 7. Risks and Security Design
 This was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
 
 ### i. Authentication and Authorization
@@ -808,7 +927,7 @@ The security strategy outlined above ensures **robust protection against cyber t
 ---
 
 
-## 7. UI Design
+## 8. UI Design
 
 
 ### i. Hardware Platform
@@ -875,8 +994,8 @@ graph TD
 
 
 ##### Mouse/Touch Interactions
-- Card dragging and dropping
-- Button clicks
+- Card dragging and dropping: Use card
+- Button clicks: end turn, submit response, login(OAuth)
 - Map navigation
 - Menu selection
 
@@ -894,6 +1013,16 @@ graph TD
 - Card Image renders
 - Color theme generation
 
+***Input-output expectations:***
+  * User submits text response -> New updated story appears on the screen
+  * User Clicks Oauth Provider -> User directed to sign in with OAuth Provider, then sent to their home dashboard
+  * User Clicks Log out -> Data saved, User is returned to sign-in page
+  * User Drags card to center during battle -> Card is used, some effect takes place, Boss is hit with effect
+  * User submits no response -> Text appears on screen warning user they must enter something
+  * User performs card action with no mana -> Warning appears on screen, the card is not used.
+  * User card move destroys boss -> User sent to result page with AI summary of the battle and story
+  * User clicks continue on result screen -> User returned to the game session and Text Input/Ai Response screen to continue story
+  * User selects Item/Reward -> Item/Reward becomes a card for use in fights, appears in their deck
 
 ### v. Component Architecture
 
