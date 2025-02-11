@@ -930,6 +930,7 @@ The security strategy outlined above ensures **robust protection against cyber t
 ## 8. UI Design
 
 
+
 ### i. Hardware Platform
 
 
@@ -945,6 +946,11 @@ The security strategy outlined above ensures **robust protection against cyber t
 
 
 ### Branding & Theme
+
+**Logo**
+
+!["Logo"](../doc/images/main_logo.jpeg "Logo")
+
 
 
 **Login and Theme Generator Color Scheme:**
