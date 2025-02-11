@@ -174,11 +174,11 @@ Overall, each stakeholder group expects a seamless, secure, and engaging experie
 
 The system follows a client-server architecture where the client is a web application that communicates with a backend server to handle game state, user accounts, card collections, payments, and story generation. The server-side logic will be responsible for processing game logic, generating dynamic stories using AI language models, and managing data persistence.
 
----
 
-## Key Components
 
-### **Client (Web Interface)**
+### Key Components
+
+#### **Client (Web Interface)**
 
 - **Frontend (UI)**: Provides users with an interface for interacting with the game, such as creating accounts, initiating game sessions, viewing storylines, and interacting with the game world (e.g., collecting cards, battling bosses).
   
@@ -186,17 +186,17 @@ The system follows a client-server architecture where the client is a web applic
 
 ---
 
-### **Backend (Server)**
+#### **Backend (Server)**
 
 - **API Layer**: The server exposes RESTful APIs to facilitate communication with the client. It will be responsible for handling requests like card collection updates, story generation, and game state management. Handled with Game Engine Interface.
   
 - **Internal Backend Interfaces**: The core of the backend, which handles the AI-generated story, card interactions and generation, and game logic (including user progress and boss battles).
 
-- **Database**: A relational database to persist game data, user accounts, card collections, game progress, and transaction history.
+- **Database**: A relational database to persist game data, user accounts, card collections, game progress, and transaction history (uses Supabase as our database).
 
 ---
 
-### **External Services**
+#### **External Services**
 
 - **Stripe**: For handling payments and purchasing the game.
 
@@ -209,17 +209,15 @@ The system follows a client-server architecture where the client is a web applic
 - **Supabase**: Database used for authentication, storing game state, images, and card data.
 
 
----
+### Design Rationale
 
-## Design Rationale
-
-Client-Server separation ensures a clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience. REST APIs provide a standard interface for communication, ensuring scalability and ease of integration with external services (like Stripe and the AI models). AI-driven story generation and card image generation provide a unique and dynamic user experience.
+Client-Server separation ensures a clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience. REST APIs provide a standard interface for communication, ensuring scalability and ease of integration with external services (like Stripe and the AI models).
 
 ---
 
 ## 4. Backend Design
 
----
+
 
 ### 4.1 Internal Interfaces
 
@@ -228,7 +226,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Validates user authorization using Supabase and OAuth for secure access.
   
 - **Actions**:
-  - Uses Supabase to validate user has permission to access game data, allowing the Game Engine to retrieve user information.
+  - Uses Supabase to validate that the user has permission to access game data, allowing the Game Engine to retrieve user information.
   
 - **Communication with Other Interfaces**:
   - **Internal**:
@@ -247,7 +245,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Powers dynamic story generation, and manages game flow, player choices, and game logic.
   
 - **Actions**:
-  - **Story Generation**: Requests internal AI-Language Model to generate story content.
+  - **Story Generation**: Requests internal AI-language model to generate story content.
   - **Handle Player Actions**: Processes player choices (e.g., collecting items, battling bosses).
   - **Card & Buff Management**: Manages cards and buffs during in-game interactions. (The card Management interface is responsible for updating, creating, and returning card actions. The game engine interface is responsible for applying the effects in-game and to the client)
   - **Boss Battle Simulation**: Executes logic for combat and progression.
@@ -317,7 +315,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Communication with Other Interfaces**:
   - **Internal**:
     - **Card Management**: Card management requests images for newly generated cards and is sent back image or error.
-    - **Game Engine**: Game engine requests images for boss encounters.
+    - **Game Engine**: The game engine requests images for boss encounters.
   - **External**:
     - **Image Generation API**: Generates images based on given descriptions.
   
@@ -348,7 +346,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ### 4.2 External Interfaces
 
----
+
 
 #### i. **Stripe Integration**
 
@@ -396,11 +394,13 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 - **Rationale**: Isolating image generation to a single interface allows flexibility in switching image providers or refining visuals in the future. Using external services allows us to avoid needing powerful computers to run the models locally and developing our own custom image model.
 
+
 ---
+
 
 #### iv. **Database (Supabase)**
 
-- **Purpose**: Provides backend services for user management, including authentication (via OAuth) and game data storage. Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase. 
+- **Purpose**: Provides backend services for user management, including authentication (via OAuth) and game data storage. Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase. See database design for more details.
 
 - - **Actions**:
   - **Store User Data**: Saves user credentials (token access) and user profile info.
@@ -426,7 +426,9 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 - **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development. Its user authentication will allow us to focus on gameplay without sacrificing on security. By using Supabase for data storage, we can focus on building out the game mechanics and user experience.
   
+
 ---
+
 #### v. **OAuth Authentication Service**
 
 - **Purpose**: Manages user authentication via OAuth providers (e.g., Google, Facebook) for secure login. (note: Supabase will be responsible for using OAuth)
@@ -451,9 +453,9 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 
 
+---
 
-
-## Database Interface
+## Database Design
 
 ### Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
