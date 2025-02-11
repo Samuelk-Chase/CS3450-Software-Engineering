@@ -63,7 +63,7 @@ Security is prioritized throughout the design with encryption, token-based authe
    6. Implementation Strategy
    
 
-## **1 . Stakeholder Expectations:**
+## **1. Stakeholder Expectations:**
 
 
 ### **i.** **Game Players:**
@@ -547,7 +547,7 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 ---
 
-## Database Design
+## 6. Database Design
 
 ### Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
