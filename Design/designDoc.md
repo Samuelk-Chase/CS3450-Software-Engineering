@@ -10,6 +10,9 @@ Security is prioritized throughout the design with encryption, token-based authe
 
 ## Table Of Contents
 1. Stakeholder Expectations
+   1. Game Players
+   2. Game Developers/Operators
+   3. Business Stakeholders
 
 2. Game Design
 
@@ -37,10 +40,11 @@ Security is prioritized throughout the design with encryption, token-based authe
       5. OAuth
          
 5. Database Design
-   
-      1. Actions and Responsibilities
-      2. Communication with other Components
-      3. Tables and Entities
+
+      1. Pupose
+      2. Actions and Responsibilities
+      3. Communication with other Components
+      4. Tables and Entities
   
    
 6. Risks and Security Design
@@ -549,7 +553,7 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 ## 6. Database Design
 
-### Purpose
+### i. Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
 
 - **User Accounts** 
@@ -560,7 +564,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 ---
 
-### Actions / Responsibilities
+### ii. Actions / Responsibilities
 
 1. **Store User Data**  
    - Create new user records
@@ -588,32 +592,40 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 ---
 
-### Communication With Other Components
+### iii. Communication With Other Components
+
 
 - **User Authentication Interface**  
   - **Reads/Writes** user data (account creation, OAuth tokens).
   - Verifies user has purchased the game before granting broader permissions.
 
+
 - **Game Engine**  
   - **Retrieves** and **stores** user runs (HP, deck composition, current scenario).
   - Logs and updates combat states or story progress.
+
 
 - **Card Management**  
   - **Saves** newly generated cards in the user’s deck.
   - **Reads** card definitions from a master list (e.g., from a `cards` table).
   - Updates deck composition upon collecting or removing cards.
 
+
 - **Payment Interface**  
   - **Writes** transaction records for successful Stripe payments.
   - **Reads** user purchase status to confirm game access.
 
+
 - **AI-Language Model Interface** (Optional)  
   - Log and retrieve narrative progress for story building.
+
 
 - **AI Image Generation Interface** (Optional)  
   - Store references to generated images in the database (e.g., linking them to specific cards or enemies).
 ---
-### Tables & Entities
+
+
+### iv. Tables & Entities
 
 #### 1. Users Table
 
@@ -714,8 +726,8 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 
 
 
-## 6. Security Design
-This document was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
+## 6. Risks and Security Design
+This was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
 
 ### i. Authentication and Authorization
 To secure user accounts and prevent unauthorized access, I chose **OAuth** for authentication. This is an industry-standard approach that removes the need for our game to store and manage passwords directly, reducing security risks.
@@ -796,7 +808,7 @@ The security strategy outlined above ensures **robust protection against cyber t
 ---
 
 
-## 11. UI Design
+## 7. UI Design
 
 
 ### i. Hardware Platform
