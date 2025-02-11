@@ -557,7 +557,7 @@ We divided our project into these interfaces to separate logic and ensure flexib
 
 ---
 
-## 6. Input/Output Processing for Backend
+## 5. Input/Output Processing for Backend
 
 ### Overview
 
@@ -670,7 +670,7 @@ Example: Invalid Card Play Response
 *   Error Logs: Catches and stores failures for analysis.
 *   Performance Metrics: Monitors API response times and external service latency.
 
-## 7. Database Design
+## 6. Database Design
 
 ### i. Purpose
 Manages all **persistent game data**, integrating with [Supabase](https://supabase.com/) for user authentication and storage. This interface ensures consistency and durability for essential information like:
