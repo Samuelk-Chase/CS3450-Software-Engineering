@@ -299,9 +299,11 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Communication with Other Interfaces**:
   - **Internal**:
     - **Card Management**: Gives card details to card management for creating new cards based on player actions. Card management will send back card details and actions.
-    - **Database**: Saves player’s progress and updates inventory during interactions.
     - **AI Image Interface**: Requests images for game content like boss fights.
     - **AI-Language Model Interface**: Generates story updates based on player input.
+      
+  - **External:**
+    - **Supabase Database**: Saves player’s progress, permanent game state, and updates inventory during interactions.
 
   
 - **Rationale**: This interface serves as the central hub for game progression. It coordinates between multiple systems (card management, database, story generation) to deliver a consistent experience, keeping the flow of the game intact.
@@ -363,6 +365,8 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
   - **Internal**:
     - **Card Management**: Card management requests images for newly generated cards and is sent back image or error.
     - **Game Engine**: The game engine requests images for boss encounters.
+   
+      
   - **External**:
     - **Image Generation API**: Generates images based on given descriptions.
   
@@ -370,7 +374,9 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ---
 
+
 #### vi. **AI-Language Model Interface**
+
 
 - **Purpose**: Powers the AI-driven storylines for the game.
   
@@ -397,13 +403,16 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 #### i. **Stripe Integration**
 
+
 - **Purpose**: Handles all financial transactions for the game, from initial purchases to in-game purchases.
+
 
 - **Actions**:
   - Processing and facilitating Payments: Responsible for allowing users to pay for the game.
+
   
 - **Communication**:
-  - **Backend → Stripe**: Sends transaction details to Stripe.
+  - **Backend → Stripe**: Requests stripe payment.
   - **Stripe → Backend**: Returns transaction status (success/failure).
 
 - **Rationale**: Payment is handled externally to reduce security concerns within the game’s backend. Stripe allows secure, easy payment processing.
@@ -449,12 +458,14 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 - **Purpose**: Provides backend services for user management, including authentication (via OAuth) and game data storage. Manages all persistent data, such as user accounts, game progress, cards, and transaction records using Supabase. See database design for more details.
 
+
 - **Actions**:
   - **Store User Data**: Saves user credentials (token access) and user profile info.
   - **Store Game State**: Tracks player’s game progress, inventory, decisions, and stats.
   - **Transaction Logs**: Stores all payment transactions and tracks in-game purchases(if implemented in the future).
   - **Game History**: Saves past game sessions to allow users to resume their gameplay.
   - **Card Collection Management**: Stores and updates the player’s card collection.
+
 
 - **Communication with Other Interfaces**:
   - **Internal**:
@@ -464,12 +475,15 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
     - **Payment Interface**: Stores transactions for purchases and in-game items.
   - **External**:
     - **OAuth**: Will use OAuth providers to authenticate users.
+
       
 - **Rationale**: Supabase provides a powerful backend-as-a-service solution with built-in database management, authentication, and real-time capabilities. By using Supabase for data storage, we can focus on building out the game mechanics and user experience. The **Database Interface** will abstract the complexity of interacting with Supabase, allowing for seamless data management.
+
 
 - **Communication**:
   - **Backend → Supabase**: Communicates for tasks like sign-up, sign-in, game progress, and transactions.
   - **Supabase → Backend**: Returns user data, game state, and authentication details.
+
 
 - **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development. Its user authentication will allow us to focus on gameplay without sacrificing on security. By using Supabase for data storage, we can focus on building out the game mechanics and user experience.
   
@@ -520,7 +534,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 1. **Store User Data**  
    - Create new user records
    - Store minimal profile info (username, email, etc.) with the help of OAuth use
-   - Maintain ban status if necissary
+   - Maintain ban status if necessary
    - Store purchase status (accounts can be created before purchase)
 
 2. **Store & Retrieve Game State**  
@@ -664,6 +678,10 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
   - The **Payment Interface** writes to this table upon receiving success/fail from Stripe.  
 ### Visualization of Tables
 !["Database Layout"](databaseRoughLayout.png "Database Layout")
+
+---
+
+
 
 ## 6. Security Design
 This document was generated with the assistance of ChatGPT, which provided efficient and well-structured explanations for our chosen security measures. It helped articulate our reasoning more clearly and concisely than I could have expressed on my own, ensuring a thorough and well-documented approach to our security design.
