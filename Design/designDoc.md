@@ -16,7 +16,7 @@ Security is prioritized throughout the design with encryption, token-based authe
 
 2. Game Design
 
-3. System overview
+3. System Overview
 
    
 4. Backend Design
@@ -34,7 +34,7 @@ Security is prioritized throughout the design with encryption, token-based authe
    4.2 External Interfaces
    
       1. Stripe
-      2. AI Language Model
+      2. AI-Language Model
       3. AI Image Generator service
       4. Database with Supabase
       5. OAuth
@@ -47,7 +47,7 @@ Security is prioritized throughout the design with encryption, token-based authe
          
 6. Database Design
 
-      1. Pupose
+      1. Purpose
       2. Actions and Responsibilities
       3. Communication with other Components
       4. Tables and Entities
@@ -248,7 +248,7 @@ The system follows a client-server architecture where the client is a web applic
 
 - **Stripe**: For handling payments and purchasing the game.
 
-- **AI Language Model**: An AI-based model that generates stories for the game. This can be an API for a pre-trained model like GPT-4 or a custom language model.
+- **AI-Language Model**: An AI-based model that generates stories for the game. This can be an API for a pre-trained model like GPT-4 or a custom language model.
 
 - **AI Image Generation**: An external service to generate card images based on AI models, providing users with unique visual content for the game.
 
