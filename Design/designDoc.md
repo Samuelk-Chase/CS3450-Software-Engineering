@@ -251,7 +251,9 @@ The system follows a client-server architecture where the client is a web applic
 
 Client-Server separation ensures a clear division of responsibilities, allowing the backend to manage game logic and storage, while the frontend focuses on delivering an interactive experience. REST APIs provide a standard interface for communication, ensuring scalability and ease of integration with external services (like Stripe and the AI models).
 
+
 ---
+
 
 ## 4. Backend Design
 
@@ -259,21 +261,25 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 ### 4.1 Internal Interfaces
 
+
 #### i. **User Authentication & Authorization Interface**
 
 - **Purpose**: Validates user authorization using Supabase and OAuth for secure access.
   
 - **Actions**:
+  
   - Uses Supabase to validate that the user has permission to access game data, allowing the Game Engine to retrieve user information.
   
 - **Communication with Other Interfaces**:
   
   - **Internal**:
+    
     - **Database**: Interacts with the user table to store credentials and securely hash passwords (via Supabase).
     - **Game Engine**: Grants access to the user's game state data after successful validation.
     - **Payment**: Confirms user’s purchase status via the Payment Interface.
       
   - **External**:
+    
     - **Supabase**: Checks access tokens stored in the Supabase database and allows the backend to retrieve user data.
   
 - **Rationale**: The User Authentication & Authorization Interface ensures secure user access by checking that a user has a valid access token before granting access to user data. With Supabase managing both OAuth and database storage, this interface will be fairly simple and just check that our Supabase database has authenticated a user before granting access to user data.
@@ -287,6 +293,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
   
 - **Actions**:
+  
   - **Story Generation**: Requests internal AI-language model to generate story content.
   - **Handle Player Actions**: Processes player choices (e.g., collecting items, battling bosses).
   - **Card & Buff Management**: Manages cards and buffs during in-game interactions. (The card Management interface is responsible for updating, creating, and returning card actions. The game engine interface is responsible for applying the effects in-game and to the client)
@@ -294,12 +301,15 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
   
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **Card Management**: Gives card details to card management for creating new cards based on player actions. Card management will send back card details and actions.
     - **AI Image Interface**: Requests images for game content like boss fights.
     - **AI-Language Model Interface**: Generates story updates based on player input.
       
   - **External:**
+    
     - **Supabase Database**: Saves player’s progress, permanent game state, and updates inventory during interactions.
 
   
@@ -312,13 +322,16 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Handles the collection, use, and upgrades of cards within the game.
   
 - **Actions**:
+  
   - **Card Generation**: Creates new cards based on in-game events and item descriptions.
   - **Card Usage**: Allows players to use cards for battles or buffs.
   - **Card Collection**: Tracks and updates the player's card inventory.
   - **Card Upgrades**: Manages potential future upgrades of cards.
   
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **Game Engine**: Updates card collection and usage during events.
     - **Database**: Stores card inventory and updates each card's use or collection.
     - **AI Image Generation**: Requests images for newly generated cards.
@@ -333,16 +346,20 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Facilitates in-game purchases and the initial purchase of the game using Stripe.
   
 - **Actions**:
+  
   - **Purchase Game**: Handles payment processing through Stripe API.
   - **Transaction History**: Logs purchases to verify user’s game access.
   
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **Database**: Stores transaction records and verifies user access.
     - **User Authentication**: Updates user access after a successful payment.
   
-- **External**:
-  - **Stripe API**: Processes payments and returns transaction statuses.
+  - **External**:
+  
+    - **Stripe API**: Processes payments and returns transaction statuses.
   
 - **Rationale**: A separate Payment Interface allows for clean management of financial transactions. It ensures the game can be easily updated in the future if more payment options are required. This is more of a could-have for us, so it will not be highly prioritized during our implementation. 
 
@@ -353,18 +370,22 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Generates custom images for cards and other in-game visuals.
   
 - **Actions**:
+  
   - **Card Image Generation**: Requests images based on card attributes.
   - **Image Storage**: Stores generated images to the database.
   - **Boss Image Generation**: Generates visuals for bosses or enemies.
   - **Validation**: Ensures generated images are valid and usable.
   
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **Card Management**: Card management requests images for newly generated cards and is sent back image or error.
     - **Game Engine**: The game engine requests images for boss encounters.
    
       
   - **External**:
+    
     - **Image Generation API**: Generates images based on given descriptions.
   
 - **Rationale**: This interface isolates image generation to a single component, allowing easy changes and enhancements in the future. It simplifies image management and keeps the logic for visual elements modular. Having logic for image generation separate allows other components to use the interface without needing to know how it works.
@@ -378,16 +399,21 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Powers the AI-driven storylines for the game.
   
 - **Actions**:
+  
   - **Story Generation**: Generates narrative elements based on game state and user input.
   - **Boss Battle Descriptions**: Provides descriptions for bosses and encounters.
   - **Quality Control/Validation**: Ensures generated stories are in the correct format.
   - **Story Summary**: Provides summaries of major story beats.
   
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **Game Engine**: Requests story updates based on user choices.
     - **Database**: Stores story progress and player decisions.
+      
   - **External**:
+    
     - **AI-Language Model API**: Communicates with the LLM to generate dynamic narratives.
   
 - **Rationale**: The AI-Language Model is key to the game’s dynamic narrative. Separating this functionality allows easy scalability and flexibility, ensuring stories are generated seamlessly.
@@ -405,10 +431,12 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 - **Actions**:
+  
   - Processing and facilitating Payments: Responsible for allowing users to pay for the game.
 
   
 - **Communication**:
+  
   - **Backend → Stripe**: Requests stripe payment.
   - **Stripe → Backend**: Returns transaction status (success/failure).
 
@@ -421,10 +449,12 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Generates dynamic, AI-powered storylines.
 
 - **Actions:**
+  
   - **Generating Story content:** Generates and returns story content based on prompts passed by the backend.
   -  **Generating Item Description:** Will generate descriptions of items that will be used to build cards.
 
 - **Communication**:
+  
   - **Internal AI-Language Model Interface → LLM API**: Sends user input to LLM to generate stories.
   - **LLM → Internal AI-Language Model Interface**: Returns generated story content.
 
@@ -437,11 +467,13 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 - **Purpose**: Provides unique images for cards and in-game visuals like bosses.
 
 - **Actions:**
+  
   - **Image Generations:** Generates images for in-game entities like cards and bosses/enemies.
 
   
 
 - **Communication**:
+  
   - **AI image generation internal interface → Image Generation API**: Requests for image creation.
   - **Image Generation API → AI image generation internal interface**: Returns generated image data.
 
@@ -457,6 +489,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 - **Actions**:
+  
   - **Store User Data**: Saves user credentials (token access) and user profile info.
   - **Store Game State**: Tracks player’s game progress, inventory, decisions, and stats.
   - **Transaction Logs**: Stores all payment transactions and tracks in-game purchases(if implemented in the future).
@@ -465,24 +498,25 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 - **Communication with Other Interfaces**:
+  
   - **Internal**:
+    
     - **User Authentication Interface**: Stores and retrieves user credentials via Supabase authentication. User Authentication interface will check Supabase for user access.
     - **Game Engine**: Retrieves and updates user game state and progress.
     - **Card Management**: Stores and updates player’s card inventory.
     - **Payment Interface**: Stores transactions for purchases and in-game items.
+      
   - **External**:
+    
     - **OAuth**: Will use OAuth providers to authenticate users.
 
       
-- **Rationale**: Supabase provides a powerful backend-as-a-service solution with built-in database management, authentication, and real-time capabilities. By using Supabase for data storage, we can focus on building out the game mechanics and user experience. The **Database Interface** will abstract the complexity of interacting with Supabase, allowing for seamless data management.
-
-
 - **Communication**:
   - **Backend → Supabase**: Communicates for tasks like sign-up, sign-in, game progress, and transactions.
   - **Supabase → Backend**: Returns user data, game state, and authentication details.
 
 
-- **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development. Its user authentication will allow us to focus on gameplay without sacrificing on security. By using Supabase for data storage, we can focus on building out the game mechanics and user experience.
+- **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development. Its user authentication will allow us to focus on gameplay without sacrificing security. By using Supabase for data storage, we can focus on building out the game mechanics and user experience.
   
 
 ---
