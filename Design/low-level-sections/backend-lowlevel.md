@@ -1,3 +1,5 @@
+Note: Chat GPT was used to help generate sections of this
+
 # Low level Design
 Subsystem Design:
 
@@ -148,3 +150,76 @@ Rationale: This subcomponent will be responsible for communicating with the exte
 - **PaymentService** → `DatabaseService`: Stores transactions  
 - **CardManager** → `AIImageGenerator`: Requests card images  
 - **GameEngine** → `AuthService`: Checks user authentication
+- 
+
+
+
+
+
+### System Performance:
+
+# System Performance
+
+Ensuring optimal system performance is crucial for maintaining a seamless gaming experience, particularly as player engagement increases. This section addresses potential bottlenecks and how the system handles an increase in load.
+
+## Potential Bottlenecks & Mitigation Strategies
+
+1. **Database Performance**
+   - **Bottleneck:** Increased concurrent queries from a growing user base may slow down game state retrieval and card collection updates.
+   - **Mitigation:**
+     - Implement database indexing to optimize query performance.
+     - Utilize caching mechanisms (e.g., Redis) for frequently accessed data, such as user game state and card inventory.
+     - Optimize database queries and use connection pooling to handle high traffic efficiently.
+     
+2. **AI-Generated Story & Image Processing**
+   - **Bottleneck:** AI language model and AI image generation API calls may introduce latency, impacting real-time gameplay.
+   - **Mitigation:**
+     - Pre-generate and cache frequently used story elements and card images.
+     - Implement asynchronous processing for AI requests to prevent blocking gameplay interactions.
+     - Utilize a load balancer to distribute AI generation requests efficiently.
+     
+3. **Server Load & Scalability**
+   - **Bottleneck:** High user concurrency may overwhelm the backend, leading to slower API response times.
+   - **Mitigation:**
+     - Deploy auto-scaling instances to dynamically adjust server capacity based on traffic.
+     - Use a CDN (Content Delivery Network) to distribute assets and reduce server load.
+     - Implement rate limiting to prevent abuse and ensure fair resource allocation.
+
+4. **Authentication & Payment Processing**
+   - **Bottleneck:** Increased authentication requests and payment transactions could lead to delays in login and purchase verification.
+   - **Mitigation:**
+     - Leverage Supabase’s authentication caching to minimize redundant authentication checks.
+     - Use asynchronous processing for payment verification to avoid blocking gameplay progression.
+     - Implement queue-based processing to handle peak transaction loads smoothly.
+
+5. **Game Engine & Card Management Performance**
+   - **Bottleneck:** Processing real-time game actions (e.g., battles, inventory updates) may introduce performance lag.
+   - **Mitigation:**
+     - Offload intensive game calculations to background workers to reduce response time.
+     - Use efficient data structures to store and retrieve card details and game state quickly.
+     - Optimize the game logic execution flow to minimize redundant computations.
+
+## Handling Increased Load
+
+As the player base grows, the system must scale effectively. The following measures will be in place to ensure smooth operation under increased load:
+
+1. **Horizontal Scaling**
+   - Load balance API requests across multiple instances to prevent any single point of failure.
+   - Implement containerization (e.g., Docker, Kubernetes) to deploy and manage scalable microservices.
+
+2. **Asynchronous Processing & Message Queues**
+   - Use message queues (e.g., RabbitMQ, Kafka) to process non-urgent tasks in the background.
+   - Implement event-driven architecture for handling game events and AI-generated content asynchronously.
+
+3. **Optimized API Gateway**
+   - Use an API gateway to efficiently route and manage API requests.
+   - Implement request batching to reduce redundant API calls and improve response times.
+
+4. **Monitoring & Performance Optimization**
+   - Continuously monitor API response times, database query performance, and server health.
+   - Implement automated alerts and logging to detect and address performance issues proactively.
+
+By applying these strategies, the system will maintain high performance while ensuring scalability as the game evolves and attracts more players.
+
+
+
