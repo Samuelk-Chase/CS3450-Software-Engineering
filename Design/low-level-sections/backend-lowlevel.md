@@ -221,5 +221,42 @@ As the player base grows, the system must scale effectively. The following measu
 
 By applying these strategies, the system will maintain high performance while ensuring scalability as the game evolves and attracts more players.
 
+# Programming Languages, Libraries, and Frameworks
+
+This section outlines the key programming languages, libraries, and frameworks that will be used in our system. The selections are based on project requirements such as performance, scalability, and long-term maintainability.
+
+## Backend
+
+- **Programming Language: Go**
+  - *Why:* Go is a statically typed, compiled language known for its performance, simplicity, and excellent support for concurrent programming. These features make it an ideal choice for building a high-performance game server that can efficiently handle multiple simultaneous connections. While robust the language has fairly simple syntax which will make it easier for those on the team that don't yet know it to learn.
+
+- **Framework: chi**
+  - *Why:* chi is a lightweight and idiomatic HTTP router for Go, designed for building RESTful APIs. Its minimalistic design and composability allow for rapid development while keeping the backend lean and maintainable.
 
 
+## Front End
+- **React with TypeScript**
+  - *Why:* React provides a powerful framework for building interactive user interfaces, while TypeScript adds static typing, reducing runtime errors and improving code maintainability. This combination ensures a scalable and robust front-end development experience. React will also allow us to reuse UI elements in multiple screens which will help us reuse components as new game content is added in the future.
+ 
+- **Additional Frontend Libraries:**
+  - **Fetch API**
+    - *Why:* Used for making HTTP requests to our backend, ensuring smooth communication between the client and server.
+  - **React Router**
+    - *Why:* Manages in-app navigation, ensuring a seamless user experience as players move between different views.
+  - **CSS Frameworks (Tailwind CSS)**
+    - *Why:* Provides pre-built components and utility classes that expedite the development of a responsive and user-friendly interface. Will allow us to build a styled ui faster and help with designing new pages and content in the future.
+
+
+## How these choices affect development and performance
+
+- **Performance and Scalability:**  
+  Both Go and React are optimized for high performance and scalability. Go's efficient concurrency handling may be crucial for managing a high volume of simultaneous requests, while React's virtual DOM and component-based architecture ensure a smooth and responsive user experience.
+
+- **Ease of Development & Maintainability:**  
+  Go's simplicity and clear syntax lower the learning curve and reduce complexity, making the backend easier to maintain over time. Meanwhile, React combined with TypeScript offers enhanced code quality and predictability on the frontend, facilitating long-term maintenance and reducing the risk of bugs.
+
+- **Ecosystem and Community Support:**  
+  The vast ecosystems around Go and React mean access to extensive libraries, frameworks, and community support. This ensures that any challenges encountered can be swiftly addressed with proven solutions and best practices.
+
+- **Modularity and Flexibility:**  
+  By leveraging specialized libraries (like chi for routing and stripe-go for payment integration), the system remains modular. This modularity allows individual components to be updated or replaced independently as the system evolves, aligning with future requirements and technological advancements.
