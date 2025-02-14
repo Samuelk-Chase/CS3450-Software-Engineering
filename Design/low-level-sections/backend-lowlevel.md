@@ -1,5 +1,115 @@
 Note: Chat GPT was used to help generate sections of this
 
+
+# **Game Development Backlog**
+
+## **Sprint 2: Core Systems & AI Experimentation (Backend + Initial Frontend)**
+
+### **Backend Team**
+#### ** Database Setup:**
+- [ ] **Set up User table:** Store authentication data, user profile details, and metadata for player progress.
+- [ ] **Set up Run table:** Store each game session's progress, including choices made and card usage.
+- [ ] **Set up Card tables:** Define schema for different card types, attributes, rarity levels, and effects.
+
+#### ** Backend-Server Development:**
+- [ ] **Implement Authentication System:** OAuth integration (Google, email/password) using Supabase or Firebase.
+- [ ] **Create foundational Game Engine & API Endpoints:**
+  - Define routes for game state updates.
+  - Implement functions for tracking player progress, stats, and story.
+  - Handle card interactions in API responses.
+- [ ] **Create Card Management System:**
+  - CRUD operations for creating, storing, and retrieving cards.
+  - Define internal rules for buffs, debuffs, and status effects.
+- [ ] **Set up AI LLM Interface (Initial Mock Responses):**
+  - Basic connection to an AI API (e.g., OpenAI, Mistral, Claude).
+  - Interface should generate mock responses that simulate in-game interactions.
+- [ ] **AI Model Testing & Prompt Engineering:**
+  - Experiment with multiple LLMs (GPT-4, Claude, Mistral, etc.) to assess response quality.
+  - Start designing/experimenting with structured prompts that align with narrative-driven gameplay.
+  - Test AI’s ability to generate **meaningful** stories and responses.
+
+### **Front-End Team**
+#### **UI Development for Core Player Navigation**
+- [ ] **Create Sign-in / Sign-up Pages:**
+  - Basic UI with authentication integration.
+  - Error handling for login failures.
+- [ ] **Create Main Character Screen:**
+  - Displays user stats, character progress, new character button.
+- [ ] **Create Character Selection Screen:**
+  - Allows players to choose between different starting characters with unique attributes.
+- [ ] **Develop AI Text Input Page:**
+  - Simple interface for text-based interactions.
+  - Mock responses should be rendered dynamically.
+
+---
+
+## **Sprint 3: AI Integration & Combat System Development**
+
+### **Backend Team**
+#### **Database Enhancements:**
+- [ ] **Expand Card Table:**
+  - Store additional attributes (mana cost, rarity, effect types).
+  - Implement support for deck-building mechanics.
+
+#### **Backend Development:**
+- [ ] **Integrate AI into LLM Interface:**
+  - Replace mock responses with real AI-generated interactions.
+  - Implement token limits, input sanitization, and response formatting.
+- [ ] **Implement AI Image Interface (AI-Generated Cards & Assets):**
+  - Connect to an AI image generation API (e.g., DALL·E, Stability AI).
+  - Generate visuals dynamically for new cards or unique bosses.
+- [ ] **Enhance Game Engine with Boss Creation System:**
+  - AI-driven bosses with unique abilities and patterns.
+  - Implement scaling difficulty for encounters.
+
+### **Front-End Team**
+#### **Combat & Deck Mechanics UI**
+- [ ] **Develop Battle Screen:**
+  - Display turn-based battle interface.
+  - Show enemy boss, player stats, and cards in hand.
+- [ ] **Create Card Deck Component:**
+  - UI for selecting and playing cards.
+  - Implement drag-and-drop interactions.
+- [ ] **Implement Internal Battle Logic for Boss Battles:**
+  - Ensure AI-generated bosses have attack patterns.
+  - Sync game state with backend API.
+
+---
+
+## **Sprint 4: Monetization, Rewards, and Final Polish**
+
+### **Backend Team**
+#### **Database Enhancements:**
+- [ ] **Create Payment Transaction Table:**
+  - Store user purchases, card pack transactions, and premium features.
+
+#### **Backend Development:**
+- [ ] **Generate Card Descriptions Dynamically via AI LLM Interface:**
+  - Convert item descriptions into unique, AI-generated card text.
+  - Improve AI’s ability to balance game mechanics when generating card effects.
+- [ ] **Implement Payment Interface:**
+  - Integrate Stripe or another payment processor.
+  - Enable purchasing the game.
+
+### **Front-End Team**
+#### **Finalizing UI & Visual Enhancements**
+- [ ] **Create Reward Screen:**
+  - Displays unlocked cards, ai battle summary, and earned items after battles.
+- [ ] **Final UI Styling & UX Polish:**
+  - Improve animations and transitions.
+  - Ensure smooth navigation between screens.
+  - Add accessibility features like screen reader support
+
+---
+
+## 🚀 **Next Steps After Sprint 3:**
+Once Sprint 3 is completed, the game should be **fully playable** with AI-driven battles, deck-building, and monetization features. The next phase could focus on:
+
+✅ **Bug Fixing & Optimization**  
+✅ **Multiplayer Features** (Co-op battles, pvp)   
+
+---
+
 # Low level Design
 Subsystem Design:
 
