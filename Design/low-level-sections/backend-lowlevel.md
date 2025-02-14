@@ -86,6 +86,8 @@ Note: Chat GPT was used to help generate sections of this
 
   #### **Expectations:**
     **By the end of this sprint:**
+
+      
       - Users should be recieve AI generated story responses
       - Backend should generate,store, and send ai story responses to client
       - Backend should be able to receive card description and generate image and card stats which should be stored in db
@@ -125,7 +127,6 @@ Note: Chat GPT was used to help generate sections of this
      
     #### **Expectations:**
     **By the end of this sprint:**
-     
       - Players should see a battle summary with ai generated text after defeating boss
       - Backend should generate unique item descriptions based on boss the user beat
       - Players should be able select which item after a boss fight to keep and turn into card
@@ -143,7 +144,7 @@ Once Sprint 3 is completed, the game should be **fully playable** with AI-driven
 ✅ **Multiplayer Features** (Co-op battles, pvp)   
 
 ---
-# idea for low-level classes on front end if the front end team wants to use
+# idea for low-level classes on front end if the front end team wants to use(Some repetition since still figuring out what should have what)
 # Low-Level Design Front End
 -----
 Game management:
@@ -428,13 +429,6 @@ This engine is going to be broken into 2 parts the main game manager that update
      
     
    
-- **Object: Boss_Entity()**
-  - **name**: string
-  - **health**: int
-  - **mana**: int
-  - **damage_amount**: int
-  - **description**: string
-  - **image_url**: string
 
 - `get_character_state(user_id: str, char_id: str) -> dict`  
   *Loads saved game state(character stats/object) from Database creates character object.*
@@ -503,10 +497,13 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `generate_boss_image(description: str) -> str`  
   *Generates an image for a boss, stores in an S3 bucket, and returns url.*
 
+
 - `generate_character_image(description: str`
   *Generates image that will be used to represent the character in-game, returns url*
+
   
-Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section #
+Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section 
+
 
 ## AI Story Generator Interface
 **AIStoryGenerator**(connects to external AI LLM for generating content)
@@ -523,7 +520,18 @@ Rationale: This subcomponent will be responsible for communicating with the exte
   *Prompts the ai to generate a story where multiple objects can be picked up. generates attributes of each object that match card attributes*
 
 - `parse_items(item_descriptions: str) -> dict`
-  *Filters through item description to find keywords to build an card object later, returns dictionary of items and their attributes* 
+  *Filters through item description to find keywords to build an card object later, returns dictionary of items and their attributes*
+
+- `generate_boss_entity(story_text: str) -> dict`
+  *Uses AI to crate boss attributes, returns these attribtes below*
+  - **Boss_Entity attributes**
+    - **name**: string
+    - **health**: int
+    - **mana**: int
+    - **damage_amount**: int
+    - **description**: string
+    - **boss_card**: list of cards generated for boss
+
 
 
 
