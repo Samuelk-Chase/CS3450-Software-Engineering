@@ -439,6 +439,10 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 ---
 
+![Example UI](backend_diagramSubcomponents.png)
+
+---
+
 
 ## Relationships Between Components
 - **GameEngine** → `AIStoryGenerator`: Requests story text  
