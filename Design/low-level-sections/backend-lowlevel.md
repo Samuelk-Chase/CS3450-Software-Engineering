@@ -341,22 +341,23 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 ### Endpoints:
 
-/getcards/id: The server should return all cards belonging to character to client
+- `/getcards/id:` The server should return all cards belonging to character to client
 
-/createcard: Client passes card description selected to server, server returns a card object as json
+- `/createcard:` Client passes card description selected to server, server returns a card object as json
 
-/getgame/id: server returns game run(story text, player stats(health, mana))( json)
+- `/getgame/id:` server returns game run(story text, player stats(health, mana))( json)
 
-/getsummary: server returns a summary of the story(json)
+- `/getsummary:` server returns a summary of the story(json)
 
-/getstoryall: server returns all story text
+- `/getstoryall:` server returns all story text
 
-/playerresponse: client passes user prompt to server, server continued story text
+- `/playerresponse:` client passes user prompt to server, server continued story text
 
-/createbattle: server returns boss details as json(damage, health, url image)
+- `/createbattle:` server returns boss details as json(damage, health, url image)
 
-/battleresults: client passes boss outcome(win or lose) server returns ai summary of battle and items to choose from which will be turned into cards.
+- `/battleresults:` client passes boss outcome(win or lose) server returns ai summary of battle and items to choose from which will be turned into cards.
 
+- `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run. Game and character will be returned as JSON.
 
 
 **GameEngine Interface Front End** 
@@ -412,6 +413,9 @@ This engine is going to be broken into 2 parts the main game manager that update
   
 - `item_selection(item_selection: str, player_id: str) -> JSON Object`  
   *Processes player choice, returns card*
+
+- `create_character(char_description)`
+  * Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
   
   
 - `create_boss_battle(player_id: str) -> Boss Json`  
@@ -465,6 +469,9 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `generate_boss_image(description: str) -> str`  
   *Generates an image for a boss, stores in an S3 bucket, and returns url.*
 
+- `generate_character_image(description: str`
+  *Generates image that will be used to represent the character in-game, returns url*
+  
 Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section #
 
 ## AI Story Generator Interface
