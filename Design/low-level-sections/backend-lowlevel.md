@@ -109,8 +109,219 @@ Once Sprint 3 is completed, the game should be **fully playable** with AI-driven
 ✅ **Multiplayer Features** (Co-op battles, pvp)   
 
 ---
+# idea for low-level classes on front end if the front end team wants to use
+# Low-Level Design Front End
+-----
+Game management:
 
-# Low level Design
+- **Class: EntityClass()** provides structure for player characters and boss entities
+  - Attributes
+    - **name:** str
+    - **health_total:** int
+    - **mana_total:** int
+    - **current_health:** int
+    - **current_mana:** int
+    - **alive:** bool
+   
+   - Methods:
+    - `upgrade_mana(increase_amount: int):`
+      *Increases mana_total*
+      
+    - `upgrade_health(increase_amount: int):`
+      *Increases health_total*
+
+    - `restore_health()`
+      *Sets current_health to health_total*
+
+    - `restore_mana()`
+      *Sets current_mana to mana_total*
+
+    - `add_health(health_added: int)`
+      *adds hearts/health to character*
+
+    - `add_mana(mana_added: int)`
+      *adds hearts/health to character*
+
+
+  - **Class: Character()** inherits entity class
+
+    
+    - Methods:
+      - `upgrade_mana(increase_amount: int):`
+        *Increases mana_total*
+        
+      - `upgrade_health(increase_amount: int):`
+        *Increases health_total*
+  
+      - `restore_health()`
+        *Sets current_health to health_total*
+  
+      - `restore_mana()`
+        *Sets current_mana to mana_total*
+  
+      - `add_health(health_added: int)`
+        *adds hearts/health to character*
+  
+      - `add_mana(mana_added: int)`
+        *adds hearts/health to character*
+
+  - **Class: Boss_Entity()** Inherits properties of entity class
+    - **damage_amount**: int
+    - **description**: string
+    - **image_url**: string
+  
+
+
+## Card class:
+  Attributes:
+  - **name**: str
+  - **image_url**: str
+  - **power_level**: int
+  - **mana_cost**: int
+  - **Available**: bool
+    
+   Methods:
+
+   -`set_available(bool)`**
+     * sets available to false so it can't be used*
+
+  - `use_card()`
+    *Overloaded function that will apply an effect depending on the card*
+     
+  ## Class DamageCard:
+      - **damage_type:** str
+
+      Methods: 
+      - `use_card()`
+        *Returns damage effect and the power of the effect, json format that will be applied during battle, by battle logic*
+        
+
+  ## Class BuffCard:
+      - **buff_type**:
+      
+      Methods:
+
+      - `use_card()`
+      *Returns buff effect and the power of the effect, json format that will be applied during battle*
+
+  ## Class EnemyDebuff:
+   - **debuff_type**:
+      
+      Methods:
+
+      - `use_card()`
+      *Returns debuff effect and the power of the effect, json format that will be applied to enemy during battle*
+
+      
+    
+-----
+
+- **Class: Character()**
+  - Attributes
+    - **name:** str
+    - **health_total:** int
+    - **mana_total:** int
+    - **current_health:** int
+    - **current_mana:** int
+    - **alive:** bool
+  - Methods:
+    - `upgrade_mana(increase_amount: int):`
+      *Increases mana_total*
+      
+    - `upgrade_health(increase_amount: int):`
+      *Increases health_total*
+
+    - `restore_health()`
+      *Sets current_health to health_total*
+
+    - `restore_mana()`
+      *Sets current_mana to mana_total*
+
+    - `add_health(health_added: int)`
+      *adds hearts/health to character*
+
+    - `add_mana(mana_added: int)`
+      *adds hearts/health to character*
+
+
+- **Class: Boss_Entity()** Inherits properties of entity class
+  - **damage_amount**: int
+  - **description**: string
+  - **image_url**: string
+
+- methods
+  - `decrease_health(health_hit: int)`
+    *takes health away from boss*
+    
+  - `add_health(health_added: int)`
+      *adds hearts/health to boss*
+
+
+
+- **Class: Boss_Entity()**
+  - **name**: string
+  - **health_total**: int
+  - **health_current**: int
+  - **mana**: int
+  - **damage_amount**: int
+  - **description**: string
+  - **image_url**: string
+
+- methods
+  - `decrease_health(health_hit: int)`
+    *takes health away from boss*
+    
+  - `add_health(health_added: int)`
+      *adds hearts/health to boss*
+
+
+
+## Card class:
+  Attributes:
+  - **name**: str
+  - **image_url**: str
+  - **power_level**: int
+  - **mana_cost**: int
+  - **Available**: bool
+    
+   Methods:
+
+   -`set_available(bool)`**
+     * sets available to false so it can't be used*
+
+  - `use_card()`
+    *Overloaded function that will apply an effect depending on the card*
+     
+  ## Class DamageCard:
+      - **damage_type:** str
+
+      Methods: 
+      - `use_card()`
+        *Returns damage effect and the power of the effect, json format that will be applied during battle, by battle logic*
+        
+
+  ## Class BuffCard:
+      - **buff_type**:
+      
+      Methods:
+
+      - `use_card()`
+      *Returns buff effect and the power of the effect, json format that will be applied during battle*
+
+  ## Class EnemyDebuff:
+   - **debuff_type**:
+      
+      Methods:
+
+      - `use_card()`
+      *Returns debuff effect and the power of the effect, json format that will be applied to enemy during battle*
+
+      
+    
+
+    
+
+# Low-level Design Backend
 Subsystem Design:
 
 # Backend System Design (UML)
@@ -124,8 +335,35 @@ Subsystem Design:
 - `check_purchase_status(user_id: str) -> bool`  
   *Confirms game purchase.*  
 
-## Game Engine
-**Class: GameEngine Interface**  
+## Module Game Engine
+This engine is going to be broken into 2 parts the main game manager that updates/saves character progression and the API layer that defines endpoints for client to call:
+
+
+### Endpoints:
+
+/getcards/id: The server should return all cards belonging to character to client
+
+/createcard: Client passes card description selected to server, server returns a card object as json
+
+/getgame/id: server returns game run(story text, player stats(health, mana))( json)
+
+/getsummary: server returns a summary of the story(json)
+
+/getstoryall: server returns all story text
+
+/playerresponse: client passes user prompt to server, server continued story text
+
+/createbattle: server returns boss details as json(damage, health, url image)
+
+/battleresults: client passes boss outcome(win or lose) server returns ai summary of battle and items to choose from which will be turned into cards.
+
+
+
+**GameEngine Interface Front End** 
+  
+
+
+**Class: GameEngine Interface Backend**  
 - **Object: Character()**
   - Attributes
     - **name:** str
@@ -208,7 +446,7 @@ Subsystem Design:
   *Upgrades an existing card.*  
 
 ## Payment Interface
-**Class: PaymentService(could have)**  
+**PaymentService(could have)**  
 - `process_payment(user_id: str, amount: float) -> dict`  
   *Handles payment processing.*
   
@@ -219,18 +457,18 @@ Subsystem Design:
   *Retrieves user payment history.*  
 
 
-## AI Image Generator
-**Class: AIImageGenerator**  
+## AI Image Generator Interface
+**AIImageGenerator**  
 - `generate_card_image(description: str) -> str`  
   *Generates an image for a card, stores in S3 bucket, and returns URL.*
   
 - `generate_boss_image(description: str) -> str`  
   *Generates an image for a boss, stores in an S3 bucket, and returns url.*
 
-Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make.
+Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section #
 
-## AI Story Generator
-**Class: AIStoryGenerator**(connects to external AI LLM for generating content)  
+## AI Story Generator Interface
+**AIStoryGenerator**(connects to external AI LLM for generating content)
 - `generate_story_text(user_prompt: str) -> str`  
   *Prompts Ai with user input and custom prompt to Generate dynamic story content. Returns story text*
   
