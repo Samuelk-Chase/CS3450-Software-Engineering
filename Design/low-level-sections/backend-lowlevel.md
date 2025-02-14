@@ -217,10 +217,10 @@ Game management:
     
    Methods:
 
-   -`set_available(bool)`**
+   - `set_available(bool)`
      * sets available to false so it can't be used*
 
-  - `use_card()`
+   - `use_card()`
     *Overloaded function that will apply an effect depending on the card*
      
   ## Class DamageCard:
@@ -371,7 +371,7 @@ Subsystem Design:
   *Confirms game purchase.*  
 
 ## Module Game Engine
-This engine is going to be broken into 2 parts the main game manager that updates/saves character progression and the API layer that defines endpoints for client to call:
+This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call:
 
 
 ### Endpoints:
@@ -400,35 +400,6 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 
 **Class: GameEngine Interface Backend**  
-- **Object: Character()**
-  - Attributes
-    - **name:** str
-    - **health_total:** int
-    - **mana_total:** int
-    - **current_health:** int
-    - **current_mana:** int
-    - **alive:** bool
-  - Methods:
-    - `upgrade_mana(increase_amount: int):`
-      *Increases mana_total*
-      
-    - `upgrade_health(increase_amount: int):`
-      *Increases health_total*
-
-    - `restore_health()`
-      *Sets current_health to health_total*
-
-    - `restore_mana()`
-      *Sets current_mana to mana_total*
-
-    - `add_health(health_added: int)`
-      *adds hearts/health to character*
-
-    - `add_mana(mana_added: int)`
-      *adds hearts/health to character*
-     
-    
-   
 
 - `get_character_state(user_id: str, char_id: str) -> dict`  
   *Loads saved game state(character stats/object) from Database creates character object.*
@@ -497,7 +468,6 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `generate_boss_image(description: str) -> str`  
   *Generates an image for a boss, stores in an S3 bucket, and returns url.*
 
-
 - `generate_character_image(description: str`
   *Generates image that will be used to represent the character in-game, returns url*
 
@@ -505,7 +475,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section 
 
 
-## AI Story Generator Interface
+## AI Language Model Interface
 **AIStoryGenerator**(connects to external AI LLM for generating content)
 - `generate_story_text(user_prompt: str) -> str`  
   *Prompts Ai with user input and custom prompt to Generate dynamic story content. Returns story text*
@@ -531,6 +501,36 @@ Rationale: This subcomponent will be responsible for communicating with the exte
     - **damage_amount**: int
     - **description**: string
     - **boss_card**: list of cards generated for boss
+
+**AI Entity creator(connects to externam AI LLM)**
+  - `generate_boss_entity(story_text: str) -> dict`
+      *Uses AI to crate boss attributes, interacts with AI image generator to return boss image url, returns these attribtes below*
+    
+  - **Boss_Entity attributes**
+    - **name**: string
+    - **health**: int
+    - **mana**: int
+    - **damage_amount**: int
+    - **description**: string
+    - **boss_card**: list of cards generated for boss
+    - **Image_URL**: str
+   
+**AI Entity creator(connects to externam AI LLM)**
+  - `generate_boss_entity(story_text: str) -> dict`
+      *Uses AI to create boss attributes, interacts with AI image generator to return boss image url, returns these attribtes below*
+
+  - `generate_boss_entity(character_description: str) -> dict`
+      *Prompts AI to create character attributes, interacts with AI image generator to generate character image url, returns these attribtes below*
+    
+  - **Character_Entity attributes**
+    - **name**: string
+    - **health**: int
+    - **mana**: int
+    - **description**: string
+    - **Image_URL**: str
+   
+      
+    
 
 
 
