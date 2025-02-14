@@ -262,7 +262,7 @@ Subsystem Design:
 - `check_purchase_status(user_id: str) -> bool`  
   *Confirms game purchase.*  
 
-## Module Game Engine
+## Game Engine
 This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call, Game engine makes sure data is formated correctly to be sent to client:
 
 
@@ -288,7 +288,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 
 
-**Class: GameEngine Interface Backend**  
+**GameEngine (Backend)**  
 
 - `get_character_state(user_id: str, char_id: str) -> JSON object`  
   *Loads saved game state(character stats/object) from Database*
@@ -303,7 +303,7 @@ This engine is going to be broken into 2 parts the main game manager that update
   *Processes player choice, returns card*
 
 - `create_character(char_description) -> JSON object`
-  * Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
+  *Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
   
   
 - `create_boss_battle(player_id: str) -> Json object`  
@@ -315,12 +315,15 @@ This engine is going to be broken into 2 parts the main game manager that update
       Create a card from Card Management,
       and return the JSON of the new card.*
 
-  - `save_game_state(user_id: str, game_state: dict)`  
+- `save_game_state(user_id: str, game_state: dict)`  
   *Saves game progress.*  
 
+**Priority: High**
+
+**Why:** The backend game engines is the access point for the client to communicate. Its responsibilities such as saving data client gives and creating JSON object that can be returned to the client are vital to make our game work
 
 ## Card Management
-**Class: CardManager**  
+**CardManager**  
 - `generate_card(item_description: dict, player_id: str) -> dict`  
   *Given card attributes, creates, saves, and returns a new card.*
 
@@ -339,11 +342,18 @@ This engine is going to be broken into 2 parts the main game manager that update
   *Handles payment processing.*
   
 - `save_transaction(user_id: str, transaction: dict)`
+  
   *Stores a transaction record.*
   
 - `get_transaction_history(user_id: str) -> list`  
   *Retrieves user payment history.*  
 
+**Priority:** Low
+
+**Why:** Payment functionality will only be implemented once the game is playable, without a game to play their is nothing to purchase.
+
+
+---
 
 ## AI Image Generator Interface
 **AIImageGenerator**  
@@ -353,12 +363,19 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `generate_boss_image(description: str) -> str`  
   *Generates an image for a boss, stores in an S3 bucket, and returns url.*
 
-- `generate_character_image(description: str`
+- `generate_character_image(description: str)`
   *Generates image that will be used to represent the character in-game, returns url*
 
-  
-Rationale: This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section 
 
+  
+**Rationale:** This subcomponent will be responsible for communicating with the external AI image generator service. Both functions will have a custom prompt built for the type of image it is trying to make. More information on how AI integration will work in section 
+
+**Priority**: High
+
+**Why**: Image generation will be vital in providing unique visuals for users. Card images will be deemed the highest priority of all image creation, followed by boss images and character. The reason being is we want cards to be unique, we can use default icons to represent player and boss in battle if needed.
+
+
+---
 
 ## AI Language Model Interface
 **AI Story Generator**(connects to external AI LLM for generating content)
@@ -400,7 +417,7 @@ Rationale: This subcomponent will be responsible for communicating with the exte
         - **boss_card**: list of cards generated for boss
         - **Image_URL**: str
    
-  - `generate_boss_entity(character_description: str) -> dict`
+  - `generate_character_entity(character_description: str) -> dict`
       *Prompts AI to create character attributes, interacts with AI image generator to generate character image url, returns these attribtes below*
     
       - **Character_Entity attributes**
@@ -410,13 +427,17 @@ Rationale: This subcomponent will be responsible for communicating with the exte
         - **description**: string
         - **Image_URL**: str
    
-      
+**Priority**: High
+
+**Why:** Its vital to our program to have a system that creates attributes for other enties. Character entities will be prioritized over bosses initially since we want text and character creation to work early on. Once boss battles are implemented boss entites will be worked on.
     
 
 
 
 
-*Rationale:* We've broken the story generator into multiple functions that perform different tasks, based on the need. For example, general story generation will be prompted differently than when we want to force a boss encounter. Also we need custom prompts for generating story with items.
+**Rationale:** We've broken the AI Language model interface into 2 subcomponents. Since they will each have different prompts and data output. The story generator is broken into multiple functions that perform different tasks, based on the need. For example, general story generation will be prompted differently than when we want to generate a description of a boss encounter. Also we need custom prompts for generating story with items. We created the AI entity creator to focus on taking story and entity descriptions and turning them into entity attributes that can be stored or passed to the client.
+
+---
 
 
 ## Relationships Between Components
@@ -427,11 +448,7 @@ Rationale: This subcomponent will be responsible for communicating with the exte
 - **AuthService** → `DatabaseService`: Validates user data  
 - **PaymentService** → `DatabaseService`: Stores transactions  
 - **CardManager** → `AIImageGenerator`: Requests card images  
-- **GameEngine** → `AuthService`: Checks user authentication
-- 
-
-
-
+- **GameEngine** → `AuthService`: Checks user authentication 
 
 
 ### System Performance:
