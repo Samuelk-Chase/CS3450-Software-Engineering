@@ -86,14 +86,12 @@ Note: Chat GPT was used to help generate sections of this
 
   #### **Expectations:**
     **By the end of this sprint:**
-
-      
-      - Users should be recieve AI generated story responses
-      - Backend should generate,store, and send ai story responses to client
-      - Backend should be able to receive card description and generate image and card stats which should be stored in db
-      - Backend should be able to create Boss description, and image and send to client
-      - Players should be able to initiate battle, see boss with its stats and image
-      - Players should be able to play cards by dragging and dropping, cards should apply effects to user or boss
+      * Users should be recieve AI generated story responses
+      * Backend should generate,store, and send ai story responses to client
+      * Backend should be able to receive card description and generate image and card stats which should be stored in db
+      * Backend should be able to create Boss description, and image and send to client
+      * Players should be able to initiate battle, see boss with its stats and image
+      * Players should be able to play cards by dragging and dropping, cards should apply effects to user or boss
         
 
 
@@ -127,12 +125,13 @@ Note: Chat GPT was used to help generate sections of this
      
     #### **Expectations:**
     **By the end of this sprint:**
-      - Players should see a battle summary with ai generated text after defeating boss
-      - Backend should generate unique item descriptions based on boss the user beat
-      - Players should be able select which item after a boss fight to keep and turn into card
-      - Animations should be smooth.
-      - Users should see unique visual effects applied during battle
-      - Users should be able to buy the game before being granted access
+    
+      * Players should see a battle summary with ai generated text after defeating boss
+      * Backend should generate unique item descriptions based on boss the user beat
+      * Players should be able select which item after a boss fight to keep and turn into card
+      * Animations should be smooth.
+      * Users should see unique visual effects applied during battle
+      * Users should be able to buy the game before being granted access
       
 
 ---
@@ -158,12 +157,9 @@ Game management:
     - **current_mana:** int
     - **alive:** bool
    
-   - Methods:
+  - Methods:
     - `upgrade_mana(increase_amount: int):`
       *Increases mana_total*
-      
-    - `upgrade_health(increase_amount: int):`
-      *Increases health_total*
 
     - `restore_health()`
       *Sets current_health to health_total*
@@ -188,17 +184,9 @@ Game management:
       - `upgrade_health(increase_amount: int):`
         *Increases health_total*
   
-      - `restore_health()`
-        *Sets current_health to health_total*
-  
       - `restore_mana()`
         *Sets current_mana to mana_total*
   
-      - `add_health(health_added: int)`
-        *adds hearts/health to character*
-  
-      - `add_mana(mana_added: int)`
-        *adds hearts/health to character*
 
   - **Class: Boss_Entity()** Inherits properties of entity class
     - **damage_amount**: int
@@ -207,149 +195,52 @@ Game management:
   
 
 
-## Card class:
-  Attributes:
-  - **name**: str
-  - **image_url**: str
-  - **power_level**: int
-  - **mana_cost**: int
-  - **Available**: bool
+- **Card class:**
+  - Attributes:
+    - **name**: str
+    - **image_url**: str
+    - **power_level**: int
+    - **mana_cost**: int
+    - **Available**: bool
     
-   Methods:
-
-   - `set_available(bool)`
-     * sets available to false so it can't be used*
-
-   - `use_card()`
-    *Overloaded function that will apply an effect depending on the card*
+   - Methods:
      
-  ## Class DamageCard:
+     - `set_available(bool)`
+       *sets available to false so it can't be used*
+  
+     - `use_card()`
+        *Overloaded function that will apply an effect depending on the card*
+     
+  - **Class DamageCard:**
+    - Attributes:
       - **damage_type:** str
 
-      Methods: 
+    - Methods: 
       - `use_card()`
         *Returns damage effect and the power of the effect, json format that will be applied during battle, by battle logic*
         
 
-  ## Class BuffCard:
-      - **buff_type**:
+  - **Class BuffCard:**
+    - Attributes:
+      - **buff_type:** str
       
-      Methods:
-
+    - Methods:
       - `use_card()`
-      *Returns buff effect and the power of the effect, json format that will be applied during battle*
+        *Returns buff effect and the power of the effect, json format that will be applied during battle*
 
-  ## Class EnemyDebuff:
-   - **debuff_type**:
-      
-      Methods:
-
-      - `use_card()`
-      *Returns debuff effect and the power of the effect, json format that will be applied to enemy during battle*
+   - **Class EnemyDebuffCard:**
+      - Attributes: 
+        - **debuff_type**: str
+        
+      - Methods:
+        - `use_card()`
+        *Returns debuff effect and the power of the effect, json format that will be applied to enemy during battle*
 
       
     
 -----
 
-- **Class: Character()**
-  - Attributes
-    - **name:** str
-    - **health_total:** int
-    - **mana_total:** int
-    - **current_health:** int
-    - **current_mana:** int
-    - **alive:** bool
-  - Methods:
-    - `upgrade_mana(increase_amount: int):`
-      *Increases mana_total*
-      
-    - `upgrade_health(increase_amount: int):`
-      *Increases health_total*
 
-    - `restore_health()`
-      *Sets current_health to health_total*
-
-    - `restore_mana()`
-      *Sets current_mana to mana_total*
-
-    - `add_health(health_added: int)`
-      *adds hearts/health to character*
-
-    - `add_mana(mana_added: int)`
-      *adds hearts/health to character*
-
-
-- **Class: Boss_Entity()** Inherits properties of entity class
-  - **damage_amount**: int
-  - **description**: string
-  - **image_url**: string
-
-- methods
-  - `decrease_health(health_hit: int)`
-    *takes health away from boss*
-    
-  - `add_health(health_added: int)`
-      *adds hearts/health to boss*
-
-
-
-- **Class: Boss_Entity()**
-  - **name**: string
-  - **health_total**: int
-  - **health_current**: int
-  - **mana**: int
-  - **damage_amount**: int
-  - **description**: string
-  - **image_url**: string
-
-- methods
-  - `decrease_health(health_hit: int)`
-    *takes health away from boss*
-    
-  - `add_health(health_added: int)`
-      *adds hearts/health to boss*
-
-
-
-## Card class:
-  Attributes:
-  - **name**: str
-  - **image_url**: str
-  - **power_level**: int
-  - **mana_cost**: int
-  - **Available**: bool
-    
-   Methods:
-
-   -`set_available(bool)`**
-     * sets available to false so it can't be used*
-
-  - `use_card()`
-    *Overloaded function that will apply an effect depending on the card*
-     
-  ## Class DamageCard:
-      - **damage_type:** str
-
-      Methods: 
-      - `use_card()`
-        *Returns damage effect and the power of the effect, json format that will be applied during battle, by battle logic*
-        
-
-  ## Class BuffCard:
-      - **buff_type**:
-      
-      Methods:
-
-      - `use_card()`
-      *Returns buff effect and the power of the effect, json format that will be applied during battle*
-
-  ## Class EnemyDebuff:
-   - **debuff_type**:
-      
-      Methods:
-
-      - `use_card()`
-      *Returns debuff effect and the power of the effect, json format that will be applied to enemy during battle*
 
       
     
@@ -359,10 +250,11 @@ Game management:
 # Low-level Design Backend
 Subsystem Design:
 
-# Backend System Design (UML)
+# Backend System Design
+
 
 ## User Authentication & Authorization
-**Class: AuthService**  
+**AuthService**  
 - `validate_token(token: str) -> bool`  
   *Checks if the token is valid.*  
 - `get_user_data(user_id: str) -> dict`  
@@ -371,7 +263,7 @@ Subsystem Design:
   *Confirms game purchase.*  
 
 ## Module Game Engine
-This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call:
+This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call, Game engine makes sure data is formated correctly to be sent to client:
 
 
 ### Endpoints:
@@ -395,16 +287,13 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run. Game and character will be returned as JSON.
 
 
-**GameEngine Interface Front End** 
-  
-
 
 **Class: GameEngine Interface Backend**  
 
-- `get_character_state(user_id: str, char_id: str) -> dict`  
-  *Loads saved game state(character stats/object) from Database creates character object.*
+- `get_character_state(user_id: str, char_id: str) -> JSON object`  
+  *Loads saved game state(character stats/object) from Database*
 
-- `get_cards(user_id: str, char_id: str) -> dict`
+- `get_cards(user_id: str, char_id: str) -> JSON object`
   *Gets deck of cards for the character from Database*
   
 - `generate_story(player_input: str) -> JSON object`  
@@ -413,11 +302,11 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `item_selection(item_selection: str, player_id: str) -> JSON Object`  
   *Processes player choice, returns card*
 
-- `create_character(char_description)`
+- `create_character(char_description) -> JSON object`
   * Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
   
   
-- `create_boss_battle(player_id: str) -> Boss Json`  
+- `create_boss_battle(player_id: str) -> Json object`  
   *Returns Json of boss object*
 
 
@@ -428,10 +317,6 @@ This engine is going to be broken into 2 parts the main game manager that update
 
   - `save_game_state(user_id: str, game_state: dict)`  
   *Saves game progress.*  
-
-  **Class: Run Manager**
-
-
 
 
 ## Card Management
@@ -476,7 +361,7 @@ Rationale: This subcomponent will be responsible for communicating with the exte
 
 
 ## AI Language Model Interface
-**AIStoryGenerator**(connects to external AI LLM for generating content)
+**AI Story Generator**(connects to external AI LLM for generating content)
 - `generate_story_text(user_prompt: str) -> str`  
   *Prompts Ai with user input and custom prompt to Generate dynamic story content. Returns story text*
   
@@ -506,28 +391,24 @@ Rationale: This subcomponent will be responsible for communicating with the exte
   - `generate_boss_entity(story_text: str) -> dict`
       *Uses AI to crate boss attributes, interacts with AI image generator to return boss image url, returns these attribtes below*
     
-  - **Boss_Entity attributes**
-    - **name**: string
-    - **health**: int
-    - **mana**: int
-    - **damage_amount**: int
-    - **description**: string
-    - **boss_card**: list of cards generated for boss
-    - **Image_URL**: str
+      - **Boss_Entity attributes**
+        - **name**: string
+        - **health**: int
+        - **mana**: int
+        - **damage_amount**: int
+        - **description**: string
+        - **boss_card**: list of cards generated for boss
+        - **Image_URL**: str
    
-**AI Entity creator(connects to externam AI LLM)**
-  - `generate_boss_entity(story_text: str) -> dict`
-      *Uses AI to create boss attributes, interacts with AI image generator to return boss image url, returns these attribtes below*
-
   - `generate_boss_entity(character_description: str) -> dict`
       *Prompts AI to create character attributes, interacts with AI image generator to generate character image url, returns these attribtes below*
     
-  - **Character_Entity attributes**
-    - **name**: string
-    - **health**: int
-    - **mana**: int
-    - **description**: string
-    - **Image_URL**: str
+      - **Character_Entity attributes**
+        - **name**: string
+        - **health**: int
+        - **mana**: int
+        - **description**: string
+        - **Image_URL**: str
    
       
     
@@ -567,6 +448,7 @@ Ensuring optimal system performance is crucial for maintaining a seamless gaming
      - Implement database indexing to optimize query performance.
      - Utilize caching mechanisms (e.g., Redis) for frequently accessed data, such as user game state and card inventory.
      - Optimize database queries and use connection pooling to handle high traffic efficiently.
+     - Put more Game logic on front end to reduce the number of server requests
      
 2. **AI-Generated Story & Image Processing**
    - **Bottleneck:** AI language model and AI image generation API calls may introduce latency, impacting real-time gameplay.
