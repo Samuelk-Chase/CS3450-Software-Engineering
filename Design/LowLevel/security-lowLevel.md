@@ -16,45 +16,48 @@ This document provides a detailed low-level security design for our AI-driven mu
   4. The token is validated on the backend before granting access.
   5. A short-lived access token is issued along with an optional refresh token.
 
-#### Sample Code (OAuth Implementation in Python using Flask & Authlib)
-```python
-from authlib.integrations.flask_client import OAuth
-from flask import Flask, redirect, url_for, session
+#### Sample Code (OAuth Implementation in Go using `golang.org/x/oauth2`)
+```go
+package main
 
-app = Flask(__name__)
-oauth = OAuth(app)
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
 
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['OAUTH_CREDENTIALS'] = {
-    'google': {
-        'client_id': 'your_google_client_id',
-        'client_secret': 'your_google_client_secret'
-    }
-}
-
-google = oauth.register(
-    name='google',
-    client_id=app.config['OAUTH_CREDENTIALS']['google']['client_id'],
-    client_secret=app.config['OAUTH_CREDENTIALS']['google']['client_secret'],
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    authorize_params=None,
-    access_token_url='https://oauth2.googleapis.com/token',
-    access_token_params=None,
-    client_kwargs={'scope': 'email profile'}
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
-@app.route('/login')
-def login():
-    return google.authorize_redirect(url_for('authorize', _external=True))
+var googleOauthConfig = &oauth2.Config{
+	ClientID:     "your_google_client_id",
+	ClientSecret: "your_google_client_secret",
+	RedirectURL:  "http://localhost:8080/callback",
+	Scopes:       []string{"email", "profile"},
+	Endpoint:     google.Endpoint,
+}
 
-@app.route('/authorize')
-def authorize():
-    token = google.authorize_access_token()
-    user_info = google.get('userinfo').json()
-    return f"Logged in as {user_info['email']}"
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	url := googleOauthConfig.AuthCodeURL("state-token")
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+}
 
-if __name__ == '__main__':
-    app.run(debug=True)
+func callbackHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	token, err := googleOauthConfig.Exchange(context.Background(), code)
+	if err != nil {
+		log.Println("OAuth token exchange failed:", err)
+		return
+	}
+	fmt.Fprintf(w, "Access Token: %s", token.AccessToken)
+}
+
+func main() {
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/callback", callbackHandler)
+	http.ListenAndServe(":8080", nil)
+}
 ```
 
 ---
@@ -68,31 +71,36 @@ if __name__ == '__main__':
     - Upon expiration, a refresh token is used to issue a new access token.
     - Refresh tokens are rotated upon use to prevent replay attacks.
 
-#### Sample Code (JWT Authentication in Python using Flask & PyJWT)
-```python
-import jwt
-import datetime
-from flask import Flask, request, jsonify
+#### Sample Code (JWT Authentication in Go using `github.com/golang-jwt/jwt/v4`)
+```go
+package main
 
-app = Flask(__name__)
-SECRET_KEY = "your_secret_key"
+import (
+	"fmt"
+	"time"
 
-def generate_jwt(user_id):
-    payload = {
-        "user_id": user_id,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
-    }
-    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-    return token
+	"github.com/golang-jwt/jwt/v4"
+)
 
-@app.route('/token', methods=['POST'])
-def get_token():
-    user_id = request.json.get('user_id')
-    token = generate_jwt(user_id)
-    return jsonify({"token": token})
+var secretKey = []byte("your_secret_key")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+func generateJWT(userID string) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(15 * time.Minute).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
+}
+
+func main() {
+	token, err := generateJWT("12345")
+	if err != nil {
+		fmt.Println("Error generating token:", err)
+		return
+	}
+	fmt.Println("Generated Token:", token)
+}
 ```
 
 ---
@@ -102,89 +110,56 @@ if __name__ == '__main__':
 ### 3.1 Encryption of Sensitive Data
 - **Technology Used:** AES-256 for data at rest, TLS 1.3 for data in transit.
 
-#### Sample Code (AES Encryption in Python using PyCryptodome)
-```python
-from Crypto.Cipher import AES
-import base64
+#### Sample Code (AES Encryption in Go using `crypto/aes`)
+```go
+package main
 
-SECRET_KEY = b'your_32_byte_secret_key'  # AES-256 key
+import (
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
+	"fmt"
+)
 
-def encrypt_data(data):
-    cipher = AES.new(SECRET_KEY, AES.MODE_EAX)
-    ciphertext, tag = cipher.encrypt_and_digest(data.encode('utf-8'))
-    return base64.b64encode(cipher.nonce + ciphertext).decode('utf-8')
+var key = []byte("your_32_byte_secret_key")
 
-def decrypt_data(encrypted_data):
-    raw = base64.b64decode(encrypted_data)
-    nonce, ciphertext = raw[:16], raw[16:]
-    cipher = AES.new(SECRET_KEY, AES.MODE_EAX, nonce=nonce)
-    return cipher.decrypt(ciphertext).decode('utf-8')
+func encrypt(plainText string) (string, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	ciphertext := make([]byte, len(plainText))
+	cipher.NewCFBEncrypter(block, key[:block.BlockSize()]).XORKeyStream(ciphertext, []byte(plainText))
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
+}
+
+func main() {
+	cipherText, err := encrypt("Sensitive Data")
+	if err != nil {
+		fmt.Println("Encryption failed:", err)
+		return
+	}
+	fmt.Println("Encrypted Text:", cipherText)
+}
 ```
 
 ---
 
-## 4. Secure Payments with Stripe
+## 4. Deployment & Security Monitoring
 
-### 4.1 Payment Processing
-- **Technology Used:** Stripe API with PCI DSS compliance.
-
-#### Sample Code (Stripe Payment Integration in Python)
-```python
-import stripe
-
-stripe.api_key = "your_secret_key"
-
-def create_payment_intent(amount, currency):
-    intent = stripe.PaymentIntent.create(
-        amount=amount,
-        currency=currency,
-        payment_method_types=["card"]
-    )
-    return intent.client_secret
-```
-
----
-
-## 5. Mitigating Common Attacks
-
-### 5.1 DDoS Protection
-- **Technology Used:** AWS Shield + Rate Limiting
-- **Sample Code for Rate Limiting in Flask using Flask-Limiter**
-```python
-from flask import Flask
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-
-app = Flask(__name__)
-limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
-
-@app.route('/')
-@limiter.limit("10 per minute")
-def index():
-    return "Welcome!"
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
----
-
-## 6. Deployment & Security Monitoring
-
-### 6.1 Deployment Strategy
+### 4.1 Deployment Strategy
 - **Technology Used:** Docker + Kubernetes
 
 #### Sample Code (Dockerfile for Secure Deployment)
 ```dockerfile
-FROM python:3.9-slim
+FROM golang:1.19-alpine
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD ["python", "app.py"]
+RUN go build -o main .
+CMD ["./main"]
 ```
 
 ---
 
-## 7. Conclusion
+## 5. Conclusion
 The low-level security design ensures a robust security framework for authentication, data protection, multiplayer fairness, and incident response. By implementing OAuth, TLS 1.3, secure payments, and DDoS protection, we minimize risks while maintaining optimal performance and user experience.
