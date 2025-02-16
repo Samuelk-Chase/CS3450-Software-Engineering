@@ -394,15 +394,6 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `parse_items(item_descriptions: str) -> dict`
   *Filters through item description to find keywords to build an card object later, returns dictionary of items and their attributes*
 
-- `generate_boss_entity(story_text: str) -> dict`
-  *Uses AI to crate boss attributes, returns these attribtes below*
-  - **Boss_Entity attributes**
-    - **name**: string
-    - **health**: int
-    - **mana**: int
-    - **damage_amount**: int
-    - **description**: string
-    - **boss_card**: list of cards generated for boss
 
 **AI Entity creator(connects to externam AI LLM)**
   - `generate_boss_entity(story_text: str) -> dict`
