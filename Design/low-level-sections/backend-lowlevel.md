@@ -450,7 +450,7 @@ For example, our GameEngine manages game data and communicates with services lik
 ![Example UI](backend_diagramSubcomponents.png)
 
 ---
-![Function Flow](backend_funciton_flow.png)
+![Function Flow](function_flow_diagram.png)
 ---
 
 
