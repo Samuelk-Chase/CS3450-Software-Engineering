@@ -197,6 +197,7 @@ const Inventory: React.FC<InventoryProps> = ({ cards, onCardSelected }) => {
 
 
 ## UML Diagram
+```mermaid
 classDiagram
     class Game {
         description: string
