@@ -140,7 +140,7 @@ Note: Chat GPT was used to help generate sections of this
 
 ---
 
-## 🚀 **Next Steps After Sprint 3:**
+### 🚀 **Next Steps After Sprint 3:**
 Once Sprint 3 is completed, the game should be **fully playable** with AI-driven battles, deck-building, and monetization features. Given extra time, we could focus on:
 
 [] **Bug Fixing & Optimization**  
@@ -149,13 +149,11 @@ Once Sprint 3 is completed, the game should be **fully playable** with AI-driven
 ---
 
 
-# Low-level Design Backend
+## Low-level Design Backend
 Subsystem Design: The following section details our backend design. At this point, we've decided that the backend will not be broken into classes for 2 main reasons. The first is we are using Go so it doesn't have a tradition class or inheritance system, but instead uses structs. Also as we designed our low level we have changed some things from our high level. Most of the game logic that the backend was going to use is now being implemented on the front end. The backend will serve the purpose of getting data from the database, updating and storing data, and creating AI content. So we think relying on functions and a more imperative approach to the backend is more appropriate and at this moment and do not see a clear use of classes. This may change during development. Below we have broken our interfaces from highlevel into functions and some into smaller subcomponents.
 
-# Backend System Design
 
-
-## User Authentication & Authorization
+### User Authentication & Authorization
 **AuthService**  
 - `validate_token(token: str) -> bool`  
   *Checks if the token is valid.*  
@@ -164,11 +162,11 @@ Subsystem Design: The following section details our backend design. At this poin
 - `check_purchase_status(user_id: str) -> bool`  
   *Confirms game purchase.*  
 
-## Game Engine
+### Game Engine
 This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call, Game engine makes sure data is formated correctly to be sent to client:
 
 
-### Endpoints:
+**Endpoints:**
 
 - `/getcards/id:` The server should return all cards belonging to character to client
 
@@ -186,7 +184,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 - `/battleresults:` client passes boss outcome(win or lose) server returns ai summary of battle and items to choose from which will be turned into cards.
 
-- `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run. Game and character will be returned as JSON.
+- `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run.         Game and character will be returned as JSON.
 
 
 
@@ -224,7 +222,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 **Why:** The backend game engines is the access point for the client to communicate. Its responsibilities such as saving data client gives and creating JSON object that can be returned to the client are vital to make our game work
 
-## Card Management
+### Card Management
 **CardManager**  
 - `generate_card(item_description: dict, player_id: str) -> dict`  
   *Given card attributes, creates, saves, and returns a new card.*
@@ -238,7 +236,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 - `upgrade_card(card_id: str, player_id: str) -> dict`  
   *Upgrades an existing card.*  
 
-## Payment Interface
+### Payment Interface
 **PaymentService(could have)**  
 - `process_payment(user_id: str, amount: float) -> dict`  
   *Handles payment processing.*
@@ -257,7 +255,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 ---
 
-## AI Image Generator Interface
+### AI Image Generator Interface
 **AIImageGenerator**  
 - `generate_card_image(description: str) -> str`  
   *Generates an image for a card, stores in S3 bucket, and returns URL.*
@@ -279,7 +277,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 ---
 
-## AI Language Model Interface
+### AI Language Model Interface
 **AI Story Generator**(connects to external AI LLM for generating content)
 - `generate_story_text(user_prompt: str) -> str`  
   *Prompts Ai with user input and custom prompt to Generate dynamic story content. Returns story text*
@@ -322,7 +320,7 @@ This engine is going to be broken into 2 parts the main game manager that update
    
 **Priority**: High
 
-**Why:** Its vital to our program to have a system that creates attributes for other enties. Character entities will be prioritized over bosses initially since we want text and character creation to work early on. Once boss battles are implemented boss entites will be worked on.
+**Why:** It's vital to our program to have a system that creates attributes for other enties. Character entities will be prioritized over bosses initially since we want text and character creation to work early on. Once boss battles are implemented boss entites will be worked on.
     
 
 
@@ -333,7 +331,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 ---
 
 
-**Explanation:** Why We're Not Using Classes in Our GO Server
+**Explanation:** Why We're Not Using Classes in Our GO Server...
 In designing our backend server using Go (Golang), we've opted not to implement object-oriented programming (OOP) with classes for several key reasons. Instead, we focus on using Go's strengths, such as its simplicity, performance, and suitability for the request-based nature of our application. Below is an explanation of why classes aren't necessary for the backend system described in the design document.
 
 Our backend primarily handles requests (API calls) from clients, processes data, and returns responses in the form of JSON objects. The design revolves around straightforward interactions such as retrieving game data, processing user input, and generating content. These interactions are better suited to Go’s simple function-based approach rather than an OOP model, which can introduce unnecessary complexity in the form of class definitions and inheritance hierarchies.
@@ -347,24 +345,466 @@ For example, our GameEngine manages game data and communicates with services lik
 ---
 
 
-## Relationships Between Components
-- **GameEngine** → `AIStoryGenerator`: Requests story text  
-- **GameEngine** → `DatabaseService`: Stores game state  
-- **GameEngine** → `CardManager`: Requests card actions  
-- **GameEngine** → `AIImageGenerator`: Requests boss images  
-- **AuthService** → `DatabaseService`: Validates user data  
-- **PaymentService** → `DatabaseService`: Stores transactions  
-- **CardManager** → `AIImageGenerator`: Requests card images  
-- **GameEngine** → `AuthService`: Checks user authentication 
+## Frontend Low-Level Design
+
+### Overview
+
+The frontend application is built using React with TypeScript, following a component-based architecture. The application integrates with the backend services through RESTful APIs and manages game state using React Context and local state management.
+
+## Type Definitions & Interfaces
+
+### Core Types
+
+#### Game Progress
+- Game progress will contain the current story node, players inventory at the time, and the date the player last played the game. 
+
+```typescript
+
+type GameProgress = {
+  currentStoryNode: string;
+  inventory: Card[];
+  lastPlayed: Date;
+};
+```
+#### Card
+- The card type will contain attributes and descriptions of the card. It will also have a link to the S3 bucket where we store the card image. Cards will have both attributes and effects, to provide a wide range of options for the player. 
+```typescript
+
+type Card = {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  type: CardType;
+  attributes: CardAttributes;
+  effects: CardEffect[];
+};
+
+type CardType = 'attack' | 'defense' | 'buff' | 'special';
+type EffectType = 'damage' | 'heal' | 'buff' | 'debuff';
+type CardAttributes = {
+  cost: number;
+  power: number;
+  duration?: number;
+};
+
+type CardEffect = {
+  type: EffectType;
+  value: number;
+  duration?: number;
+};
+
+```
+#### Game State and Player Story Nodes
+- We need a way to store story information, for when players leave and exit the game. We also 
+
+```typescript
+type GameState = {
+  currentStory: StoryNode;
+  playerState: PlayerState;
+  bossState?: BossState;
+  inventory: Card[];
+};
+
+type StoryNode = {
+  id: string;
+  content: string;
+  choices: Choice[];
+  items?: Item[];
+};
+
+type Choice = {
+  id: string;
+  text: string;
+  nextNodeId: string;
+  consequences?: GameStateChange[];
+};
+```
 
 
-### System Performance:
+#### Battle Types
+```
+type BossState = {
+  id: string;
+  name: string;
+  health: number;
+  maxHealth: number;
+  imageUrl: string;
+  abilities: BossAbility[];
+};
 
-# System Performance
+type BossAbility = {
+  name: string;
+  damage: number;
+  effects: CardEffect[];
+};
+```
 
-Ensuring optimal system performance is crucial for maintaining a seamless gaming experience, particularly as player engagement increases. This section addresses potential bottlenecks and how the system handles an increase in load.
+### API Interfaces
 
-## Potential Bottlenecks & Mitigation Strategies
+```typescript
+interface GameAPI {
+  startGame(): Promise<GameState>;
+  makeChoice(choiceId: string): Promise<GameState>;
+  useCard(cardId: string, targetId?: string): Promise<GameState>;
+  collectItem(itemId: string): Promise<Card>;
+  saveProgress(gameState: GameState): Promise<void>;
+}
+
+interface AuthAPI {
+  login(credentials: LoginCredentials): Promise<User>;
+  logout(): Promise<void>;
+  register(userData: RegistrationData): Promise<User>;
+  resetPassword(email: string): Promise<void>;
+}
+
+interface CardAPI {
+  getCards(): Promise<Card[]>;
+  upgradeCard(cardId: string): Promise<Card>;
+  getCardDetails(cardId: string): Promise<Card>;
+}
+```
+
+## Component Architecture
+
+### Core Components
+
+#### CardComponent
+```typescript
+interface CardProps {
+  card: Card;
+  isPlayable: boolean;
+  onUse?: (cardId: string) => void;
+  className?: string;
+}
+
+const Card: React.FC<CardProps> = ({ card, isPlayable, onUse, className }) => {
+  // Component implementation
+};
+```
+
+#### StoryDisplay
+```typescript
+interface StoryDisplayProps {
+  node: StoryNode;
+  onChoiceSelected: (choiceId: string) => void;
+}
+
+const StoryDisplay: React.FC<StoryDisplayProps> = ({ node, onChoiceSelected }) => {
+  // Component implementation
+};
+```
+
+#### BattleInterface
+```typescript
+interface BattleInterfaceProps {
+  playerState: PlayerState;
+  bossState: BossState;
+  availableCards: Card[];
+  onCardPlayed: (cardId: string) => void;
+}
+
+const BattleInterface: React.FC<BattleInterfaceProps> = ({
+  playerState,
+  bossState,
+  availableCards,
+  onCardPlayed,
+}) => {
+  // Component implementation
+};
+```
+
+#### Inventory
+```typescript
+interface InventoryProps {
+  cards: Card[];
+  onCardSelected: (card: Card) => void;
+}
+
+const Inventory: React.FC<InventoryProps> = ({ cards, onCardSelected }) => {
+  // Component implementation
+};
+```
+
+### Layout Components
+
+#### GameLayout
+```typescript
+interface GameLayoutProps {
+  children: React.ReactNode;
+  showInventory?: boolean;
+  showStats?: boolean;
+}
+
+const GameLayout: React.FC<GameLayoutProps> = ({
+  children,
+  showInventory,
+  showStats,
+}) => {
+  // Component implementation
+};
+```
+
+## Pages
+
+### HomePage
+```typescript
+const HomePage: React.FC = () => {
+  // Implementation for landing page
+};
+```
+
+### GamePage
+```typescript
+const GamePage: React.FC = () => {
+  // Main game implementation
+};
+```
+
+### BattlePage
+```typescript
+const BattlePage: React.FC = () => {
+  // Battle system implementation
+};
+```
+
+### InventoryPage
+```typescript
+const InventoryPage: React.FC = () => {
+  // Card collection and management implementation
+};
+```
+
+### AuthPages
+```typescript
+const LoginPage: React.FC = () => {
+  // Login implementation
+};
+
+const RegisterPage: React.FC = () => {
+  // Registration implementation
+};
+```
+
+## State Management
+
+### Game Context
+```typescript
+interface GameContextType {
+  gameState: GameState;
+  dispatch: React.Dispatch<GameAction>;
+}
+
+type GameAction =
+  | { type: 'UPDATE_STORY'; payload: StoryNode }
+  | { type: 'USE_CARD'; payload: { cardId: string; targetId?: string } }
+  | { type: 'COLLECT_ITEM'; payload: Item }
+  | { type: 'UPDATE_PLAYER_STATE'; payload: Partial<PlayerState> };
+
+const GameContext = React.createContext<GameContextType | undefined>(undefined);
+```
+
+### Auth Context
+```typescript
+interface AuthContextType {
+  user: User | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+```
+
+## API Integration
+
+### API Client
+```typescript
+class APIClient {
+  private baseUrl: string;
+  private token: string | null;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+    this.token = null;
+  }
+
+  setToken(token: string) {
+    this.token = token;
+  }
+
+  async get<T>(endpoint: string): Promise<T> {
+    // Implementation
+  }
+
+  async post<T>(endpoint: string, data: any): Promise<T> {
+    // Implementation
+  }
+
+  async put<T>(endpoint: string, data: any): Promise<T> {
+    // Implementation
+  }
+
+  async delete(endpoint: string): Promise<void> {
+    // Implementation
+  }
+}
+```
+
+### API Hooks
+```typescript
+function useGame() {
+  const [gameState, setGameState] = useState<GameState | null>(null);
+
+  // Implementation
+}
+
+function useCards() {
+  const [cards, setCards] = useState<Card[]>([]);
+
+  // Implementation
+}
+
+function useBattle() {
+  const [battleState, setBattleState] = useState<BattleState | null>(null);
+
+  // Implementation
+}
+```
+### Additional UI Prototypes
+
+Below are the newly added UI prototypes showcasing the main screens of the application. Each prototype is accompanied by a brief explanation of its purpose, key elements, and how it fits into the overall user flow.
+
+---
+
+### 1. Login Screen
+
+![Login Screen](./LowLevel/frontendlowlevelimages/Login.png)
+
+**Purpose:**
+- Provide users with a straightforward way to log in or register.
+- Offer multiple sign-in options (e.g., Google, Microsoft) for convenience.
+
+**Key Elements:**
+- **Email & Password Fields:** Standard text inputs for credentials.
+- **Social Login Buttons:** Quick authentication through external providers.
+- **Submit Button:** Triggers login or registration flow.
+
+**Flow Integration:**
+1. **User enters credentials** (or chooses a social login).
+2. **On success**, user is directed to the main game dashboard or character creation screen.
+
+---
+
+### 2. Character Creation
+
+![Character Creation](./LowLevel/frontendlowlevelimages/Caracter.png "Character Creation screen with difficulty selection, game mode, and AI-generated avatar")
+
+**Purpose:**
+- Allow players to customize their game experience before starting.
+- Select difficulty (“Hard” or “Merciful” modes), choose a game mode (single-player, multiplayer), and input character details.
+- Optionally generate an AI-created avatar image based on the user’s description.
+
+**Key Elements:**
+- **Difficulty & Mode Selectors:** Radio buttons or dropdowns for selecting how challenging or story-driven the game will be.
+- **Character Description Input:** Text field for the user to describe their character. This description is used to generate a personalized avatar image via AI.
+- **Play Button:** Commits selections and initializes the game session.
+
+**Flow Integration:**
+1. **User selects difficulty level** (e.g., Hard or Merciful).
+2. **User chooses game mode** (single-player, co-op, etc.).
+3. **User enters a character description** and sees an AI-generated avatar.
+4. **Clicking “Play”** starts the game and loads the initial story node.
+
+---
+
+### 3. Deck View
+
+![Deck View](./LowLevel/frontendlowlevelimages/Deck.png "Deck View showing four example cards")
+
+**Purpose:**
+- Display the user’s current collection of cards.
+- Provide detailed information on each card’s level, type (Attack, Ability, Power), and effects.
+
+**Key Elements:**
+- **Card Grid/List:** Each card is shown with its name, level, and an image.
+- **Card Details:** Hovering or clicking on a card can reveal more in-depth stats or upgrade options.
+- **Navigation Back to Game:** A clear way to return to the main story or battle interface.
+
+**Flow Integration:**
+1. **User opens the Deck screen** from a navigation menu or button.
+2. **User reviews available cards**, possibly upgrades or discards them.
+3. **Returning to the main game** continues story progression or battle interactions.
+
+---
+
+### 4. Chest Opening
+
+![Chest Opening](./LowLevel/frontendlowlevelimages/Chest.png "Chest opening screen with three card choices")
+
+**Purpose:**
+- Present a reward or loot screen where the user can pick one new card to add to their deck.
+- Occurs after certain story milestones, battles, or quest completions.
+
+**Key Elements:**
+- **Three Card Options:** Each with a unique effect, type, or rarity.
+- **Selection Prompt:** “Pick a card and continue your journey.”
+- **Add to Deck:** The chosen card is added to the user’s inventory for future battles.
+
+**Flow Integration:**
+1. **User completes an event** (defeats a boss, completes a quest, etc.).
+2. **A chest screen appears** with three random card rewards.
+3. **User selects one card** to keep, which is then stored in their deck/inventory.
+
+---
+
+### 5. Battle View
+
+![Battle View](./LowLevel/frontendlowlevelimages/Battle.png "Battle interface with player and enemy portraits, chosen cards, and health/mana bars")
+
+**Purpose:**
+- Facilitate real-time or turn-based combat against bosses or other players (1v1 or multiplayer co-op).
+- Display each participant’s health, chosen cards, and current status.
+
+**Key Elements:**
+- **Player & Enemy Portraits:** Show health bars, mana (if applicable), and character images.
+- **Chosen Cards:** Each side reveals the card they’re playing this turn (attack, defense, ability, etc.).
+- **View Deck Button:** Allows quick access to the player’s card collection to plan the next move.
+
+**Flow Integration:**
+1. **Battle starts** (boss encounter, PvP, or co-op).
+2. **Players select cards** to play each round (using the “View Deck” button to choose).
+3. **Round resolves**, showing damage dealt, healing, or buffs/debuffs applied.
+4. **Repeat until** one side is victorious or the battle ends.
+
+---
+
+### How These Screens Fit Into the Overall Experience
+
+1. **Login** → 2. **Character Creation** → 3. **Main Story/Battles**
+   - Users begin at the login screen, authenticate, and create or load their character.
+   - Once the character is set, they enter the main game flow, which can include battles, story progression, and deck management.
+
+2. **Deck & Chest Interactions** are auxiliary:
+   - Players access the **Deck View** at any time to strategize or upgrade.
+   - **Chest Opening** occurs after significant milestones, rewarding players with new cards.
+
+3. **Battle View** is central to combat encounters:
+   - Displays real-time updates on health, mana, and card usage.
+   - Integrates seamlessly with the deck system, allowing players to select the best cards for each encounter.
+
+---
+
+**Note:**  
+All images shown are prototypes and subject to change based on ongoing user testing and feedback. Accessibility features such as proper color contrast, keyboard navigation, and ARIA labels are integrated to ensure inclusivity and a positive user experience.
+
+
+
+
+## System Performance
+
+Ensuring optimal system performance is crucial for maintaining a seamless gaming experience, particularly as player engagement increases. Its important for out client that the game runs as smoothly as possible for users. This section addresses potential bottlenecks and how the system handles an increase in load.
+
+### Potential Bottlenecks & Mitigation Strategies
 
 1. **Database Performance**
    - **Bottleneck:** Increased concurrent queries from a growing user base may slow down game state retrieval and card collection updates.
@@ -402,7 +842,7 @@ Ensuring optimal system performance is crucial for maintaining a seamless gaming
      - Use efficient data structures to store and retrieve card details and game state quickly.
      - Optimize the game logic execution flow to minimize redundant computations.
 
-## Handling Increased Load
+### Handling Increased Load
 
 As the player base grows, the system must scale effectively. The following measures will be in place to ensure smooth operation under increased load:
 
@@ -424,11 +864,11 @@ As the player base grows, the system must scale effectively. The following measu
 
 By applying these strategies, the system will maintain high performance while ensuring scalability as the game evolves and attracts more players.
 
-# Programming Languages, Libraries, and Frameworks
+## Programming Languages, Libraries, and Frameworks
 
 This section outlines the key programming languages, libraries, and frameworks that will be used in our system. The selections are based on project requirements such as performance, scalability, and long-term maintainability.
 
-## Backend
+### Backend
 
 - **Programming Language: Go**
   - *Why:* Go is a statically typed, compiled language known for its performance, simplicity, and excellent support for concurrent programming. These features make it an ideal choice for building a high-performance game server that can efficiently handle multiple simultaneous connections. While robust the language has fairly simple syntax which will make it easier for those on the team who don't yet know it to learn.
@@ -437,7 +877,7 @@ This section outlines the key programming languages, libraries, and frameworks t
   - *Why:* chi is a lightweight and idiomatic HTTP router for Go, designed for building RESTful APIs. Its minimalistic design and composability allow for rapid development while keeping the backend lean and maintainable.
 
 
-## Front End
+### Front End
 - **React with TypeScript**
   - *Why:* React provides a powerful framework for building interactive user interfaces, while TypeScript adds static typing, reducing runtime errors and improving code maintainability. This combination ensures a scalable and robust front-end development experience. React will also allow us to reuse UI elements in multiple screens which will help us reuse components as new game content is added in the future.
  
@@ -450,7 +890,7 @@ This section outlines the key programming languages, libraries, and frameworks t
     - *Why:* Provides pre-built components and utility classes that expedite the development of a responsive and user-friendly interface. Will allow us to build a styled ui faster and help with designing new pages and content in the future.
 
 
-## How these choices affect development and performance
+### How these choices affect development and performance
 
 - **Performance and Scalability:**  
   Both Go and React are optimized for high performance and scalability. Go's efficient concurrency handling may be crucial for managing a high volume of simultaneous requests, while React's virtual DOM and component-based architecture ensure a smooth and responsive user experience. We won't be focusing on concurrency yet, but go's capabilities will allow us in the future to add concurrency if we need performance boosts.
@@ -463,3 +903,9 @@ This section outlines the key programming languages, libraries, and frameworks t
 
 - **Modularity and Flexibility:**  
   By leveraging specialized libraries (like chi for routing and stripe-go for payment integration), the system remains modular. This modularity allows individual components to be updated or replaced independently as the system evolves, aligning with future requirements and technological advancements.
+
+
+## External Implementations
+
+
+
