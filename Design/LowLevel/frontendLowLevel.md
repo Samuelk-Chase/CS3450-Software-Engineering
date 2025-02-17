@@ -325,6 +325,7 @@ classDiagram
     GameAPI -- Player : creates
     CardAPI -- Card : manages
     CardAPI -- GameState : updates with card actions
+```
 
 
 ## Routing
