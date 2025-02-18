@@ -1,6 +1,8 @@
 # Low Level Design
 Note: This document was generated with the assistance of ChatGPT
 
+This document details our low-level design. With stakeholder expectations set up in the high-level design, this low-level design shows how we will implement features to satisfy players, game developers, and business operators. We cover the backend and front-end implementation to show how our program will be designed and how we will create an interactive and smooth experience for users and for future game developers of the game to look back on and consider our implementation when creating new content. We cover performance considerations that will improve playability for players and create more efficiency for business owners. We also cover security design to keep players safe and reduce liability for business owners. We also outline our deployment strategy so business owners know how the game will be deployed to an audience. As we enter the development phase aspects of this document may change to reflect new ideas and fix problems we run into.
+
 **Table of Contents for Low-Level Design:**
 
 1. Game Development Backlog
@@ -11,7 +13,7 @@ Note: This document was generated with the assistance of ChatGPT
 6. External Service Implementations
 7. Security Design
 8. Performance
-9. Development Strategy
+9. Deployment Strategy
 
 
 
@@ -41,7 +43,7 @@ Note: This document was generated with the assistance of ChatGPT
   - Start designing/experimenting with structured prompts that align with narrative-driven gameplay.
   - Test AI’s ability to generate **meaningful** stories and responses.
 
-### **Front-End Team**
+#### **Front-End Team**
 #### **UI Development for Core Player Navigation**
 - [ ] **Create Sign-in / Sign-up Pages:**
   - Basic UI with authentication integration.
@@ -68,7 +70,7 @@ Note: This document was generated with the assistance of ChatGPT
 
 ---
 
-## **Sprint 3: AI Integration & Combat System Development**
+### **Sprint 3: AI Integration & Combat System Development**
 
 ### **Backend**
 #### **Database Team:**
@@ -87,7 +89,7 @@ Note: This document was generated with the assistance of ChatGPT
   - AI-driven bosses with unique abilities and patterns.
   - Implement scaling difficulty for encounters(make bosses have equal level/card power to character).
 
-### **Front-End Team**
+#### **Front-End Team**
 #### **Combat & Deck Mechanics UI**
 - [ ] **Develop Battle Screen:**
   - Display turn-based battle interface.
@@ -103,8 +105,8 @@ Note: This document was generated with the assistance of ChatGPT
 
 **By the end of this sprint:**
 
-  * Users should be recieve AI generated story responses
-  * Backend should generate,store, and send ai story responses to client
+  * Users should receive AI generated story responses
+  * Backend should generate, store, and send ai story responses to client
   * Backend should be able to receive card description and generate image and card stats which should be stored in db
   * Backend should be able to create Boss description, and image and send to client
   * Players should be able to initiate battle, see boss with its stats and image
@@ -116,7 +118,7 @@ Note: This document was generated with the assistance of ChatGPT
 
 ---
 
-## **Sprint 4: Monetization, Rewards, and Final Polish**
+### **Sprint 4: Monetization, Rewards, and Final Polish**
 
 ### **Backend**
 #### **Database Team:**
@@ -131,7 +133,7 @@ Note: This document was generated with the assistance of ChatGPT
   - Integrate Stripe or another payment processor.
   - Enable purchasing the game.
 
-### **Front-End Team**
+#### **Front-End Team**
 #### **Finalizing UI & Visual Enhancements**
 - [ ] **Create Reward Screen:**
   - Displays unlocked cards, ai battle summary, and earned items after battles.
@@ -145,9 +147,9 @@ Note: This document was generated with the assistance of ChatGPT
     
 **By the end of this sprint:**
 
-  * Players should see a battle summary with ai generated text after defeating boss
-  * Backend should generate unique item descriptions based on boss the user beat
-  * Players should be able select which item after a boss fight to keep and turn into card
+  * Players should see a battle summary with ai generated text after defeating the boss
+  * Backend should generate unique item descriptions based on the boss the user beat
+  * Players should be able to select which item after a boss fight to keep and turn into card
   * Animations should be smooth.
   * Users should see unique visual effects applied during battle
   * Users should be able to buy the game before being granted access
@@ -155,7 +157,7 @@ Note: This document was generated with the assistance of ChatGPT
 
 ---
 
-### **Next Steps After Sprint 4:**
+#### **Next Steps After Sprint 4:**
 Once Sprint 3 is completed, the game should be **fully playable** with AI-driven battles, deck-building, and monetization features. Given extra time, we could focus on:
 
 * **Bug Fixing & Optimization**
@@ -224,7 +226,7 @@ Subsystem Design: The following section details our backend design. At this poin
   *Confirms game purchase.*  
 
 ### Game Engine
-This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to client and the API layer that defines endpoints for client to call, Game engine makes sure data is formated correctly to be sent to client:
+This engine is going to be broken into 2 parts the main game manager that updates/saves character progression that will be used to send data to the client and the API layer that defines endpoints for the client to call, Game engine makes sure data is formatted correctly to be sent to the client:
 
 
 **Endpoints:**
@@ -245,7 +247,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 - `/battleresults:` client passes boss outcome(win or lose) server returns ai summary of battle and items to choose from which will be turned into cards.
 
-- `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run.         Game and character will be returned as JSON.
+- `/createnewgame:` the client should pass the game description and character description, server then will create new game, and create a new character(using game engines`create_character(char_description)`) and run. Game and character will be returned as JSON.
 
 
 
@@ -265,7 +267,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 - `create_character(char_description) -> JSON object`
   
-  *Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
+  *Creates and stores new characters in database, calls ai image interface to make character image, returns character details stored in json*
   
   
 - `create_boss_battle(player_id: str) -> Json object`  
@@ -282,7 +284,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 **Priority: High**
 
-**Why:** The backend game engines is the access point for the client to communicate. Its responsibilities such as saving data client gives and creating JSON object that can be returned to the client are vital to make our game work
+**Why:** The backend game engine is the access point for the client to communicate. Its responsibilities such as saving data the client gives and creating JSON objects that can be returned to the client are vital to making our game work
 
 ### Card Management
 **CardManager**  
@@ -312,7 +314,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 **Priority:** Low
 
-**Why:** Payment functionality will only be implemented once the game is playable, without a game to play their is nothing to purchase.
+**Why:** Payment functionality will only be implemented once the game is playable, without a game to play there is nothing to purchase.
 
 
 ---
@@ -393,7 +395,8 @@ This engine is going to be broken into 2 parts the main game manager that update
 ---
 
 
-**Explanation:** Why We're Not Using Classes in Our GO Server...
+**Explanation:** Why We're Not Using Classes in Our GO Server:
+
 In designing our backend server using Go (Golang), we've opted not to implement object-oriented programming (OOP) with classes for several key reasons. Instead, we focus on using Go's strengths, such as its simplicity, performance, and suitability for the request-based nature of our application. Below is an explanation of why classes aren't necessary for the backend system described in the design document.
 
 Our backend primarily handles requests (API calls) from clients, processes data, and returns responses in the form of JSON objects. The design revolves around straightforward interactions such as retrieving game data, processing user input, and generating content. These interactions are better suited to Go’s simple function-based approach rather than an OOP model, which can introduce unnecessary complexity in the form of class definitions and inheritance hierarchies.
