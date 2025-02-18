@@ -359,7 +359,7 @@ This engine is going to be broken into 2 parts the main game manager that update
   *Filters through item description to find keywords to build an card object later, returns dictionary of items and their attributes*
 
 
-**AI Entity creator(connects to externam AI LLM)**
+**AI Entity creator(connects to exteral AI LLM)**
   - `generate_boss_entity(story_text: str) -> dict`
       *Uses AI to crate boss attributes, interacts with AI image generator to return boss image url, returns these attribtes below*
     
@@ -390,7 +390,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 
 
-**Rationale:** We've broken the AI Language model interface into 2 subcomponents. Since they will each have different prompts and data output. The story generator is broken into multiple functions that perform different tasks, based on the need. For example, general story generation will be prompted differently than when we want to generate a description of a boss encounter. Also we need custom prompts for generating story with items. We created the AI entity creator to focus on taking story and entity descriptions and turning them into entity attributes that can be stored or passed to the client.
+**Rationale:** We've broken the AI-Language model interface into 2 subcomponents. Since they will each have different prompts and data output. The story generator is broken into multiple functions that perform different tasks, based on the need. For example, general story generation will be prompted differently than when we want to generate a description of a boss encounter. Also, we need custom prompts for generating story with items. We created the AI entity creator to focus on taking story and entity descriptions and turning them into entity attributes that can be stored or passed to the client.
 
 ---
 
@@ -407,6 +407,7 @@ For example, our GameEngine manages game data and communicates with services lik
 
 ---
 ![Function Flow](low-level-sections/function_flow_diagram.png)
+
 ---
 
 
