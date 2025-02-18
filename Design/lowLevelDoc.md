@@ -19,13 +19,12 @@ Note: This document was generated with the assistance of ChatGPT
 
 ### **Sprint 2: Core Systems & AI Experimentation (Backend + Initial Frontend)**
 
-### **Backend Team**
-#### **Database Setup:**
+#### **Database Team:**
 - [ ] **Set up User table:** Store authentication data, user profile details, and metadata for player progress.
 - [ ] **Set up Run table:** Store each game session's progress, including choices made and card usage.
 - [ ] **Set up Card tables:** Define schema for different card types, attributes, rarity levels, and effects.
 
-#### **Backend-Server Development:**
+#### **Backend Team:**
 - [ ] **Implement Authentication System:** OAuth integration (Google, email/password) using Supabase or Firebase.
 - [ ] **Create foundational Game Engine & API Endpoints:**
   - Define routes for game state updates.
@@ -61,23 +60,23 @@ Note: This document was generated with the assistance of ChatGPT
 **By the end of this sprint:**
 
   - Users should be able to sign in
-  - Users should be authenticated on backend and frontend with supabase/oauth
+  - Users should be authenticated on the backend and frontend with supabase/oauth
   - Users should be able to create or select a new character
-  - Characters should be stored in database and accessed through backend
-  - Players should be able to type response and receive a response(even if just a mock response at first)
-  - Back should be able to create mock up cards and store in database      
+  - Characters should be stored in the database and accessed through the backend
+  - Players should be able to type a response and receive a response(even if just a mock response at first)
+  - Back should be able to create mock-up cards and store in the database      
 
 ---
 
 ## **Sprint 3: AI Integration & Combat System Development**
 
-### **Backend Team**
-#### **Database Enhancements:**
+### **Backend**
+#### **Database Team:**
 - [ ] **Expand Card Table:**
   - Store additional attributes (mana cost, rarity, effect types).
   - Implement support for deck-building mechanics.
 
-#### **Backend Development:**
+#### **Backend Team:**
 - [ ] **Integrate AI into LLM Interface:**
   - Replace mock responses with real AI-generated interactions.
   - Implement token limits, input sanitization, and response formatting.
@@ -119,12 +118,12 @@ Note: This document was generated with the assistance of ChatGPT
 
 ## **Sprint 4: Monetization, Rewards, and Final Polish**
 
-### **Backend Team**
-#### **Database Enhancements:**
+### **Backend**
+#### **Database Team:**
 - [ ] **Create Payment Transaction Table:**
   - Store user purchases.
 
-#### **Backend Development:**
+#### **Backend Team:**
 - [ ] **Generate Card Descriptions Dynamically via AI LLM Interface:**
   - Convert item descriptions into unique, AI-generated card text.
   - Improve AI’s ability to balance game mechanics when generating card effects.
