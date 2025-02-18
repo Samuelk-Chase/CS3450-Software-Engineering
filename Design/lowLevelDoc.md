@@ -156,8 +156,8 @@ Once Sprint 3 is completed, the game should be **fully playable** with AI-driven
 * **Bug Fixing & Optimization**
 * **Multiplayer Features** (Co-op battles, pvp)   
 
----
 
+---
 
 ## 2. Programming Languages, Libraries, and Frameworks
 
@@ -166,15 +166,18 @@ This section outlines the key programming languages, libraries, and frameworks t
 ### Backend
 
 - **Programming Language: Go**
-  - *Why:* Go is a statically typed, compiled language known for its performance, simplicity, and excellent support for concurrent programming. These features make it an ideal choice for building a high-performance game server that can efficiently handle multiple simultaneous connections. While robust the language has fairly simple syntax which will make it easier for those on the team who don't yet know it to learn.
+  - *Why:* Go is a statically typed, compiled language known for its performance, simplicity, and excellent support for concurrent programming. These features make it an ideal choice for building a high-performance game server that can efficiently handle multiple simultaneous connections. While robust, the language has a fairly simple syntax which will make it easier for those on the team who don't yet know it to learn.
 
 - **Framework: chi**
   - *Why:* chi is a lightweight and idiomatic HTTP router for Go, designed for building RESTful APIs. Its minimalistic design and composability allow for rapid development while keeping the backend lean and maintainable.
 
+- **Payment Integration Library: stripe-go**
+  - *Why:* stripe-go is the official Go library for integrating Stripe’s payment processing capabilities into our backend. It provides robust, secure methods for handling payments, managing subscriptions, and processing refunds. This integration ensures that financial transactions are handled efficiently and safely, while seamlessly aligning with our Go-based architecture.
 
 ### Front End
+
 - **React with TypeScript**
-  - *Why:* React provides a powerful framework for building interactive user interfaces, while TypeScript adds static typing, reducing runtime errors and improving code maintainability. This combination ensures a scalable and robust front-end development experience. React will also allow us to reuse UI elements in multiple screens which will help us reuse components as new game content is added in the future.
+  - *Why:* React provides a powerful framework for building interactive user interfaces, while TypeScript adds static typing, reducing runtime errors and improving code maintainability. This combination ensures a scalable and robust front-end development experience. React will also allow us to reuse UI elements in multiple screens, which will help us reuse components as new game content is added in the future.
  
 - **Additional Frontend Libraries:**
   - **Fetch API**
@@ -182,13 +185,14 @@ This section outlines the key programming languages, libraries, and frameworks t
   - **React Router**
     - *Why:* Manages in-app navigation, ensuring a seamless user experience as players move between different views.
   - **CSS Frameworks (Tailwind CSS)**
-    - *Why:* Provides pre-built components and utility classes that expedite the development of a responsive and user-friendly interface. Will allow us to build a styled ui faster and help with designing new pages and content in the future.
-
+    - *Why:* Provides pre-built components and utility classes that expedite the development of a responsive and user-friendly interface. It will allow us to build a styled UI faster and help with designing new pages and content in the future.
+  - **Stripe Elements**
+    - *Why:* Stripe Elements are pre-built UI components designed to securely collect payment information from users. They simplify the integration of payment forms, ensure PCI compliance, and provide customizable components that work seamlessly with our React and TypeScript stack, delivering a secure and consistent checkout experience.
 
 ### How these choices affect development and performance
 
 - **Performance and Scalability:**  
-  Both Go and React are optimized for high performance and scalability. Go's efficient concurrency handling may be crucial for managing a high volume of simultaneous requests, while React's virtual DOM and component-based architecture ensure a smooth and responsive user experience. We won't be focusing on concurrency yet, but go's capabilities will allow us in the future to add concurrency if we need performance boosts.
+  Both Go and React are optimized for high performance and scalability. Go's efficient concurrency handling may be crucial for managing a high volume of simultaneous requests, while React's virtual DOM and component-based architecture ensure a smooth and responsive user experience. We won't be focusing on concurrency yet, but Go's capabilities will allow us in the future to add concurrency if we need performance boosts.
 
 - **Ease of Development & Maintainability:**  
   Go's simplicity and clear syntax lower the learning curve and reduce complexity, making the backend easier to maintain over time. Meanwhile, React combined with TypeScript offers enhanced code quality and predictability on the frontend, facilitating long-term maintenance and reducing the risk of bugs.
@@ -197,7 +201,7 @@ This section outlines the key programming languages, libraries, and frameworks t
   The vast ecosystems around Go and React mean access to extensive libraries, frameworks, and community support. This ensures that any challenges encountered can be swiftly addressed with proven solutions and best practices.
 
 - **Modularity and Flexibility:**  
-  By leveraging specialized libraries (like chi for routing and stripe-go for payment integration), the system remains modular. This modularity allows individual components to be updated or replaced independently as the system evolves, aligning with future requirements and technological advancements.
+  By leveraging specialized libraries (like chi for routing, stripe-go for payment integration, and Stripe Elements for secure payment UI components), the system remains modular. This modularity allows individual components to be updated or replaced independently as the system evolves, aligning with future requirements and technological advancements.
 
 ---
 
