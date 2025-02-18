@@ -427,7 +427,7 @@ The database follows a **relational structure** and adheres to **third normal fo
 
 The Database Schema is defined by this diagram. Note: Underline denotes primary keys and italics denotes foreign key (these are not mutually exclusive). Two primary keys indicate a composite primary key. 
 
-![Database Schema](./lowlevel/frontendlowlevelimages/DatabaseSchemaDefinition.png)
+![Database Schema](/Design/LowLevel/frontendlowlevelimages/DatabaseSchemaDefinition.png)
 
 
 #### 2.1 Tables
