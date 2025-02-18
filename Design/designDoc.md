@@ -270,6 +270,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 ### 4.1 Internal Interfaces
+**Change Note for low level:** During our low-level design we decided to deviate slightly specifically with regards to the Game engine. Instead of the game engine being focused on game logic like executing battles we have moved most of that logic to the front end and will use the backend for AI generation and communicating with the client to send and store data. The game engine will be an access point for the front end and will be responsible for sending and receiving data.
 
 
 #### i. **User Authentication & Authorization Interface**
@@ -299,7 +300,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 #### ii. **Game Engine (Story Generation & Game Logic) Interface**
 
 
-- **Purpose**: Powers dynamic story generation, and manages game flow, player choices, and game logic.
+- **Purpose**: Powers dynamic story generation, and manages game flow, player choices, and game logic. 
 
   
 - **Actions**:
