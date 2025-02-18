@@ -1200,6 +1200,55 @@ Once the AI model to be used is finalized, the example data sets will need to be
 
 ---
 
+
+### Stripe Integration
+
+This section details how Stripe will be integrated into our low-level design, covering both backend and frontend implementations to ensure secure, efficient, and PCI-DSS compliant payment processing. More details can be seen in the security design.
+
+#### Overview
+
+We will use Stripe to handle all payment processing tasks. The integration leverages:
+- **Backend:** The `stripe-go` library to interact securely with Stripe’s API.
+- **Frontend:** Stripe Elements for securely capturing payment details and tokenizing sensitive card data.
+
+This approach ensures that our system never handles raw card data directly, meeting PCI-DSS requirements and utilizing Stripe Radar for fraud detection.
+
+#### Backend Integration
+
+- **Payment Integration Library:** `stripe-go`
+  - **Purpose:** Official Go library for integrating with Stripe’s payment processing system.
+  - **Responsibilities:**
+    - Creating and managing charges, subscriptions, and refunds.
+    - Communicating securely with Stripe's API.
+    - Recording transaction details and handling payment-related errors.
+  - **Flow:**
+    1. **Receive Payment Token:** The backend receives a token or `paymentMethodId` from the frontend.
+    2. **Create Charge:** Using `stripe-go`, a charge is created against the token.
+    3. **Record Transaction:** Transaction details are stored in the database for future reference.
+  - **Security Measures:**
+    - **PCI-DSS Compliance:** Stripe’s tokenization means the backend does not process raw card data.
+    - **Fraud Detection:** Leverage Stripe Radar to monitor and mitigate fraudulent transactions.
+
+#### Frontend Integration
+
+- **Library:** Stripe Elements
+  - **Purpose:** Provides pre-built, customizable UI components to collect and tokenize card details.
+  - **Responsibilities:**
+    - Rendering secure payment forms within our React/TypeScript application.
+    - Tokenizing card details into a secure token or `paymentMethodId` that can be safely transmitted to the backend.
+  - **Additional Tools:**
+    - **React with TypeScript:** Ensures a robust, scalable, and maintainable front-end.
+    - **Fetch API:** Handles HTTP requests to the backend for payment processing.
+  - **Flow:**
+    1. **Render Payment Form:** Use Stripe Elements to collect the user’s payment information.
+    2. **Tokenization:** Card details are tokenized by Stripe, producing a token or `paymentMethodId`.
+    3. **Send to Backend:** The token is sent via an HTTP request to the backend.
+    4. **Transaction Confirmation:** The backend processes the payment and returns transaction status to update the UI.
+
+
+
+---
+
 ## 7. Low-Level Security Design
 
 This document details the security mechanisms and implementation strategies for the AI-driven multiplayer RPG game. It extends the high-level security design by breaking down each requirement into actionable components—complete with code samples, recommended libraries, and justification for each decision. Where possible, code snippets are included to show how you might implement these concepts in a Go-based backend, though the overall principles apply regardless of specific programming language or framework.
