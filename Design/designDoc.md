@@ -1,3 +1,10 @@
+# The Last Game Design Document
+
+This design document is divided into 2 sections, a high-level design and a low-level design document. The low-level design takes place right after the High-level Ui design.
+
+
+
+
 AI Note: This Design document was created with the assistance of ChatGpt.
 # Group 5: High-Level Design Document: The Last Game
 
