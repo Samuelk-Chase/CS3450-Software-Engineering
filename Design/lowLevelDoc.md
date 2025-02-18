@@ -264,6 +264,7 @@ This engine is going to be broken into 2 parts the main game manager that update
   *Processes player choice, returns card*
 
 - `create_character(char_description) -> JSON object`
+  
   *Creates and stores new character in database, calls ai image interface to make character image, returns character details stored in json*
   
   
@@ -995,9 +996,9 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
    - Integrates seamlessly with the deck system, allowing players to select the best cards for each encounter.
 
 ---
-
-**Note:**  
+Note:  
 All images shown are prototypes and subject to change based on ongoing user testing and feedback. Accessibility features such as proper color contrast, keyboard navigation, and ARIA labels are integrated to ensure inclusivity and a positive user experience.
+
 ---
 
 ## 6. External Interface Implementation
