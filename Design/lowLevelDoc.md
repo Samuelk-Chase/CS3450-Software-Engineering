@@ -1002,6 +1002,10 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 Note:  
 All images shown are prototypes and subject to change based on ongoing user testing and feedback. Accessibility features such as proper color contrast, keyboard navigation, and ARIA labels are integrated to ensure inclusivity and a positive user experience.
 
+
+UserFlow:
+![User Flow](./UserFlow.png "User Flow")
+
 ---
 
 ## 6. External Interface Implementation
