@@ -56,14 +56,16 @@ Note: This document was generated with the assistance of ChatGPT
   - Mock responses should be rendered dynamically.
 
 
-    #### **Expectations:**
-    **By the end of this sprint:**
-      - Users should be able to sign in
-      - Users should be authenticated on backend and frontend with supabase/oauth
-      - Users should be able to create or select a new character
-      - Characters should be stored in database and accessed through backend
-      - Players should be able to type response and receive a response(even if just a mock response at first)
-      - Back should be able to create mock up cards and store in database      
+#### **Expectations:**
+
+**By the end of this sprint:**
+
+  - Users should be able to sign in
+  - Users should be authenticated on backend and frontend with supabase/oauth
+  - Users should be able to create or select a new character
+  - Characters should be stored in database and accessed through backend
+  - Players should be able to type response and receive a response(even if just a mock response at first)
+  - Back should be able to create mock up cards and store in database      
 
 ---
 
@@ -98,14 +100,16 @@ Note: This document was generated with the assistance of ChatGPT
   - Ensure AI-generated bosses have attack patterns.
   - Sync game state with backend API.
 
-  #### **Expectations:**
-    **By the end of this sprint:**
-      * Users should be recieve AI generated story responses
-      * Backend should generate,store, and send ai story responses to client
-      * Backend should be able to receive card description and generate image and card stats which should be stored in db
-      * Backend should be able to create Boss description, and image and send to client
-      * Players should be able to initiate battle, see boss with its stats and image
-      * Players should be able to play cards by dragging and dropping, cards should apply effects to user or boss
+#### Expectations:
+
+**By the end of this sprint:**
+
+  * Users should be recieve AI generated story responses
+  * Backend should generate,store, and send ai story responses to client
+  * Backend should be able to receive card description and generate image and card stats which should be stored in db
+  * Backend should be able to create Boss description, and image and send to client
+  * Players should be able to initiate battle, see boss with its stats and image
+  * Players should be able to play cards by dragging and dropping, cards should apply effects to user or boss
         
 
 
@@ -136,21 +140,23 @@ Note: This document was generated with the assistance of ChatGPT
   - Improve animations and transitions.
   - Ensure smooth navigation between screens.
   - Add accessibility features like screen reader support
-     
-    #### **Expectations:**
-    **By the end of this sprint:**
+
+
+#### Expectations:
     
-      * Players should see a battle summary with ai generated text after defeating boss
-      * Backend should generate unique item descriptions based on boss the user beat
-      * Players should be able select which item after a boss fight to keep and turn into card
-      * Animations should be smooth.
-      * Users should see unique visual effects applied during battle
-      * Users should be able to buy the game before being granted access
+**By the end of this sprint:**
+
+  * Players should see a battle summary with ai generated text after defeating boss
+  * Backend should generate unique item descriptions based on boss the user beat
+  * Players should be able select which item after a boss fight to keep and turn into card
+  * Animations should be smooth.
+  * Users should see unique visual effects applied during battle
+  * Users should be able to buy the game before being granted access
       
 
 ---
 
-### 🚀 **Next Steps After Sprint 3:**
+### **Next Steps After Sprint 4:**
 Once Sprint 3 is completed, the game should be **fully playable** with AI-driven battles, deck-building, and monetization features. Given extra time, we could focus on:
 
 * **Bug Fixing & Optimization**
