@@ -2,7 +2,7 @@
 
 This document outlines the deployment strategy for our AI-driven roguelike game. The backend server will be hosted on an AWS EC2 instance, with Supabase handling authentication and database storage. The deployment process ensures high availability, zero-downtime updates, and secure communication using Cloudflare Origin Certificates.
 
-Additionally, AI models will be accessed via (Fireworks)[https://fireworks.ai] for various in-game features. Generated images will be stored in an AWS S3 bucket for efficient retrieval.
+Additionally, AI models will be accessed via [Fireworks](https://fireworks.ai) for various in-game features. Generated images will be stored in an AWS S3 bucket for efficient retrieval.
 
 ## Infrastructure setup
 
