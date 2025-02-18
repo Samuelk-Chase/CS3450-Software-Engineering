@@ -270,7 +270,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 ### 4.1 Internal Interfaces
-**Change Note for low level:** During our low-level design we decided to deviate slightly specifically with regards to the Game engine. Instead of the game engine being focused on game logic like executing battles we have moved most of that logic to the front end and will use the backend for AI generation and communicating with the client to send and store data. The game engine will be an access point for the front end and will be responsible for sending and receiving data.
+**Change Note for low level:** During our low-level design we decided to deviate slightly specifically with regards to the Game engine. Instead of the game engine being focused on game logic like executing battles we have moved most of that logic to the front end and will use the backend for AI generation and communicating with the client to send and store data. The game engine will be an access point for the front end and will be responsible for sending and receiving data. We also break the Ai language model interface into sub-interfaces; one in charge of the story and another with creating attributes for bosses and characters.
 
 
 #### i. **User Authentication & Authorization Interface**
