@@ -406,7 +406,10 @@ For example, our GameEngine manages game data and communicates with services lik
 ![Example UI](low-level-sections/backend_diagramSubcomponents.png)
 
 ---
+
 ![Function Flow](low-level-sections/function_flow_diagram.png)
+
+Note: We've designed extra database tables in database design in case we implement multiplayer features and need to store more details. Our priority will be single player though and will only use other tables if we need to store more for increasing the number of saves locations/states or for storing details that need to be shared with a party.
 
 ---
 
