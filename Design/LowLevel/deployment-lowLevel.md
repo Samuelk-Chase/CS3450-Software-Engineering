@@ -13,7 +13,7 @@ Additionally, AI models will be accessed via [Fireworks](https://fireworks.ai) f
     *   Security group allowing TCP traffic on ports 22 and 443
         *   22 for SSH   
         *   443 for HTTPS
-        *   No 80 for HTTP because this backend will act as an API. Clients attempting to connect via HTTP can be rejected.
+        *   No 80 for HTTP because this backend will act as an API. Clients attempting to connect via HTTP will be rejected.
 *   Persistent storage: 20GB
     *   Nothing extra should be stored on the EC2
 
