@@ -1630,18 +1630,21 @@ func TriggerRecovery() {
 2.	BackupData: Demonstrates reading a database dump file and writing it to a secure backup location. In a real system, you might call a database or use cloud-based snapshots.
 3.	TriggerRecovery: Illustrates how to automatically run the backup process and take additional steps in response to an incident.
 -----
-### 9. Summary & Conclusion
 
-    By integrating industry-standard security measures—OAuth 2.0, short-lived JWTs, robust encryption (AES-256, TLS 1.3), thorough validations for common attack vectors, Stripe for secure payments, cheat detection subsystems, secure WebSocket connections, and AI prompt injection defenses—the game ensures both strong protection for player data and a fair playing environment. Coupled with a well-defined incident response plan (including automated backups, real-time alerts, and post-incident audits), this design aims to maintain both integrity and availability of the game’s multiplayer infrastructure.
+####  Summary & Conclusion
 
-    Key Takeaways:
-	-	Defense-in-Depth: Multiple layers of security (authentication, encryption, WAF/CDN, logging).
-	-	Least Privilege: Minimal permissions for each user/service.
-	-	Visibility & Monitoring: Detailed logs, real-time alerts, and post-incident audits.
-	-	Continuous Improvement: Regular pentesting, code reviews, and audits as threats evolve.
+By integrating industry-standard security measures—OAuth 2.0, short-lived JWTs, robust encryption (AES-256, TLS 1.3), thorough validations for common attack vectors, Stripe for secure payments, cheat detection subsystems, secure WebSocket connections, and AI prompt injection defenses—the game ensures both strong protection for player data and a fair playing environment. Coupled with a well-defined incident response plan (including automated backups, real-time alerts, and post-incident audits), this design aims to maintain both integrity and availability of the game’s multiplayer infrastructure.
 
-	Note: Always store sensitive data (e.g., encryption keys, Stripe secrets) in secure environment variables or secret management solutions. Keep separate credentials for development, staging, and production environments, and follow the principle of least privilege for all user roles.
+Key Takeaways:
+  - Defense-in-Depth: Multiple layers of security (authentication, encryption, WAF/CDN, logging).
+  - Least Privilege: Minimal permissions for each user/service.
+  - Visibility & Monitoring: Detailed logs, real-time alerts, and post-incident audits.
+  - Continuous Improvement: Regular pentesting, code reviews, and audits as threats evolve.
 
+Note: Always store sensitive data (e.g., encryption keys, Stripe secrets) in secure environment variables or secret management solutions. Keep separate credentials for development, staging, and production environments, and follow the principle of least privilege for all user roles.
+
+
+---
 
 ## 8. System Performance
 
