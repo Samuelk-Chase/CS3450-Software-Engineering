@@ -1195,7 +1195,7 @@
       "dependencies": [
         "npm:@eslint/js@^9.19.0",
         "npm:@types/react-dom@^19.0.3",
-        "npm:@types/react@^19.0.8",
+        "npm:@types/react@^19.0.10",
         "npm:@vitejs/plugin-react@^4.3.4",
         "npm:eslint-plugin-react-hooks@5",
         "npm:eslint-plugin-react-refresh@~0.4.18",
