@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom'; // if you're using react-router for navigation
@@ -15,7 +15,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div 
+    <div>
+      <div 
       className="global-text-color"
       style={{
         display: 'flex',
@@ -131,7 +132,13 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
     </div>
+
+    </div>
+    
+
   );
+    
+  
 };
 
 export default LoginPage;
