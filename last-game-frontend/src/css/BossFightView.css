@@ -1,0 +1,136 @@
+/* Full-screen container with a limited background image height */
+.boss-fight-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: url('../images/background.jpg') no-repeat center center;
+    background-size: 100% 70vh;
+    background-position: top;
+    padding: 1rem;
+    position: relative;
+  }
+  
+  /* Fight area - positions characters properly */
+  .fight-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 85%;
+    height: 66vh;
+    position: relative;
+  }
+  
+  /* Player & Boss sides */
+  .player-side, .boss-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 18%;
+    position: relative;
+  }
+  
+  /* Bigger Character Images */
+  .character-img {
+    width: 180px;
+    height: 260px;
+    border-radius: 15px;
+    border: 3px solid #ff4757;
+    box-shadow: 0px 0px 15px rgba(255, 71, 87, 0.8);
+  }
+  
+  .boss-side .character-img {
+    border-color: #d63031;
+    box-shadow: 0px 0px 15px rgba(214, 48, 49, 0.7);
+  }
+  
+  /* Character Names */
+  .character-name {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-top: 10px;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Health Bars under the images */
+  .health-bar-container {
+    width: 100%;
+    margin-top: 10px;
+    background: #333;
+    border-radius: 5px;
+    height: 12px;
+    overflow: hidden;
+  }
+  
+  .health-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3b3b, #990000);
+    transition: width 0.3s ease-in-out;
+  }
+  
+  /* VS in the center */
+  .vs-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff4757;
+    text-shadow: 0px 0px 20px rgba(255, 71, 87, 0.8);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Stats Section - Now Full Width */
+  .stats-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%; /* Now stretches across the entire screen */
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(20, 20, 20, 0.95);
+    border-radius: 0px; /* Removed border-radius to extend to the edges */
+  }
+  
+  /* Individual Stats Box */
+  .stats-box {
+    width: 45%;
+    padding: 10px;
+  }
+  
+  .stats-box h3 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .stats-box p {
+    font-size: 1.2rem;
+    color: #ddd;
+    margin: 5px 0;
+  }
+  
+  /* View Deck Button - Locked to Bottom Left */
+  .bottom-actions {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+  }
+  
+  .view-deck-button {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #1b5e20, #388e3c);
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
+  }
+  
+  .view-deck-button:hover {
+    background: linear-gradient(45deg, #388e3c, #1b5e20);
+    transform: scale(1.1);
+  }
