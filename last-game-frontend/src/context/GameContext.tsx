@@ -11,7 +11,7 @@ interface Character {
   description: string;
   health: number;
   mana: number;
-  // Add other stats as needed
+  deck: Card[];
 }
 
 export interface Card {
@@ -22,6 +22,16 @@ export interface Card {
   description: string;
   image: string;
   mana: number;
+}
+
+export interface Boss {
+  id: number;
+  name: string;
+  level: number;
+  health: number;
+  mana: number;
+  deck: Card[];
+  image: string;
 }
 
 interface GameContextProps {
@@ -73,6 +83,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       description,
       health: 100,
       mana: 50,
+      deck: [],
     });
   };
 
