@@ -14,12 +14,14 @@ interface Character {
   // Add other stats as needed
 }
 
-interface Card {
+export interface Card {
   id: number;
   name: string;
   level: number;
   type: 'ATTACK' | 'ABILITY' | 'POWER';
   description: string;
+  image: string;
+  mana: number;
 }
 
 interface GameContextProps {
