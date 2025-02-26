@@ -5,6 +5,7 @@ import CharacterCreationPage from './pages/CharacterCreationPage';
 import MainPlayerView from './pages/MainPlayerView';
 import BossFightPage from './pages/BossFightPage';
 import DeckOverlayPage from './pages/DeckOverlayPage';
+import CharacterAccountPage from './pages/CharacterAccountPage'
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         <Route path="/main" element={<MainPlayerView />} />
         <Route path="/boss" element={<BossFightPage />} />
         <Route path="/deck" element={<DeckOverlayPage />} />
+        <Route path="/character-account" element={<CharacterAccountPage />} />
+
       </Routes>
     </Router>
   );

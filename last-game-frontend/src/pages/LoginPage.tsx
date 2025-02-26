@@ -1,8 +1,7 @@
-// src/pages/LoginPage.tsx
 import React, { useState} from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { Link } from 'react-router-dom'; // if you're using react-router for navigation
+import { Link } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,13 +9,11 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
     console.log('Email:', email, 'Password:', password);
   };
 
   return (
-    <div>
-      <div 
+    <div 
       className="global-text-color"
       style={{
         display: 'flex',
@@ -27,77 +24,94 @@ const LoginPage: React.FC = () => {
         color: '#E3C9CE'
       }}
     >
-      {/* Outer box */}
+      {/* Outer box - Increased to 600px width */}
       <div
         style={{
           backgroundColor: '#2d2d2d',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 0 20px #20683F',
-          width: '450px'
+          padding: '4rem', // More padding for a bigger feel
+          borderRadius: '12px',
+          boxShadow: '0 0 30px #20683F',
+          width: '600px', // Wider
+          maxWidth: '90%'
         }}
       >
         {/* Headings */}
-        <h2 style={{ textAlign: 'left', marginBottom: '0.5rem' }}>BEAN BOYS</h2>
-        <p style={{ textAlign: 'center', marginBottom: '1rem' }}>The Last Game</p>
+        <h1 style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2.5rem' }}>BEAN BOYS</h1>
+        <p style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.4rem' }}>The Last Game</p>
         
         {/* Centered form */}
         <form
           onSubmit={handleSubmit}
           style={{
-            marginBottom: '1rem',
+            marginBottom: '2rem',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center'
           }}
         >
-          <div style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
+          <div style={{ marginBottom: '2rem', width: '100%', textAlign: 'center' }}>
             <InputText
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={{
-                width: '80%',
+                width: '90%', 
+                height: '55px',
+                fontSize: '1.4rem',
                 backgroundColor: '#444444',
-                color: '#E3C9CE'
+                color: '#E3C9CE',
+                padding: '15px',
+                borderRadius: '10px'
               }}
             />
           </div>
-          <div style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
+          <div style={{ marginBottom: '2rem', width: '100%', textAlign: 'center' }}>
             <InputText
               placeholder="Password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{
-                width: '80%',
+                width: '90%',
+                height: '55px',
+                fontSize: '1.4rem',
                 backgroundColor: '#444444',
-                color: '#E3C9CE'
+                color: '#E3C9CE',
+                padding: '15px',
+                borderRadius: '10px'
               }}
             />
           </div>
           <Button
             type="submit"
-            label="Submit"
+            label="LOGIN"
             style={{
-              width: '100%',
+              width: '95%', 
+              height: '60px',
+              fontSize: '1.5rem',
               backgroundColor: '#20683F',
               borderColor: '#20683F',
-              marginBottom: '1rem'
+              marginBottom: '2rem',
+              fontWeight: 'bold',
+              borderRadius: '12px'
             }}
           />
         </form>
 
-        {/* Social Sign-Up Buttons */}
+        {/* Social Sign-Up Buttons - Even Bigger */}
         <Button
           label="Sign up with Apple"
           icon="pi pi-apple"
           iconPos="right"
           style={{
-            width: '100%',
+            width: '95%',
+            height: '55px',
+            fontSize: '1.4rem',
             backgroundColor: '#20683F',
             borderColor: '#20683F',
-            marginBottom: '0.5rem'
+            marginBottom: '1.2rem',
+            fontWeight: 'bold',
+            borderRadius: '12px'
           }}
         />
         <Button
@@ -105,10 +119,14 @@ const LoginPage: React.FC = () => {
           icon="pi pi-google"
           iconPos="right"
           style={{
-            width: '100%',
+            width: '95%',
+            height: '55px',
+            fontSize: '1.4rem',
             backgroundColor: '#20683F',
             borderColor: '#20683F',
-            marginBottom: '0.5rem'
+            marginBottom: '1.2rem',
+            fontWeight: 'bold',
+            borderRadius: '12px'
           }}
         />
         <Button
@@ -116,29 +134,26 @@ const LoginPage: React.FC = () => {
           icon="pi pi-microsoft"
           iconPos="right"
           style={{
-            width: '100%',
+            width: '95%',
+            height: '55px',
+            fontSize: '1.4rem',
             backgroundColor: '#20683F',
-            borderColor: '#20683F'
+            borderColor: '#20683F',
+            fontWeight: 'bold',
+            borderRadius: '12px'
           }}
         />
 
         {/* "Already have an account?" text */}
-        <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem' }}>
+        <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '1.2rem' }}>
           <span>Already have an account? </span>
-          {/* Using Link from react-router-dom */}
-          <Link to="/signin" style={{ color: '#20683F', textDecoration: 'underline' }}>
+          <Link to="/signin" style={{ color: '#20683F', textDecoration: 'underline', fontWeight: 'bold' }}>
             Click here
           </Link>
         </div>
       </div>
     </div>
-
-    </div>
-    
-
   );
-    
-  
 };
 
 export default LoginPage;
