@@ -1,22 +1,28 @@
 import React from 'react';
 import { Menubar } from 'primereact/menubar';
+import {User} from '../context/GameContext';
 
-const NavBar: React.FC = () => {
+//placeholder interface for user
+interface UserMenuProps {
+    user: User | null;
+    logout: () => void;
+    email: string;
+    username: string;
+
+}
+//same navbar, needs to be fleshed out when we know what the user object looks like
+const NavBar: React.FC<UserMenuProps> = ({logout, username}) => {
     const items = [
         {
-            label: 'Home',
-            icon: 'pi pi-home',
-            url: '/'
-        },
-        {
-            label: 'About',
-            icon: 'pi pi-info',
-            url: '/about'
-        },
-        {
-            label: 'Contact',
-            icon: 'pi pi-envelope',
-            url: '/contact'
+            label: `${username}`,
+            icon: 'pi pi-user',
+            items: [
+                {
+                    label: 'Logout',
+                    icon: 'pi pi-power-off',
+                    command: logout
+                }
+            ]
         }
     ];
 

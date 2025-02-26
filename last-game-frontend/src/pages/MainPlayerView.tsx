@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { GameContext } from '../context/GameContext';
 import '../css/MainPlayerView.css'
 import characterImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
-
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 const MainPlayerView: React.FC = () => {
   const { character } = useContext(GameContext);
@@ -79,6 +79,10 @@ const MainPlayerView: React.FC = () => {
             <h2>Dungeon Quest: "The Forgotten Depths"</h2>
             <p>Players: Alice (Warrior, Level 5), Bob (Ranger, Level 5), etc.</p>
             <p>[Session Start]</p>
+            {/* Primereact scrollpanel to handle large amounts of context
+            We can also increase font size for better readability, while keeping
+            content within designated area */}
+            <ScrollPanel style={{ width: '100%', height: '200px' }}>
             <p>
               Alice: "Alright team, let's breach these ancient doors. Stay alert."<br />
               Bob: "I'm going to head on the left—silent steps, quick approach."<br />
@@ -86,6 +90,8 @@ const MainPlayerView: React.FC = () => {
               ...
             </p>
             {/* More story content can be appended dynamically */}
+            </ScrollPanel>
+            
           </div>
 
           <div className="action-row">
