@@ -13,6 +13,10 @@ func Routes() http.Handler {
 
 	log.Println("Router initialized")
 	r.Mount("/llm", llm.Routes())
+	r.Get("/character/{id}", GetCharacter) // returns a character object as JSON
+	r.Get("/characters/{id}", GetCharacters)
+	r.Get("/deck/{id}", getCards) // returns a deck object as JSON
+	r.Get("/card/{id}", getCard)  // returns a card object as JSON
 
 	return r
 }
