@@ -13,7 +13,6 @@ const cards = [
   { id: 8, name: "Mana Surge", type: "Power", level: 2, mana: 5, effect: "Regain 50% of total mana instantly", image: "src/images/manasurge.jpg" },
   { id: 9, name: "Dark Pact", type: "Ability", level: 6, mana: 10, effect: "Sacrifice 20 health to deal 40 damage", image: "src/images/darkpact.jpg" },
   { id: 10, name: "Holy Blessing", type: "Power", level: 5, mana: 9, effect: "Heal all allies for 20 health", image: "src/images/holyblessing.jpg" }
-  
 ];
 
 const CardViewPage: React.FC = () => {

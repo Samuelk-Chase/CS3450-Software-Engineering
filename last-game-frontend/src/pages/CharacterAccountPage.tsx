@@ -1,20 +1,20 @@
 import React from 'react';
-import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 
 // Sample character data (Replace with real data from backend)
 const characters = [
-  { id: 1, name: "Shadow Knight", level: 10, image: "src/images/character1.jpg" },
-  { id: 2, name: "Elder Mage", level: 7, image: "src/images/character2.jpg" },
-  { id: 3, name: "Crimson Archer", level: 5, image: "src/images/character3.jpg" }
+  { id: 1, name: "Shadow Knight", level: 10, image: "src/images/shadowKnight.jpg" },
+  { id: 2, name: "Elder Mage", level: 7, image: "src/images/eldermage.jpg" },
+  { id: 3, name: "Crimson Archer", level: 5, image: "src/images/crimpsonmage.jpg" }
 ];
 
 const CharacterAccountPage: React.FC = () => {
   const navigate = useNavigate();
 
+  // Navigate to /main when a character is selected
   const handleCharacterSelect = (characterId: number) => {
     console.log(`Selected character ID: ${characterId}`);
-    navigate(`/game/${characterId}`); // Redirect to game with selected character
+    navigate('/main'); // Redirects to the MainPlayerView
   };
 
   return (
@@ -56,10 +56,10 @@ const CharacterAccountPage: React.FC = () => {
           >
             <img 
               src={char.image} 
-              alt={char.name} 
+              alt={char.name}
               style={{
-                width: '150px',
-                height: '150px',
+                width: '250px',
+                height: '250px',
                 borderRadius: '12px',
                 objectFit: 'cover',
                 border: '3px solid #20683F',
@@ -80,7 +80,7 @@ const CharacterAccountPage: React.FC = () => {
             alignItems: 'center',
             cursor: 'pointer'
           }}
-          onClick={() => alert('Add new character feature coming soon!')}
+          onClick={() => navigate('/character-creation')} // Redirects to Character Creation Page
         >
           <div 
             style={{
