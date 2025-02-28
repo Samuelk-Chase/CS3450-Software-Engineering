@@ -20,6 +20,52 @@ type Character struct {
 	MaxHealth     int    `json:"maxHealth"`
 }
 
+func generateCharacterLLM(name, description string) Character {
+
+	// TODO: will create character using llm
+
+	return Character{
+		Name:          name,
+		ID:            1, // Mock ID
+		Description:   description,
+		CurrentMana:   4,   // Mock current mana
+		MaxMana:       10,  // Mock max mana
+		CurrentHealth: 99,  // Mock current health
+		MaxHealth:     100, // Mock max health
+	}
+}
+
+// getNewCharacter is an HTTP handler that creates a character object based on the provided name and description.
+func getNewCharacter(w http.ResponseWriter, r *http.Request) {
+	// Ensure the request method is POST.
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse the request body.
+	var requestData struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Generate the character.
+	character := generateCharacterLLM(requestData.Name, requestData.Description)
+	fmt.Println("generate character called!")
+
+	// Set the response header to indicate JSON content.
+	w.Header().Set("Content-Type", "application/json")
+
+	// Encode the character object to JSON and write it to the response.
+	if err := json.NewEncoder(w).Encode(character); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // GetCharacter is an HTTP handler that returns a character object as JSON.
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
 	// Extract the character ID from the URL path.

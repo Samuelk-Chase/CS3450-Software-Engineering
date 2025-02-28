@@ -26,6 +26,19 @@ type Card struct {
 	Effect      string `json:"effect"`
 }
 
+// generateCard creates a card object with the given name and description.
+func generateCard(name, description string) Card {
+	return Card{
+		ID:          1, // Mock ID
+		Name:        name,
+		Type:        "Magic", // Mock type
+		Description: description,
+		ImageURL:    "http://example.com/sample-card.jpg", // Mock image URL
+		Level:       1,                                    // Mock level
+		Effect:      "Sample effect",                      // Mock effect
+	}
+}
+
 // getCards is an HTTP handler that returns a deck object as JSON.
 func getCards(w http.ResponseWriter, r *http.Request) {
 	// Extract the deck ID from the URL path.
@@ -54,29 +67,27 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// getCard is an HTTP handler that returns a card object as JSON.
+// Post: takes item name and description and returns a card object as JSON
 func getCard(w http.ResponseWriter, r *http.Request) {
-	// Extract the card ID from the URL path.
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid card ID", http.StatusBadRequest)
+	// Ensure the request method is POST.
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	//TODO: Get the card by ID from the database or other storage.
-
-	// Create a sample card.
-	card := Card{
-		ID:          id,
-		Name:        "Sample Card",
-		Type:        "Magic",
-		Description: "This is a sample card.",
-		ImageURL:    "http://example.com/sample-card.jpg",
-		Level:       1,
-		Effect:      "Sample effect",
+	// Parse the request body.
+	var requestData struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
-	fmt.Println("get card called!")
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Generate the card.
+	card := generateCard(requestData.Name, requestData.Description)
+	fmt.Println("generate card called!")
 
 	// Set the response header to indicate JSON content.
 	w.Header().Set("Content-Type", "application/json")
