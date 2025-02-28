@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menubar } from 'primereact/menubar';
 import {User} from '../context/GameContext';
+import {Character } from '../context/GameContext';
 
 //placeholder interface for user
 interface UserMenuProps {
@@ -8,10 +9,11 @@ interface UserMenuProps {
     logout: () => void;
     email: string;
     username: string;
+    character: Character;
 
 }
 //same navbar, needs to be fleshed out when we know what the user object looks like
-const NavBar: React.FC<UserMenuProps> = ({logout, username}) => {
+const NavBar: React.FC<UserMenuProps> = ({logout, username, character}) => {
     const items = [
         {
             label: `${username}`,
@@ -23,6 +25,10 @@ const NavBar: React.FC<UserMenuProps> = ({logout, username}) => {
                     command: logout
                 }
             ]
+        },
+        {
+            label: `${character.name}`,
+            icon: (<img src={character.image}></img>),
         }
     ];
 
