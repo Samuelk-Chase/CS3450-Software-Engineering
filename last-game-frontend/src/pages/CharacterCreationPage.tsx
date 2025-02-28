@@ -1,68 +1,18 @@
-// src/pages/CharacterCreationPage.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import characterImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
 
-// Custom ModeToggle Component using dark selectors with green highlight
-interface ModeToggleProps {
-  value: 'hard' | 'soft';
-  onChange: (value: 'hard' | 'soft') => void;
-}
-
-const ModeToggle: React.FC<ModeToggleProps> = ({ value, onChange }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        border: '1px solid #20683F',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        width: '100%',
-        maxWidth: '300px',
-        margin: '0 auto'
-      }}
-    >
-      <div
-        onClick={() => onChange('hard')}
-        style={{
-          flex: 1,
-          padding: '0.75rem',
-          textAlign: 'center',
-          backgroundColor: value === 'hard' ? '#20683F' : '#2d2d2d',
-          cursor: 'pointer'
-        }}
-      >
-        <i className="pi pi-shield" style={{ marginRight: '0.5rem' }} />
-        Hard Beans
-      </div>
-      <div
-        onClick={() => onChange('soft')}
-        style={{
-          flex: 1,
-          padding: '0.75rem',
-          textAlign: 'center',
-          backgroundColor: value === 'soft' ? '#20683F' : '#2d2d2d',
-          cursor: 'pointer'
-        }}
-      >
-        <i className="pi pi-heart" style={{ marginRight: '0.5rem' }} />
-        Soft Beans
-      </div>
-    </div>
-  );
-};
-
 const CharacterCreationPage: React.FC = () => {
-  const [storyDescription, setStoryDescription] = useState('');
   const [characterDescription, setCharacterDescription] = useState('');
   const [mode, setMode] = useState<'hard' | 'soft'>('hard');
+  const navigate = useNavigate(); // React Router navigation hook
 
   const handlePlay = () => {
     console.log('Selected Mode:', mode);
-    console.log('Story:', storyDescription);
     console.log('Character:', characterDescription);
-    // TODO: Navigate or handle your next logic here
+    navigate('/main'); // Redirect to MainPlayerView
   };
 
   return (
@@ -70,7 +20,7 @@ const CharacterCreationPage: React.FC = () => {
       style={{
         backgroundColor: '#333333',
         minHeight: '100vh',
-        padding: '2rem',
+        padding: '4rem',
         color: '#E3C9CE',
         display: 'flex',
         flexDirection: 'column',
@@ -80,117 +30,139 @@ const CharacterCreationPage: React.FC = () => {
       {/* Top Bar */}
       <div
         style={{
-          width: '100%',
-          maxWidth: '1200px',
+          width: '90%',
           backgroundColor: '#2d2d2d',
           borderRadius: '8px',
           boxShadow: '0 0 20px #20683F',
-          padding: '1rem',
+          padding: '2rem',
           marginBottom: '2rem',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          fontSize: '18px'
         }}
       >
-        <div style={{ marginLeft: '1rem' }}>
-          <h2 style={{ margin: 0 }}>BEAN BOYS</h2>
-          <p style={{ margin: 0 }}>The Last Game</p>
-          <p style={{ margin: 0 }}>Level 1</p>
+        <div style={{ marginLeft: '1.5rem' }}>
+          <h2 style={{ margin: 0, fontSize: '2rem' }}>BEAN BOYS</h2>
+          <p style={{ margin: 0, fontSize: '1.5rem' }}>The Last Game</p>
+          <p style={{ margin: 0, fontSize: '1.5rem' }}>Level 1</p>
         </div>
-        <h2 style={{ marginRight: '2rem', marginBottom: 0 }}>Character Creation</h2>
+        <h2 style={{ marginRight: '1.5rem', fontSize: '2rem' }}>Character Creation</h2>
       </div>
 
       {/* Main Container */}
       <div
         style={{
-          width: '100%',
-          maxWidth: '1200px',
+          width: '90%',
           backgroundColor: '#2d2d2d',
           borderRadius: '8px',
           boxShadow: '0 0 20px #20683F',
-          padding: '2rem',
+          padding: '3rem',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between'
         }}
       >
-        {/* Left Column: Game Play Text, Mode Descriptions, Mode Toggle, Textareas, Play Button */}
-        <div style={{ flex: 1, marginRight: '1rem' }}>
-          <h3 style={{ marginTop: 0, textAlign: 'center' }}>GAME PLAY</h3>
-          
-          {/* Mode Description Blocks */}
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <h4 style={{ margin: '0.5rem 0' }}>Hard Beans</h4>
-            <p style={{ margin: '0.5rem 0' }}>
+        {/* Left Column */}
+        <div style={{ flex: 1.5, marginRight: '2rem' }}>
+          <h3 style={{ textAlign: 'center', fontSize: '1.8rem' }}>GAME PLAY</h3>
+
+          {/* Hard Beans Description + Button */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h4 style={{ fontSize: '1.6rem', marginBottom: '1rem' }}>Hard Beans</h4>
+            <p style={{ fontSize: '1.2rem' }}>
               In hard beans, players will play as if they are experiencing the story in real life.
               Players get one life and realistic health and stamina.
             </p>
+            <Button
+              label="Select Hard Beans"
+              className="p-button p-button-rounded p-shadow-3"
+              onClick={() => setMode('hard')}
+              style={{
+                width: '50%',
+                height: '60px', // Smaller button height
+                fontSize: '1.3rem', // Smaller font size
+                fontWeight: 'bold',
+                background: mode === 'hard' 
+                  ? 'linear-gradient(180deg, #27ae60 0%, #1e8449 100%)' 
+                  : 'rgba(32, 104, 63, 0.5)',
+                border: '3px solid #20683F',
+                borderRadius: '15px',
+                transition: '0.3s ease',
+                color: mode === 'hard' ? '#FFFFFF' : '#E3C9CE'
+              }}
+            />
           </div>
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <h4 style={{ margin: '0.5rem 0' }}>Soft Beans</h4>
-            <p style={{ margin: '0.5rem 0' }}>
+
+          {/* Soft Beans Description + Button */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h4 style={{ fontSize: '1.6rem', marginBottom: '1rem' }}>Soft Beans</h4>
+            <p style={{ fontSize: '1.2rem' }}>
               In soft beans, players will have merciful experiences. Games will be fun and challenging;
               if you die, you will simply go back to the last successful save.
             </p>
-          </div>
-
-          {/* Custom Mode Toggle */}
-          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-            <p style={{ marginBottom: '0.5rem' }}>Select Game Mode:</p>
-            <ModeToggle value={mode} onChange={setMode} />
-          </div>
-
-          {/* Story & Character Descriptions */}
-          <div style={{ marginTop: '2rem' }}>
-            <p style={{ marginBottom: '0.5rem' }}>Enter in your story Description</p>
-            <InputTextarea
-              value={storyDescription}
-              onChange={(e) => setStoryDescription(e.target.value)}
-              rows={4}
-              placeholder="Enter your story description"
+            <Button
+              label="Select Soft Beans"
+              className="p-button p-button-rounded p-shadow-3"
+              onClick={() => setMode('soft')}
               style={{
-                width: '100%',
-                backgroundColor: '#444444',
-                color: '#E3C9CE'
+                width: '50%',
+                height: '60px', // Smaller button height
+                fontSize: '1.3rem', // Smaller font size
+                fontWeight: 'bold',
+                background: mode === 'soft' 
+                  ? 'linear-gradient(180deg, #27ae60 0%, #1e8449 100%)' 
+                  : 'rgba(32, 104, 63, 0.5)',
+                border: '3px solid #20683F',
+                borderRadius: '15px',
+                transition: '0.3s ease',
+                color: mode === 'soft' ? '#FFFFFF' : '#E3C9CE'
               }}
             />
           </div>
-          <div style={{ marginTop: '1rem' }}>
-            <p style={{ marginBottom: '0.5rem' }}>Enter character description</p>
+
+          {/* Character Description */}
+          <div style={{ marginTop: '2rem' }}>
+            <p style={{ fontSize: '1.4rem' }}>Enter character description</p>
             <InputTextarea
               value={characterDescription}
               onChange={(e) => setCharacterDescription(e.target.value)}
-              rows={4}
-              placeholder="Enter character description"
+              rows={8}
               style={{
                 width: '100%',
+                fontSize: '1.4rem',
                 backgroundColor: '#444444',
                 color: '#E3C9CE'
               }}
             />
           </div>
 
-          {/* Play Button */}
-          <div style={{ marginTop: '2rem' }}>
+          {/* Play Button (Navigates to /main) */}
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
             <Button
               label="PLAY"
-              onClick={handlePlay}
+              className="p-button p-button-rounded p-shadow-3"
               style={{
-                backgroundColor: '#20683F',
-                borderColor: '#20683F',
                 width: '100%',
-                height: '3rem',
-                fontSize: '1.2rem'
+                height: '100px',
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                background: 'linear-gradient(180deg, #27ae60 0%, #1e8449 100%)',
+                border: 'none',
+                borderRadius: '18px',
+                letterSpacing: '2px',
+                padding: '1.7rem'
               }}
+              onClick={handlePlay} // Redirects to /main
             />
           </div>
         </div>
 
-        {/* Right Column: Circular Image */}
+        {/* Right Column: Character Image */}
         <div
           style={{
             flex: 1,
-            marginLeft: '1rem',
+            marginLeft: '2rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -198,11 +170,11 @@ const CharacterCreationPage: React.FC = () => {
         >
           <div
             style={{
-              width: '300px',
-              height: '300px',
+              width: '550px', // Increased size
+              height: '550px',
               borderRadius: '50%',
               overflow: 'hidden',
-              border: '4px solid #20683F'
+              border: '6px solid #20683F'
             }}
           >
             <img
