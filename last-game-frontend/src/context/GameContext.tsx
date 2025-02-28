@@ -1,17 +1,18 @@
 // src/context/GameContext.tsx
 import React, { createContext, useState, ReactNode } from 'react';
 
-interface User {
+export interface User {
   username: string;
   email: string;
 }
 
-interface Character {
+export interface Character {
   name: string;
   description: string;
   health: number;
   mana: number;
   deck: Card[];
+  image: string;
 }
 
 export interface Card {
@@ -84,6 +85,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       health: 100,
       mana: 50,
       deck: [],
+      image: "placeholder"
     });
   };
 
