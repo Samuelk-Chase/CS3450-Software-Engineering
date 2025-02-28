@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -25,6 +26,8 @@ func hashAndSalt(password string) (string, error) {
 
 // createUser is an HTTP handler that creates a user object based on the provided username, email, and password.
 func createUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("create user called!")
+
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -48,6 +51,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 		return
 	}
+
+	// TODO: Store the user in the database
 
 	// Create the user object.
 	user := User{

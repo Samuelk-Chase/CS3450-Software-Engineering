@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -16,6 +17,8 @@ type Boss struct {
 
 // getBoss is an HTTP handler that returns a boss object as JSON.
 func getBoss(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("get boss called!")
 	// Create a sample boss.
 	boss := Boss{
 		Name:      "Sample Boss",

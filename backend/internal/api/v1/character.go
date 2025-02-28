@@ -37,6 +37,9 @@ func generateCharacterLLM(name, description string) Character {
 
 // getNewCharacter is an HTTP handler that creates a character object based on the provided name and description.
 func getNewCharacter(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("get new character called!")
+
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -68,6 +71,9 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 
 // GetCharacter is an HTTP handler that returns a character object as JSON.
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("get character called!")
+
 	// Extract the character ID from the URL path.
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -88,7 +94,6 @@ func GetCharacter(w http.ResponseWriter, r *http.Request) {
 		MaxHealth:     100,
 		CurrentHealth: 99,
 	}
-	fmt.Println("get character called!")
 
 	// Set the response header to indicate JSON content.
 	w.Header().Set("Content-Type", "application/json")
@@ -101,8 +106,11 @@ func GetCharacter(w http.ResponseWriter, r *http.Request) {
 
 // GetCharacters is an HTTP handler that returns all characters belonging to a user as JSON.
 func GetCharacters(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("get characters called!")
+
 	// Extract the user ID from the URL path.
-	userIDStr := chi.URLParam(r, "userID")
+	userIDStr := chi.URLParam(r, "id")
 	_, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
@@ -132,7 +140,6 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 			CurrentHealth: 110,
 		},
 	}
-	fmt.Println("get characters called!")
 
 	// Set the response header to indicate JSON content.
 	w.Header().Set("Content-Type", "application/json")

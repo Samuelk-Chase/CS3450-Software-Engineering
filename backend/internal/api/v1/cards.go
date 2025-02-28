@@ -41,6 +41,8 @@ func generateCard(name, description string) Card {
 
 // getCards is an HTTP handler that returns a deck object as JSON.
 func getCards(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("get cards called!")
+
 	// Extract the deck ID from the URL path.
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -69,6 +71,9 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 
 // Post: takes item name and description and returns a card object as JSON
 func getCard(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("get card called!")
+
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
