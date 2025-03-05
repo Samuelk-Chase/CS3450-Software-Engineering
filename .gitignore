@@ -8,7 +8,7 @@ node_modules/
 dist/
 
 # secrets
-**/.env*
+*.env*
 
 # Compiled Java class files
 *.class
