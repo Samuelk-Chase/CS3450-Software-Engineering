@@ -9,11 +9,34 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email, 'Password:', password);
-    navigate('/character-account'); // Redirect to Character Account page
+  
+    try {
+      const response = await fetch("http://localhost:8080/v1/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        alert("Login successful!");
+  
+        // Store authentication state (optional, replace with JWT handling later)
+        localStorage.setItem("userEmail", email);
+  
+        // Navigate to character account page
+        navigate("/character-account");
+      } else {
+        throw new Error("Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed. Please check your credentials.");
+    }
   };
 
   return (

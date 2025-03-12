@@ -11,15 +11,21 @@ import (
 func Routes() http.Handler {
 	r := chi.NewRouter()
 
-	log.Println("Router initialized")
+	log.Println("v1 Routes initialized")
+
+	// Mount LLM routes
 	r.Mount("/llm", llm.Routes())
-	r.Get("/character/{id}", GetCharacter)      // returns a character object as JSON
-	r.Get("/characters/{id}", GetCharacters)    // returns a multiple character objecs as JSON
-	r.Get("/deck/{id}", getCards)               // returns a deck object as JSON
-	r.Post("/card", getCard)                    // returns a card object as JSON
-	r.Post("/getNewCharacter", getNewCharacter) // returns a newly created character as json object
-	r.Post("/createUser", createUser)           // creates a user object based on the provided username, email, and password
-	r.Get("/boss", getBoss)                     // returns a boss object as JSON
+
+	// Correct signup route (use function reference, not function call)
+	r.Post("/signup", createUser)
+	r.Post("/login", loginUser)
+	// Character-related routes
+	r.Get("/character/{id}", GetCharacter)      // Returns a character object as JSON
+	r.Get("/characters/{id}", GetCharacters)    // Returns multiple character objects as JSON
+	r.Get("/deck/{id}", getCards)               // Returns a deck object as JSON
+	r.Post("/card", getCard)                    // Returns a card object as JSON
+	r.Post("/getNewCharacter", getNewCharacter) // Returns a newly created character as JSON object
+	r.Get("/boss", getBoss)                     // Returns a boss object as JSON
 
 	return r
 }

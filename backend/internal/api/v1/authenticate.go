@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"beanboys-lastgame-backend/internal/db"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,6 +16,44 @@ type User struct {
 	Password string `json:"password"`
 }
 
+// loginUser is an HTTP handler that verifies user credentials
+func loginUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("loginUser called!")
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse request body
+	var requestData struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve hashed password from Supabase
+	storedHash, err := db.GetUserPasswordHash(requestData.Email)
+	if err != nil {
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	// Compare the provided password with the stored hash
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(requestData.Password))
+	if err != nil {
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	// Send success response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful!"})
+}
+
 // hashAndSalt hashes and salts the given password.
 func hashAndSalt(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -24,17 +63,16 @@ func hashAndSalt(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-// createUser is an HTTP handler that creates a user object based on the provided username, email, and password.
+// createUser is an HTTP handler that creates a user in Supabase.
 func createUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("create user called!")
+	fmt.Println("createUser called!")
 
-	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse the request body.
+	// Parse request body
 	var requestData struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -45,27 +83,21 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Hash and salt the password.
+	// Hash the password
 	hashedPassword, err := hashAndSalt(requestData.Password)
 	if err != nil {
 		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Store the user in the database
-
-	// Create the user object.
-	user := User{
-		Username: requestData.Username,
-		Email:    requestData.Email,
-		Password: hashedPassword,
+	// Store user in Supabase
+	err = db.InsertUser(requestData.Email, hashedPassword)
+	if err != nil {
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		return
 	}
 
-	// Set the response header to indicate JSON content.
+	// Respond with success
 	w.Header().Set("Content-Type", "application/json")
-
-	// Encode the user object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully!"})
 }

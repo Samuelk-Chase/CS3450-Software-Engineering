@@ -31,3 +31,25 @@ func writeErrorResponse(w http.ResponseWriter, message string, statusCode int) {
 	log.Println("error: ", message)
 	json.NewEncoder(w).Encode(map[string]string{"error": message})
 }
+
+// CORS middleware to allow all origins
+func EnableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow requests from any origin (* means unrestricted access)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Allow all standard HTTP methods
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+		// Allow all headers
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+
+		// Handle preflight (OPTIONS) requests
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
