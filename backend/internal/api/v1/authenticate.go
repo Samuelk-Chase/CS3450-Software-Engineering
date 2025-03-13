@@ -35,8 +35,8 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retrieve hashed password from Supabase
-	storedHash, err := db.GetUserPasswordHash(requestData.Email)
+	// Retrieve user_id and hashed password from Supabase
+	userID, storedHash, err := db.GetUserPasswordHash(requestData.Email) // ✅ Accept userID
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
@@ -49,9 +49,12 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send success response
+	// Send success response with user_id
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful!"})
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id": userID, // ✅ Now returns user_id
+		"message": "Login successful!",
+	})
 }
 
 // hashAndSalt hashes and salts the given password.
@@ -74,7 +77,6 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	// Parse request body
 	var requestData struct {
-		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
@@ -91,13 +93,55 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store user in Supabase
-	err = db.InsertUser(requestData.Email, hashedPassword)
+	userID, err := db.InsertUser(requestData.Email, hashedPassword) // ✅ Accept user_id from InsertUser
 	if err != nil {
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
 	}
 
-	// Respond with success
+	// Respond with user_id for frontend storage
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully!"})
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id": userID, // ✅ Return user_id
+		"message": "User created successfully!",
+	})
+}
+
+// LoginHandler verifies user credentials and returns user_id on success
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var creds struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	userID, storedHash, err := db.GetUserPasswordHash(creds.Email)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+
+	if !CheckPasswordHash(creds.Password, storedHash) {
+		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		return
+	}
+
+	// Respond with user_id so the frontend can store it
+	response := map[string]interface{}{
+		"user_id": userID,
+		"message": "Login successful",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// CheckPasswordHash compares a plaintext password with a hashed password
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"beanboys-lastgame-backend/internal/db"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,36 +10,53 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Character defines the structure of our character object.
+// Character defines the structure of a character object.
 type Character struct {
-	Name          string `json:"name"`
-	ID            int    `json:"id"`
+	CharacterID   int    `json:"character_id"`
+	UserID        int    `json:"user_id"`
+	Name          string `json:"character_name"`
 	Description   string `json:"description"`
-	CurrentMana   int    `json:"currentMana"`
-	MaxMana       int    `json:"maxMana"`
-	CurrentHealth int    `json:"currentHealth"`
-	MaxHealth     int    `json:"maxHealth"`
+	CurrentMana   int    `json:"current_mana"`
+	MaxMana       int    `json:"max_mana"`
+	CurrentHealth int    `json:"current_health"`
+	MaxHealth     int    `json:"max_health"`
 }
 
-func generateCharacterLLM(name, description string) Character {
+func generateCharacterLLM(userID int, name string) (Character, error) {
+	fmt.Println("Generating character for user:", userID)
 
-	// TODO: will create character using llm
-
-	return Character{
-		Name:          name,
-		ID:            1, // Mock ID
-		Description:   description,
-		CurrentMana:   4,   // Mock current mana
-		MaxMana:       10,  // Mock max mana
-		CurrentHealth: 99,  // Mock current health
-		MaxHealth:     100, // Mock max health
+	newCharacter := Character{
+		UserID:        userID,
+		Name:          name, // Now only includes `character_name`
+		CurrentMana:   10,
+		MaxMana:       10,
+		CurrentHealth: 100, // Uses `current_hp`
+		MaxHealth:     100, // Uses `max_hp`
 	}
+
+	// Insert into database
+	characterID, err := db.InsertCharacter(db.Character{
+		UserID:        newCharacter.UserID,
+		Name:          newCharacter.Name, // Uses `character_name`
+		CurrentMana:   newCharacter.CurrentMana,
+		MaxMana:       newCharacter.MaxMana,
+		CurrentHealth: newCharacter.CurrentHealth, // Uses `current_hp`
+		MaxHealth:     newCharacter.MaxHealth,     // Uses `max_hp`
+	})
+	if err != nil {
+		fmt.Println("Error inserting character:", err)
+		return Character{}, err
+	}
+
+	newCharacter.CharacterID = characterID
+	fmt.Println("Character created successfully with ID:", characterID)
+
+	return newCharacter, nil
 }
 
-// getNewCharacter is an HTTP handler that creates a character object based on the provided name and description.
+// getNewCharacter is an HTTP handler that creates a character based on user input.
 func getNewCharacter(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("get new character called!")
+	fmt.Println("getNewCharacter called!")
 
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
@@ -46,8 +64,9 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse the request body.
+	// Parse request body.
 	var requestData struct {
+		UserID      int    `json:"user_id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
@@ -56,96 +75,73 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate the character.
-	character := generateCharacterLLM(requestData.Name, requestData.Description)
-	fmt.Println("generate character called!")
-
-	// Set the response header to indicate JSON content.
-	w.Header().Set("Content-Type", "application/json")
-
-	// Encode the character object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(character); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// Generate character and store in DB.
+	character, err := generateCharacterLLM(requestData.UserID, requestData.Name)
+	if err != nil {
+		http.Error(w, "Failed to create character", http.StatusInternalServerError)
+		return
 	}
+
+	// Return created character as response.
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(character)
 }
 
-// GetCharacter is an HTTP handler that returns a character object as JSON.
+// GetCharacter retrieves a character by ID and ensures it belongs to the logged-in user.
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("get character called!")
-
-	// Extract the character ID from the URL path.
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
+	characterIDStr := chi.URLParam(r, "id")
+	characterID, err := strconv.Atoi(characterIDStr)
 	if err != nil {
 		http.Error(w, "Invalid character ID", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Get the character by ID from the database or other storage.
+	fmt.Println("Fetching character with ID:", characterID)
 
-	// Create a sample character.
-	character := Character{
-		Name:          "John Doe",
-		ID:            id,
-		Description:   "Once upon a time, in a land far away...",
-		CurrentMana:   4,
-		MaxMana:       10,
-		MaxHealth:     100,
-		CurrentHealth: 99,
+	character, err := db.GetCharacterByID(characterID) // ✅ Fetch from DB
+	if err != nil {
+		fmt.Println("Error fetching character:", err)
+		http.Error(w, "Character not found", http.StatusNotFound)
+		return
 	}
 
-	// Set the response header to indicate JSON content.
+	fmt.Println("Fetched character:", character)
 	w.Header().Set("Content-Type", "application/json")
-
-	// Encode the character object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(character); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	json.NewEncoder(w).Encode(character)
 }
 
-// GetCharacters is an HTTP handler that returns all characters belonging to a user as JSON.
+// GetCharacters retrieves all characters belonging to a user.
 func GetCharacters(w http.ResponseWriter, r *http.Request) {
+	userIDStr := r.URL.Query().Get("user_id") // ✅ Read user_id from query params
+	if userIDStr == "" {
+		fmt.Println("❌ Missing user_id in request!")
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
 
-	fmt.Println("get characters called!")
-
-	// Extract the user ID from the URL path.
-	userIDStr := chi.URLParam(r, "id")
-	_, err := strconv.Atoi(userIDStr)
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
+		fmt.Println("❌ Invalid user_id:", userIDStr)
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Get all characters belonging to the user by userID from the database or other storage.
+	fmt.Println("✅ Fetching characters for user ID:", userID)
 
-	// Create sample characters.
-	characters := []Character{
-		{
-			Name:          "John Doe",
-			ID:            1,
-			Description:   "Once upon a time, in a land far away...",
-			CurrentMana:   4,
-			MaxMana:       10,
-			MaxHealth:     100,
-			CurrentHealth: 99,
-		},
-		{
-			Name:          "Jane Doe",
-			ID:            2,
-			Description:   "A brave warrior from the north.",
-			CurrentMana:   5,
-			MaxMana:       12,
-			MaxHealth:     120,
-			CurrentHealth: 110,
-		},
+	characters, err := db.GetUserCharacters(userID) // ✅ Fetch characters from DB
+	if err != nil {
+		fmt.Println("❌ Error fetching characters from DB:", err)
+		http.Error(w, "Failed to fetch characters", http.StatusInternalServerError)
+		return
 	}
 
-	// Set the response header to indicate JSON content.
+	if len(characters) == 0 {
+		fmt.Println("⚠ No characters found for user ID:", userID)
+		http.Error(w, "No characters found", http.StatusNotFound) // ✅ Return explicit 404
+		return
+	}
+
+	fmt.Println("✅ Characters found:", characters)
 	w.Header().Set("Content-Type", "application/json")
-
-	// Encode the characters slice to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(characters); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	json.NewEncoder(w).Encode(characters)
 }

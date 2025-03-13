@@ -23,13 +23,17 @@ const LoginPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
+        
+        if (!data.user_id) {
+          throw new Error("User ID missing in response!");
+        }
+  
+        // Store user ID in local storage
+        localStorage.setItem("userId", String(data.user_id));
+        localStorage.setItem("isLoggedIn", "true"); // Mark the user as logged in
+        
         alert("Login successful!");
-  
-        // Store authentication state (optional, replace with JWT handling later)
-        localStorage.setItem("userEmail", email);
-  
-        // Navigate to character account page
-        navigate("/character-account");
+        navigate("/character-account"); // Redirect to character selection
       } else {
         throw new Error("Invalid credentials");
       }
