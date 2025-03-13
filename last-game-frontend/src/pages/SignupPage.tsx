@@ -15,10 +15,39 @@ const SignupPage: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+      console.log("did this work")
 
       if (response.ok) {
-        alert("Signup successful! You can now log in.");
-        navigate("/login");
+        alert("Signup successful! Logging you in...");
+        // navigate("/login");
+
+        
+          const loginResponse = await fetch("http://localhost:8080/v1/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+      
+          if (loginResponse.ok) {
+            console.log("response is ok")
+            const data = await loginResponse.json();
+            console.log("Login successful:", data);
+            
+            if (!data.user_id) {
+              throw new Error("User ID missing in response!");
+            }
+      
+            // Store user ID in local storage
+            localStorage.setItem("userId", String(data.user_id));
+            localStorage.setItem("isLoggedIn", "true"); // Mark the user as logged in
+            
+            alert("Login successful!");
+            navigate("/character-account"); // Redirect to character selection
+          } else {
+            throw new Error("Invalid credentials");
+          }
+        
       } else {
         throw new Error("Signup failed");
       }

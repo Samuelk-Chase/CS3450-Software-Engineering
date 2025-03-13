@@ -194,7 +194,7 @@ func GetUserPasswordHash(email string) (int, string, error) {
 
 // User struct for inserting and retrieving from Supabase
 type User struct {
-	UserID           int    `json:"user_id"` // ✅ Added user_id field
+	UserID           int    `json:"user_id,omitempty"` // Use omitempty to omit when zero
 	Email            string `json:"email"`
 	PasswordHash     string `json:"password_hash"`
 	PurchaseStatusID int    `json:"purchase_status_id"`
@@ -205,16 +205,31 @@ func InsertUser(email, hashedPassword string) (int, error) {
 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/users"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
+	// Check if user already exists
+	_, _, err := GetUserPasswordHash(email)
+	if err == nil {
+		fmt.Println("❌ User already exists with email:", email)
+		return 0, errors.New("user already exists")
+	}
+
 	// Create request body matching the database schema
-	user := User{
+	user := struct {
+		Email            string `json:"email"`
+		PasswordHash     string `json:"password_hash"`
+		PurchaseStatusID int    `json:"purchase_status_id"`
+	}{
 		Email:            email,
 		PasswordHash:     hashedPassword,
 		PurchaseStatusID: 1, // Default purchase status (modify if needed)
 	}
+
+	fmt.Println("📤 Inserting user:", user)
 	body, err := json.Marshal(user)
 	if err != nil {
 		return 0, err
 	}
+
+	fmt.Println("📤 Request body:", string(body)) // Log the request body
 
 	// Make request to Supabase
 	req, err := http.NewRequest("POST", supabaseURL, bytes.NewBuffer(body))
@@ -229,17 +244,26 @@ func InsertUser(email, hashedPassword string) (int, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("Error:", err)
 		return 0, err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusCreated {
+	// Log the full response body
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println("Supabase Response:", string(respBody))
+
+	if resp.StatusCode == http.StatusConflict {
+		fmt.Println("❌ User already exists. Supabase response:", resp.StatusCode)
+		return 0, errors.New("user already exists")
+	} else if resp.StatusCode != http.StatusCreated {
+		fmt.Println("❌ Failed to insert user. Supabase response:", resp.StatusCode)
 		return 0, fmt.Errorf("failed to insert user, status: %d", resp.StatusCode)
 	}
 
 	// Parse response to get user_id
 	var insertedUsers []User
-	if err := json.NewDecoder(resp.Body).Decode(&insertedUsers); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(respBody)).Decode(&insertedUsers); err != nil {
 		return 0, err
 	}
 
