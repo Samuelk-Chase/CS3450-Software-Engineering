@@ -6,7 +6,7 @@ import MainPlayerView from './pages/MainPlayerView';
 import BossFightPage from './pages/BossFightPage';
 import DeckOverlayPage from './pages/DeckOverlayPage';
 import CharacterAccountPage from './pages/CharacterAccountPage';
-import SignupPage from './pages/SignUpPage';
+import SignupPage from './pages/SignupPage';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
