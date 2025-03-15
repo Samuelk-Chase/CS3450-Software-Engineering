@@ -22,7 +22,7 @@ func Routes() http.Handler {
 	// Character-related routes
 	r.Get("/character/{id}", GetCharacter)      // Returns a character object as JSON
 	r.Get("/characters", GetCharacters)         // ✅ This should be present	r.Get("/deck/{id}", getCards)               // Returns a deck object as JSON
-	r.Post("/card", getCard)                    // Returns a card object as JSON
+	r.Post("/card", getCard)                    // Returns a newly created card object as JSON
 	r.Post("/getNewCharacter", getNewCharacter) // Returns a newly created character as JSON object
 	r.Get("/boss", getBoss)                     // Returns a boss object as JSON
 

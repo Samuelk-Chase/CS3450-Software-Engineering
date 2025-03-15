@@ -1,0 +1,149 @@
+package db
+
+// import (
+// 	"bytes"
+// 	"encoding/json"
+// 	"errors"
+// 	"fmt"
+// 	"io"
+// 	"net/http"
+// 	"os"
+// )
+
+// // Character struct for database operations
+// type Character struct {
+// 	CharacterID   int    `json:"character_id"`
+// 	UserID        int    `json:"user_id"`
+// 	Name          string `json:"character_name"`
+// 	Description   string `json:"description"`
+// 	CurrentMana   int    `json:"current_mana"`
+// 	MaxMana       int    `json:"max_mana"`
+// 	CurrentHealth int    `json:"current_health"`
+// 	MaxHealth     int    `json:"max_health"`
+// }
+
+// // InsertCharacter adds a new character to the database.
+// func InsertCharacter(character Character) (int, error) {
+// 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/character"
+// 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+// 	// Remove `description` since it's not in the table
+// 	body, err := json.Marshal(map[string]interface{}{
+// 		"user_id":        character.UserID,
+// 		"character_name": character.Name, // Matches `character_name`
+// 		"current_hp":     character.CurrentHealth,
+// 		"max_hp":         character.MaxHealth,
+// 		"current_mana":   character.CurrentMana,
+// 		"max_mana":       character.MaxMana,
+// 	})
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	req, err := http.NewRequest("POST", supabaseURL, bytes.NewBuffer(body))
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	req.Header.Set("Content-Type", "application/json")
+// 	req.Header.Set("apikey", supabaseKey)
+// 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+// 	req.Header.Set("Prefer", "return=representation") // Return inserted data
+
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	defer resp.Body.Close()
+
+// 	// Debug print Supabase response
+// 	respBody, _ := io.ReadAll(resp.Body)
+// 	fmt.Println("Supabase Response:", string(respBody))
+
+// 	if resp.StatusCode != http.StatusCreated {
+// 		return 0, errors.New("failed to insert character")
+// 	}
+
+// 	var insertedCharacters []Character
+// 	if err := json.Unmarshal(respBody, &insertedCharacters); err != nil {
+// 		return 0, err
+// 	}
+
+// 	if len(insertedCharacters) == 0 {
+// 		return 0, errors.New("character insertion failed")
+// 	}
+
+// 	return insertedCharacters[0].CharacterID, nil
+// }
+
+// // GetCharacterByID retrieves a character by its ID.
+// func GetCharacterByID(characterID int) (Character, error) {
+// 	supabaseURL := fmt.Sprintf("%s/rest/v1/character?character_id=eq.%d", os.Getenv("SUPABASE_URL"), characterID)
+// 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+// 	req, err := http.NewRequest("GET", supabaseURL, nil)
+// 	if err != nil {
+// 		return Character{}, err
+// 	}
+// 	req.Header.Set("apikey", supabaseKey)
+// 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+// 	req.Header.Set("Content-Type", "application/json")
+
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		return Character{}, err
+// 	}
+// 	defer resp.Body.Close()
+
+// 	if resp.StatusCode != http.StatusOK {
+// 		return Character{}, errors.New("character not found")
+// 	}
+
+// 	var characters []Character
+// 	if err := json.NewDecoder(resp.Body).Decode(&characters); err != nil {
+// 		return Character{}, err
+// 	}
+
+// 	if len(characters) == 0 {
+// 		return Character{}, errors.New("character not found")
+// 	}
+
+// 	return characters[0], nil
+// }
+
+// func GetUserCharacters(userID int) ([]Character, error) {
+// 	supabaseURL := fmt.Sprintf("%s/rest/v1/character?user_id=eq.%d", os.Getenv("SUPABASE_URL"), userID)
+// 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+// 	req, err := http.NewRequest("GET", supabaseURL, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	req.Header.Set("apikey", supabaseKey)
+// 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+// 	req.Header.Set("Content-Type", "application/json")
+
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer resp.Body.Close()
+
+// 	if resp.StatusCode != http.StatusOK {
+// 		fmt.Println("❌ Failed to fetch characters. Supabase response:", resp.StatusCode)
+// 		return nil, errors.New("failed to fetch characters")
+// 	}
+
+// 	var characters []Character
+// 	respBody, _ := io.ReadAll(resp.Body)
+// 	fmt.Println("📜 Supabase API Response:", string(respBody)) // ✅ Log API response
+
+// 	if err := json.Unmarshal(respBody, &characters); err != nil {
+// 		return nil, err
+// 	}
+
+// 	fmt.Println("✅ Retrieved characters:", characters)
+// 	return characters, nil
+// }

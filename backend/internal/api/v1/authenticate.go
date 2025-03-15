@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"beanboys-lastgame-backend/internal/db"
+	db "beanboys-lastgame-backend/internal/db"
 	"encoding/json"
 	"fmt"
 	"net/http"

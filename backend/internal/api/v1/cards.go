@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	db "beanboys-lastgame-backend/internal/db/cards_db"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -27,15 +29,14 @@ type Card struct {
 }
 
 // generateCard creates a card object with the given name and description.
-func generateCard(name, description string) Card {
-	return Card{
-		ID:          1, // Mock ID
-		Name:        name,
-		Type:        "Magic", // Mock type
-		Description: description,
-		ImageURL:    "http://example.com/sample-card.jpg", // Mock image URL
-		Level:       1,                                    // Mock level
-		Effect:      "Sample effect",                      // Mock effect
+func generateCard(name, description string) db.Card {
+	return db.Card{
+		TypeID:          1, // Default type ID
+		Title:           name,
+		ManaCost:        5, // Default mana cost
+		CardDescription: description,
+		ImageURL:        "http://example.com/sample-card.jpg", // Default image URL
+		PowerLevel:      10,                                   // Default power level
 	}
 }
 
@@ -69,9 +70,7 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Post: takes item name and description and returns a card object as JSON
 func getCard(w http.ResponseWriter, r *http.Request) {
-
 	fmt.Println("get card called!")
 
 	// Ensure the request method is POST.
@@ -90,15 +89,28 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate the card.
+	// Generate the card using the provided name and description.
 	card := generateCard(requestData.Name, requestData.Description)
-	fmt.Println("generate card called!")
+
+	// Insert the card into the database.
+	cardID, err := db.InsertCard(card)
+	if err != nil {
+		http.Error(w, "Failed to insert card", http.StatusInternalServerError)
+		return
+	}
+
+	// Retrieve the inserted card to return as a response.
+	insertedCard, err := db.GetCardByID(cardID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve inserted card", http.StatusInternalServerError)
+		return
+	}
 
 	// Set the response header to indicate JSON content.
 	w.Header().Set("Content-Type", "application/json")
 
 	// Encode the card object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(card); err != nil {
+	if err := json.NewEncoder(w).Encode(insertedCard); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
