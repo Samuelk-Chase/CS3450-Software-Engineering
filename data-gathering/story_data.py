@@ -33,6 +33,7 @@ other =    """
     """
 
 COMBAT_PROMPT = "I fight in the combat."
+HISTORY_LEN = 2
 
 def generate_intro(prompt, client, api="openai", model="gpt-4o-mini", max_tokens=1000, temperature=0.7):
     """
@@ -70,9 +71,9 @@ def generate_text(prompt, client, introduction, conversation_history, api="opena
     try:
         # Construct the messages list for the API call
         messages = [{"role": "system", "content": system_prompt}]
-        if (len(conversation_history) < 5):
+        if (len(conversation_history) < HISTORY_LEN):
             messages.append({"role": "assistant", "content": introduction}) 
-        for turn in conversation_history[-5:]:
+        for turn in conversation_history[-HISTORY_LEN:]:
             messages.append({"role": "user", "content": turn["user"]})
             messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
         messages.append({"role": "user", "content": prompt})
@@ -201,9 +202,9 @@ def main():
         # Construct the messages list for the training entry
         if user_prompt != "" and ai_response != "":
             messages = [{"role": "system", "content": system_prompt}]
-            if (len(conversation_history) < 5):
+            if (len(conversation_history) < HISTORY_LEN):
                 messages.append({"role": "assistant", "content": introduction})            
-            for turn in conversation_history[-5:]:
+            for turn in conversation_history[-HISTORY_LEN:]:
                 messages.append({"role": "user", "content": turn["user"]})
                 messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
             
@@ -241,9 +242,9 @@ def main():
 
                 # Construct the messages list for the combat training entry
                 messages = [{"role": "system", "content": system_prompt}]
-                if (len(conversation_history) < 5):
+                if (len(conversation_history) < HISTORY_LEN):
                     messages.append({"role": "assistant", "content": introduction})            
-                for turn in conversation_history[-5:]:
+                for turn in conversation_history[-HISTORY_LEN:]:
                     messages.append({"role": "user", "content": turn["user"]})
                     messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
                 
