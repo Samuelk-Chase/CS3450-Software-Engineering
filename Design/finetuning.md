@@ -191,3 +191,58 @@ The following categories of AI generated content will not require finetuning:
 There are several options that we have for finetuning models. If we decide to use GPT-4o, they have a user-friendly interface on their [website](https://platform.openai.com/docs/guides/fine-tuning#when-to-use-fine-tuning) to finetune any number of models. Otherwise, we can use `huggingface.co` and a repository called `Unsloth` to finetune a model such as Deepseek R1 on one of our own computers.
 
 Once the AI model to be used is finalized, the example data sets will need to be created for each finetuned model. Each data set should ideally have more than 10 example prompts and responses. 
+
+
+# Finetuning data
+
+## Story data
+### Prompts used to generate training data
+1. 
+    
+    Generate a 4 sentence introduction to a story. The generated story should be based off of the theme "old western bank heist". Afterwards, generate me 5 sets of generated story content, each paired with a user prompt that was used to generate the request. The user prompts should be in the first person, as if the user was the main character. The user prompts should be one sentence long, just describing an action and not the reasoning behind each action. Each of the sets should build off of the previous set. The user prompts and responses should work to establish setting and tone, rather than begin story events such as combat.
+2. 
+
+    You are a story-generation assistant, and your job is to generate interesting story lines within the given context. The user will prompt you with a history of several previous prompts and responses, and you should generate an interesting new event in the story based on the most recent user prompt. The prompts will be from a first-person perspective, as if the user were the main character of the story. The reponses should be written from a thrid person perspective, as if they were coming from you, the omniscient narrator.
+    
+    Depending on the content of the response, you should respond with certain key phrases included between asterisks, placed at the end of the response. The possible phrases are: 
+
+    1. 'Combat begins.'
+    2. 'Receive card reward.'
+    3. 'Boss combat begins.'
+
+    Combat beginning is a generally negative event, and should occur if the user is being threatened by an element of the story.
+
+    Receiving a card reward is a positive event, and should only occur if the user has done some action that deserves or would result in a reward in the context of the story. This action deserving a reward could be something like discovering a secret through observation and exploration, solving a puzzle, opening a chest or locked container, or receiving a gift from a character in the story.
+
+    Boss combat is a very negative event, and should only occur if the user is being severely threatened by an element of the story that is very powerful.
+
+    Only use one key phrase per response, and vary the key phrase used. Use 'Boss combat begins.' significantly less frequently than the others. Also, not every sample response should include a key phrase, only about one in every 3 responses should include a key phrase. Base which key phrase is used on the context of the user prompt, and the logical outcome of the action indicated by it. Also base which key phrase is used on the rest of the generated response, and the logical results of such a story event occurring. 
+
+# Engineered Prompts
+### Story Request
+
+    Okay, using the above sets of prompts and responses as context, generate me a new response containing story elements as if the main character had done what is specified in this user prompt: *Prompt goes here*. The response should be written from a third person perspective, as if it were coming from an omniscient narrator. 
+    
+    Depending on the content of the response, you should add certain key phrases included between asterisks, placed at the end of the response. The possible phrases are: 
+
+    1. 'Combat begins.'
+    2. 'Receive card reward.'
+    3. 'Boss combat begins.'
+
+    Combat beginning is a generally negative event, and should occur if the user is being threatened by an element of the story.
+
+    Receiving a card reward is a positive event, and should only occur if the user has done some action that deserves or would result in a reward in the context of the story. This action deserving a reward could be something like discovering a secret through observation and exploration, solving a puzzle, opening a chest or locked container, or receiving a gift from a character in the story.
+
+    Boss combat is a very negative event, and should only occur if the user is being severely threatened by an element of the story that is very powerful.
+
+    Only use a maximum of one key phrase per response, and vary the key phrase used. Use 'Boss combat begins.' significantly less frequently than the others. Also, not every new response should include a key phrase, only about one in every 3 responses should include a key phrase. Base which key phrase is used on the context of the user prompt, and the logical outcome of the action indicated by it. Also base which key phrase is used on the rest of the generated response, and the logical results of such a story event occurring.
+
+
+** The next thing you should do is make a python script or something that requests to the base api. Have it randomly generate a story without key phrases based on your prompts. Then, have the script ask you to rate each response based on what type of key phrase it should have gotten.
+
+0. Combat begins
+1. Receive reward
+2. Boss combat begins
+3. Throw away response (because it was bad), and don't log it
+
+The script should save the previous five prompt/response sets (including their ratings) as well as the most previous prompt and response and its rating as an element in a formatted training data set.
