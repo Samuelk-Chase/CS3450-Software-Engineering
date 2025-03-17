@@ -60,11 +60,4 @@ At the beginning of each session, players can choose a genre such as Fantasy, My
 ### Summary
 This project aims to create an innovative RPG experience where AI dynamically generates the world, story, and challenges. With an open-ended multiplayer format, rich character customization, and an evolving narrative, this game will offer a unique and immersive role-playing adventure for players of all skill levels.
 
-### Next Steps
-- Gather feedback from the team on core mechanics and AI implementation.
-- Define technical requirements and framework selection.
-- Develop a prototype focusing on AI-driven world generation and character interaction.
-- Implement multiplayer functionality and test scalability.
-
-Let’s discuss how we can refine these ideas further!
 
