@@ -13,7 +13,9 @@ from you, the omniscient narrator. The responses should be roughly one paragraph
 your goal should be to not force the user to commit to any one action, but rather to leave \
 each response open-ended so the user can creatively explore their options. Don't give the user \
 any specific choices, but rather describe the situation and let the user decide what to do. When \
-referring to the main character (the user), use the the pronoun 'you'."
+referring to the main character (the user), use the the pronoun 'you'. \
+If the user's prompt contains the words, 'I fight in the combat.', you should respond with a \
+short paragraph describing the combat, as if the user had just beaten all of their enemies."
 other =    """
     Depending on the content of the response, you should respond with certain key phrases included between asterisks, placed at the end of the response. The possible phrases are: 
 
@@ -29,6 +31,8 @@ other =    """
 
     Only use one key phrase per response, and vary the key phrase used. Use 'Boss combat begins.' significantly less frequently than the others. Also, not every sample response should include a key phrase, only about one in every 3 responses should include a key phrase. Base which key phrase is used on the context of the user prompt, and the logical outcome of the action indicated by it. Also base which key phrase is used on the rest of the generated response, and the logical results of such a story event occurring. 
     """
+
+COMBAT_PROMPT = "I fight in the combat."
 
 def generate_intro(prompt, client, api="openai", model="gpt-4o-mini", max_tokens=1000, temperature=0.7):
     """
@@ -118,6 +122,21 @@ def get_key_phrase(ai_response):
     rating_mapping = {"0": "", "1": "*Combat begins*", "2": "*Receive reward*", "3": "*Boss combat begins*", "4": "Discard"}
     return rating_mapping[rating_input]
 
+def check_moderation(content, client):
+    """
+    Checks the content using OpenAI's moderation API.
+    """
+    try:
+        response = client.moderations.create(input=content)
+        if response.results[0].flagged:
+            print("Content flagged by moderation API. Not logging this turn.")
+            return False
+        print (response.results[0].model_dump())
+        return True
+    except Exception as e:
+        print(f"Error checking moderation: {e}")
+        return False
+
 def main():
     # Ask the user to choose the API
     api_choice = input("Choose the AI API to use (openai/ollama): ").strip().lower()
@@ -164,44 +183,23 @@ def main():
         if key_phrase == "Discard":
             continue
 
+        # Check moderation for user prompt and ai response individually
+        if not check_moderation(user_prompt, client):
+            user_prompt = ""
+        if not check_moderation(ai_response, client):
+            ai_response = ""
+
         # Save the current conversation turn into history.
         conversation_turn = {
             "user": user_prompt,
             "assistant": ai_response,
             "key_phrase": key_phrase
         }
+
         conversation_history.append(conversation_turn)
 
         # Construct the messages list for the training entry
-        messages = [{"role": "system", "content": system_prompt}]
-        if (len(conversation_history) < 5):
-            messages.append({"role": "assistant", "content": introduction})            
-        for turn in conversation_history[-5:]:
-            messages.append({"role": "user", "content": turn["user"]})
-            messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
-        
-        training_entry = {"messages": messages}
-
-        # Append the training entry to the jsonl file
-        output_filename = "training_data.jsonl"
-        try:
-            with open(output_filename, "a") as f:
-                f.write(json.dumps(training_entry) + "\n")
-            print(f"Turn logged and saved to {output_filename}.\n")
-        except Exception as e:
-            print(f"Error saving training data: {e}")
-
-        # Handle the case where the key phrase is "Combat begins"
-        if key_phrase == "*Combat begins*":
-            combat_response = input("Enter the assistant response for 'I fight in the combat.': ")
-            combat_turn = {
-                "user": "I fight in the combat.",
-                "assistant": combat_response,
-                "key_phrase": ""
-            }
-            conversation_history.append(combat_turn)
-
-            # Construct the messages list for the combat training entry
+        if user_prompt != "" and ai_response != "":
             messages = [{"role": "system", "content": system_prompt}]
             if (len(conversation_history) < 5):
                 messages.append({"role": "assistant", "content": introduction})            
@@ -209,15 +207,55 @@ def main():
                 messages.append({"role": "user", "content": turn["user"]})
                 messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
             
-            combat_training_entry = {"messages": messages}
+            training_entry = {"messages": messages}
 
-            # Append the combat training entry to the jsonl file
+            # Append the training entry to the jsonl file
+            output_filename = "training_data.jsonl"
             try:
                 with open(output_filename, "a") as f:
-                    f.write(json.dumps(combat_training_entry) + "\n")
-                print(f"Combat turn logged and saved to {output_filename}.\n")
+                    f.write(json.dumps(training_entry) + "\n")
+                print(f"Turn logged and saved to {output_filename}.\n")
             except Exception as e:
-                print(f"Error saving combat training data: {e}")
+                print(f"Error saving training data: {e}")
+
+        # Handle the case where the key phrase is "Combat begins"
+        if key_phrase == "*Combat begins*":
+            combat_response = generate_text(COMBAT_PROMPT, client, introduction, conversation_history, api=api_choice)
+            print("\nCombat Response:")
+            print(combat_response)
+            combat_turn = {
+                "user": COMBAT_PROMPT,
+                "assistant": combat_response,
+                "key_phrase": ""
+            }
+
+            # Check moderation before logging combat turn
+            if not check_moderation(combat_response, client):
+                combat_turn["assistant"] = ""
+            if not check_moderation(combat_turn["user"], client):
+                combat_turn["user"] = ""
+
+            conversation_history.append(combat_turn)
+            
+            if combat_response != "" and combat_turn["user"] != "":
+
+                # Construct the messages list for the combat training entry
+                messages = [{"role": "system", "content": system_prompt}]
+                if (len(conversation_history) < 5):
+                    messages.append({"role": "assistant", "content": introduction})            
+                for turn in conversation_history[-5:]:
+                    messages.append({"role": "user", "content": turn["user"]})
+                    messages.append({"role": "assistant", "content": turn["assistant"] + f" {turn['key_phrase']}"})
+                
+                combat_training_entry = {"messages": messages}
+
+                # Append the combat training entry to the jsonl file
+                try:
+                    with open(output_filename, "a") as f:
+                        f.write(json.dumps(combat_training_entry) + "\n")
+                    print(f"Combat turn logged and saved to {output_filename}.\n")
+                except Exception as e:
+                    print(f"Error saving combat training data: {e}")
 
 if __name__ == "__main__":
     main()
