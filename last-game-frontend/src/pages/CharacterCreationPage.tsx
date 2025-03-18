@@ -17,7 +17,6 @@ const CharacterCreationPage: React.FC = () => {
     const storedUserId = localStorage.getItem("userId");
 
     if (!storedUserId || isNaN(Number(storedUserId))) {
-      alert("You are not logged in. Redirecting to login...");
       localStorage.removeItem("userId"); // Remove invalid value
       navigate("/login");
       return;
@@ -28,12 +27,7 @@ const CharacterCreationPage: React.FC = () => {
 
   // Handle character creation
   const handleCreateCharacter = async () => {
-    if (userId === null) {
-      alert("User not logged in!");
-      return;
-    }
-    if (characterName.trim() === "") {
-      alert("Please enter a character name.");
+    if (userId === null || characterName.trim() === "") {
       return;
     }
 
@@ -52,20 +46,38 @@ const CharacterCreationPage: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Character created successfully!");
-        setCharacterName(""); // Reset input field
-        navigate("/character-account"); // Redirect back to character selection
+        setCharacterName(""); 
+        navigate("/character-account");
       } else {
         const errorText = await response.text();
         console.error("Failed to create character:", errorText);
-        alert(`Failed to create character: ${errorText}`);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error creating character.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Define styles BEFORE return
+  const dialogStyles = {
+    backgroundColor: "black",
+    color: "#E3C9CE",
+    border: "3px solid #27ae60",
+    boxShadow: "0 0 15px #27ae60, 0 0 30px #1e8449",
+    borderRadius: "10px",
+    padding: "20px",
+  };
+
+  const headerStyles = {
+    backgroundColor: "black",
+    color: "#27ae60",
+    borderBottom: "2px solid #27ae60",
+  };
+
+  const footerStyles = {
+    backgroundColor: "black",
+    borderTop: "2px solid #27ae60",
   };
 
   return (
@@ -122,11 +134,14 @@ const CharacterCreationPage: React.FC = () => {
         onHide={() => setShowDialog(false)}
         header="Confirm Character Creation"
         modal
-        style={{ width: "30vw" }}
+        style={{ width: "30vw", ...dialogStyles }}
       >
-        <p style={{ textAlign: "center", fontSize: "1.2rem" }}>
-          Are you sure you want to create the character <b>{characterName}</b>?
-        </p>
+        <div style={headerStyles}>
+          <p style={{ textAlign: "center", fontSize: "1.2rem", color: "#E3C9CE" }}>
+            Are you sure you want to create the character <b>{characterName}</b>?
+          </p>
+        </div>
+
         <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
             label="Cancel"
@@ -139,6 +154,8 @@ const CharacterCreationPage: React.FC = () => {
             onClick={handleCreateCharacter}
           />
         </div>
+
+        <div style={footerStyles} />
       </Dialog>
 
       {/* Loading Spinner */}

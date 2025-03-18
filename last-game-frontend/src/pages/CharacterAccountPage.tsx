@@ -93,14 +93,14 @@ const CharacterAccountPage: React.FC = () => {
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
               transition: "0.3s ease",
             }}
-            onClick={() => handleCharacterSelect(char.character_id)} // ✅ Click to select character
+            onClick={() => handleCharacterSelect(char.character_id)} 
           >
             <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FFF" }}>
               {char.character_name}
             </h3>
             <p style={{ fontSize: "1.1rem", color: "#AAAAAA" }}>
-              HP: {char.current_hp}/{char.max_hp} | Mana: {char.current_mana}/{char.max_mana}
-            </p>
+  HP: {`${char.current_hp}/${char.max_hp}`} | Mana: {`${char.current_mana}/${char.max_mana}`}
+</p>
           </div>
         ))}
       </div>

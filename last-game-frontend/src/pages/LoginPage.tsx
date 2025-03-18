@@ -1,11 +1,19 @@
+"use client";
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { Link } from 'react-router-dom';
+import backgroundImage from '../images/Login background.jpg';
+// Supabase and OAuth imports
+import type { Provider } from "@supabase/supabase-js";
+import { supabase } from "../utils/supabase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub, faGitlab, faBitbucket, faApple } from "@fortawesome/free-brands-svg-icons";
 
 const LoginPage: React.FC = () => {
+  // State for email/password login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -32,32 +40,34 @@ const LoginPage: React.FC = () => {
         localStorage.setItem("userId", String(data.user_id));
         localStorage.setItem("isLoggedIn", "true"); // Mark the user as logged in
         
-        alert("Login successful!");
+        
         navigate("/character-account"); // Redirect to character selection
       } else {
         throw new Error("Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed. Please check your credentials.");
     }
   };
+
 
   return (
     <div 
       style={{
         minHeight: '100vh',
-        backgroundColor: '#333333',
-        color: '#E3C9CE',
+        backgroundImage: `url(${backgroundImage})`, // Ensure correct path
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
-        justifyContent: 'center', // Center horizontally
-        alignItems: 'center', // Center vertically
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '2rem'
       }}
     >
-      {/* Login Card */}
       <Card 
         style={{
-          width: '700px', // Slightly larger to accommodate 500px input fields
+          width: '700px',
           backgroundColor: '#2d2d2d',
           borderRadius: '18px',
           boxShadow: '0 0 40px #20683F',
@@ -65,16 +75,17 @@ const LoginPage: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          padding: '3rem'
+          padding: '2rem'
         }}
       >
-        {/* Title */}
-        <h1 style={{ marginBottom: '2rem', fontSize: '3.5rem' }}>BEAN BOYS</h1>
-        <p style={{ marginBottom: '2rem', fontSize: '1.8rem' }}>The Last Game</p>
+        {/* Title and Subtitle */}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '3.5rem' }}>BEAN BOYS</h1>
+          <p style={{ fontSize: '1.8rem' }}>The Last Game</p>
+        </div>
 
-        {/* Login Form */}
+        {/* Email/Password Login Form */}
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          {/* Email Field */}
           <div style={{ width: '100%', marginBottom: '2rem', textAlign: 'center' }}>
             <InputText 
               placeholder="Email" 
@@ -82,7 +93,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="p-inputtext-lg"
               style={{
-                width: '500px', // Fixed 500px width
+                width: '500px',
                 height: '60px',
                 fontSize: '1.8rem',
                 backgroundColor: '#444444',
@@ -95,7 +106,6 @@ const LoginPage: React.FC = () => {
             />
           </div>
 
-          {/* Password Field */}
           <div style={{ width: '100%', marginBottom: '2rem', textAlign: 'center' }}>
             <InputText 
               placeholder="Password" 
@@ -104,7 +114,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="p-inputtext-lg"
               style={{
-                width: '500px', // Fixed 500px width
+                width: '500px',
                 height: '60px',
                 fontSize: '1.8rem',
                 backgroundColor: '#444444',
@@ -117,13 +127,12 @@ const LoginPage: React.FC = () => {
             />
           </div>
 
-          {/* Login Button */}
           <Button 
             type="submit" 
             label="LOGIN" 
             className="p-button p-button-rounded p-button-success p-shadow-3" 
             style={{
-              width: '500px', // Match input field width
+              width: '500px',
               height: '60px',
               fontSize: '1.8rem',
               background: 'linear-gradient(180deg, #27ae60 0%, #1e8449 100%)',
@@ -137,7 +146,32 @@ const LoginPage: React.FC = () => {
           />
         </form>
 
-        {/* "Don't Have an Account?" Section */}
+        {/* OAuth Login Buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', alignItems: 'center', marginTop: '2rem' }}>
+          {[{ icon: faGithub, name: 'GitHub' }, { icon: faGitlab, name: 'GitLab' }, { icon: faBitbucket, name: 'Bitbucket' }, { icon: faApple, name: 'Apple' }].map((item, index) => (
+            <div 
+              key={index}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                width: '250px',
+                height: '60px',
+                padding: '0.5rem',
+                border: '2px solid #28a745',
+                borderRadius: '8px',
+                backgroundColor: '#333',
+                cursor: 'pointer'
+              }}
+            >
+              <FontAwesomeIcon icon={item.icon} style={{ height: '24px', color: '#28a745' }} />
+              <span style={{ fontSize: '1.8rem', color: '#28a745', marginLeft: '10px' }}>{item.name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Signup Link */}
         <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '1.4rem' }}>
           <span>Don't have an account? </span>
           <Link to="/signup" style={{ color: '#27ae60', textDecoration: 'underline', fontWeight: 'bold' }}>
