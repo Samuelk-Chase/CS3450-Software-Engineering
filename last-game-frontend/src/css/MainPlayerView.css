@@ -1,148 +1,150 @@
-/* MainPlayerView.css */
-
 /* Global reset & body styling */
 * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: #333333;
-    font-family: Arial, sans-serif;
-    color: #E3C9CE;
-  }
-  
-  /* Top Bar */
-  .top-bar {
-    background-color: #2d2d2d;
-    box-shadow: 0 0 20px #20683F;
-    padding: 1rem;
-    text-align: center;
-  }
-  .top-bar h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-  
-  /* Main Container - Two-Column Layout */
-  .main-container {
-    display: flex;
-    width: 90%;  /* Use full screen width */
-    margin: 2rem auto;  
-    gap: 3rem; /* Increase spacing between sections */
-    align-items: flex-start;
-    justify-content: space-between; /* Spread out elements */
+  box-sizing: border-box;
 }
-  /* LEFT PANEL: Player Stats & Buttons */
-  .left-panel {
-    flex: 0 0 350px; /* Reduce width so text area gets more space */
-    background-color: #2d2d2d;
-    border-radius: 8px;
-    box-shadow: 0 0 20px #20683F;
-    padding: 2rem;
-    margin: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #333333;
+  font-family: Arial, sans-serif;
+  color: #E3C9CE;
 }
-  
-  .player-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background-color: #444444;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-  
-  .player-info img {
-    width: 100px;  /* Enlarged from 60px to 100px */
-    height: 100px; /* Enlarged from 60px to 100px */
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #20683F;
-  }
-  
-  .player-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  /* Health & Mana Bars */
-  .health-mana-bars {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .bar-container {
-    width: 180px;  /* Increased from 120px to 180px */
-    height: 16px;  /* Increased from 14px to 16px */
-    background-color: #555;
-    border-radius: 4px;
-    position: relative;
-  }
-  
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  .health-bar-fill {
-    width: 100%; /* Adjust dynamically as needed */
-    background-color: #3ecf4f;
-  }
-  .mana-bar-fill {
-    width: 100%; /* Adjust dynamically as needed */
-    background-color: #4287f5;
-  }
-  
-  /* Left Panel Buttons */
- /* Default button styles */
-.left-panel .action-button,
-.left-panel .view-deck-button {
-    width: 100%;
-    background-color: #20683F;
-    border: none;
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.3s ease-in-out;
+
+/* Top Bar */
+/* Top Bar */
+.top-bar {
+  background-color: transparent;  /* Make background transparent */
+  box-shadow: none;               /* Remove box-shadow */
+  padding: 0;                     /* Remove padding */
+  text-align: center;
+}
+.top-bar h1 {
+  margin: 0;
+  font-size: 2rem; /* Adjust font size as needed */
+  color: #fff; /* Make sure the text is white */
+}
+
+/* Main Container - Two-Column Layout */
+.main-container {
+  display: flex;
+  width: 90%; /* Use full screen width */
+  margin: 2rem auto;
+  gap: 3rem; /* Increase spacing between sections */
+  align-items: flex-start;
+  justify-content: space-between; /* Spread out elements */
+}
+
+/* LEFT PANEL: Player Stats & Buttons */
+.left-panel {
+  flex: 0 0 350px; /* Reduce width so text area gets more space */
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  box-shadow: 0 0 20px #20683F;
+  padding: 2rem;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 4rem; /* Add some space at the top */
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #444444;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.player-info img {
+  width: 100px; /* Enlarged from 60px to 100px */
+  height: 100px; /* Enlarged from 60px to 100px */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #20683F;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Health & Mana Bars */
+.health-mana-bars {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Health and Mana Bars */
+.bar-container {
+  width: 180px;
+  height: 16px;
+  background-color: #555;
+  border-radius: 4px;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Gradient for Health Bar */
+.health-bar-fill {
+  width: 100%; /* Adjust dynamically as needed */
+  background: linear-gradient(45deg, #1b5e20, #388e3c); /* Green gradient */
+}
+
+/* Gradient for Mana Bar */
+.mana-bar-fill {
+  width: 100%; /* Adjust dynamically as needed */
+  background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Blue gradient */
+}
+
+/* COMMON BUTTON STYLES FOR ALL BUTTONS */
+.button-common {
+  width: 100%;
+  background-color: #20683F;
+  border: none;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
 }
 
 /* Hover effect: Brighten hovered button */
-.left-panel .action-button:hover,
-.left-panel .view-deck-button:hover {
-    background-color: #28a04a; /* Brighter green */
-    transform: scale(1.05); /* Slightly enlarges */
+.button-common:hover {
+  background-color: #28a04a; /* Brighter green */
+  transform: scale(1.05); /* Slightly enlarges */
 }
 
 /* Reduce size and dim other buttons when one is hovered */
-.left-panel:hover .action-button:not(:hover),
-.left-panel:hover .view-deck-button:not(:hover) {
-    background-color: #144d2a; /* Darker green */
-    transform: scale(0.95); /* Shrinks slightly */
+.button-common:active {
+  background-color: #144d2a; /* Darker green */
+  transform: scale(0.95); /* Shrinks slightly */
 }
-  
-  /* RIGHT PANEL: Story & Decision Input */
-  .right-panel {
-    flex: 0 0 1200px; /* Increased from 320px/400px to 500px */
-    background-color: #2d2d2d;
-    border-radius: 8px;
-    box-shadow: 0 0 20px #20683F;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    height: calc(99vh - 100px); /* Adjusts to fill vertical space minus the top bar */
-  }
-  
-  /* Story Container (scrollable) */
-/* Increase text size inside the story container */
+
+/* RIGHT PANEL: Story & Decision Input */
+.right-panel {
+  flex: 0 0 1200px; /* Increased from 320px/400px to 500px */
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  box-shadow: 0 0 20px #20683F;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  height: calc(99vh - 100px); /* Adjusts to fill vertical space minus the top bar */
+}
+
+/* Story Container (scrollable) */
 .story-container {
   flex: 1;
   overflow-y: auto;
@@ -150,7 +152,7 @@
   background-color: #444444;
   border-radius: 8px;
   margin-bottom: 5rem;
-  font-size: 1.2rem;  /* Increased font size from default */
+  font-size: 1.2rem; /* Increased font size from default */
   line-height: 1.6;   /* Improved readability */
 }
 .story-container h2 {
@@ -160,135 +162,98 @@
 .story-container p {
   margin: 0.3rem 0;
 }
-  
-  /* Action Row (Decision Input & Submit) */
-  .action-row {
-    display: flex;
-    gap: 1rem;
-  }
-  .action-row input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #444;
-    color: #E3C9CE;
-    font-size: 1rem;
-  }
-  .action-row .action-button {
-    background-color: #20683F;
-    border: none;
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .action-row .action-button:hover {
-    background-color: #1a562f;
-  }
-  .text-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    width: 85%; /* Make it wider */
-    margin: 2rem auto;
-    height: 70vh; /* Make it taller */
+
+/* Action Row (Decision Input & Submit) */
+.action-row {
+  display: flex;
+  gap: 1rem;
+}
+.action-row input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #444;
+  color: #E3C9CE;
+  font-size: 1rem;
+}
+.action-row .action-button {
+  background-color: #20683F;
+  border: none;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.action-row .action-button:hover {
+  background-color: #1a562f;
+}
+
+/* Text Section Styling */
+.text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%; /* Make it wider */
+  margin: 2rem auto;
+  height: 70vh; /* Make it taller */
 }
 
 .text-content {
-    background-color: #2d2d2d;  /* Grey background */
-    color: white;
-    padding: 30px;
-    border: 2px solid #20683F;  /* Green border */
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0px 0px 20px #20683F; /* Glowing effect */
-    width: 100%;
-    height: 90%; /* Make it take more space */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem; /* Make text larger */
+  background-color: #2d2d2d; /* Grey background */
+  color: white;
+  padding: 30px;
+  border: 2px solid #20683F; /* Green border */
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 0px 20px #20683F; /* Glowing effect */
+  width: 100%;
+  height: 90%; /* Make it take more space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem; /* Make text larger */
 }
-  
-  /* USER RESPONSE SECTION */
-  .user-response {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #2d2d2d;
-    border: 2px solid #20683F;
-    border-radius: 8px;
-    padding: 12px;
-    width: 100%;
-    height: 15%;
-  }
-  
-  .user-response input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    background-color: #444444;
-    color: white;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  .user-response button {
-    background-color: #20683F;
-    color: white;
-    border: none;
-    padding: 12px 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 12px;
-    font-size: 1rem;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .user-response button:hover {
-    background-color: #28a04a;
-    transform: scale(1.05);
-  }
 
-  .user-response {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #2d2d2d;
-    border: 2px solid #20683F;
-    border-radius: 8px;
-    padding: 15px;
-    width: 100%;
-    height: 10%;
+/* USER RESPONSE SECTION */
+.user-response {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2d2d2d;
+  border: 2px solid #20683F;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  height: 15%;
 }
 
 .user-response input {
-    flex: 1;
-    padding: 15px;
-    border: none;
-    background-color: #444444;
-    color: white;
-    border-radius: 4px;
-    font-size: 1.1rem;
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background-color: #444444;
+  color: white;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
 .user-response button {
-    background-color: #20683F;
-    color: white;
-    border: none;
-    padding: 15px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 12px;
-    font-size: 1.1rem;
-    transition: all 0.2s ease-in-out;
+  background-color: #20683F;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .user-response button:hover {
-    background-color: #28a04a;
-    transform: scale(1.05);
+  background-color: #28a04a;
+  transform: scale(1.05);
 }
 
 /* Modal Overlay */
@@ -349,6 +314,151 @@
 }
 
 .close-button:hover {
+  background-color: #28a04a;
+  transform: scale(1.05);
+}
+
+/* Card content inside */
+.card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFF;
+  margin-bottom: 10px; /* Space between name and other content */
+}
+
+.card p {
+  font-size: 1.1rem;
+  color: #AAAAAA;
+  margin-top: 10px; /* Space between HP/Mana info */
+}
+
+/* MainPlayerView.css */
+
+/* Common button styles */
+.button {
+  padding: 1.2rem 2.5rem;
+  font-size: 1.5rem;
+  background: linear-gradient(45deg, #1b5e20, #388e3c);
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
+}
+
+.button:hover {
+  background: linear-gradient(45deg, #388e3c, #1b5e20);
+  transform: scale(1.05);
+}
+
+.button:active {
+  transform: scale(0.95);
+}
+
+/* Add image styling */
+.player-image {
+  width: 100%;
+  height: 150px;  /* Adjust height as needed */
+  margin-bottom: 1rem; /* Space between image and other content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.player-image .image {
+  max-width: 90%; /* Make image responsive */
+  height: auto;
+  border-radius: 8px; /* Add rounded corners if you prefer */
+}
+/* Chat History Section */
+.chat-history {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #444444;
+  border-radius: 8px;
+  height: 1900px; /* Fixed height for the chat history */
+  overflow-y: auto;  /* Makes the chat history scrollable */
+  width: 100%;
+}
+
+.chat-entry {
+  margin-bottom: 1rem;
+}
+
+.timestamp {
+  color: #888888;
+  font-size: 0.9rem;
+}
+
+.chat-text {
+  font-size: 1rem;
+  color: #E3C9CE;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 85%; /* Keep it wider */
+  margin: 3rem auto;
+  height: 80vh; /* Adjust the overall height */
+  padding-top: -1rem; /* Remove padding from the top */
+}
+
+.text-content {
+  background-color: #2d2d2d; /* Grey background */
+  color: white;
+  padding: 20px; /* Reduced padding */
+  border: 2px solid #20683F; /* Green border */
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 0px 20px #20683F; /* Glowing effect */
+  width: 100%;
+  height: 1%; /* Adjust the height to make it smaller */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem; /* Reduced font size for a more compact look */
+}
+
+/* USER RESPONSE SECTION - Reduced height */
+.user-response {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2d2d2d;
+  border: 2px solid #20683F;
+  border-radius: 8px;
+  padding: 8px; /* Reduced padding for a smaller look */
+  width: 100%;
+  height: 8%; /* Reduced height to make it smaller */
+}
+
+.user-response input {
+  flex: 1;
+  padding: 10px; /* Reduced padding */
+  border: none;
+  background-color: #444444;
+  color: white;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.user-response button {
+  background-color: #20683F;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.user-response button:hover {
   background-color: #28a04a;
   transform: scale(1.05);
 }

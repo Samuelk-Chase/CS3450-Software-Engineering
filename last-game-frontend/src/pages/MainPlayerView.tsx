@@ -12,12 +12,27 @@ interface Character {
   max_mana: number;
 }
 
+interface Card {
+  id: number;
+  name: string;
+  type: string;
+  level: number;
+  mana: number;
+  effect: string;
+  image: string;
+}
+
+const cards: Card[] = [
+  { id: 1, name: "Dagger", type: "Attack", level: 1, mana: 3, effect: "Deal a Guaranteed 20 damage per hit", image: "src/images/dagger.jpg" },
+  { id: 2, name: "Necromancy", type: "Ability", level: 6, mana: 7, effect: "Bring back opponent for your team", image: "src/images/necromancy.jpg" },
+  { id: 3, name: "Mirrors", type: "Ability", level: 1, mana: 1, effect: "Any damage done to you reflects to opponent", image: "src/images/magicmirror.jpg" },
+];
+
 const MainPlayerView: React.FC = () => {
   const [character, setCharacter] = useState<Character | null>(null);
-  const [gameText, setGameText] = useState<string>(
-    "Welcome to the adventure! What will you do next?"
-  );
+  const [gameText, setGameText] = useState<string>("Welcome to the adventure! What will you do next?");
   const [userResponse, setUserResponse] = useState<string>("");
+  const [chatHistory, setChatHistory] = useState<{ text: string, timestamp: string }[]>([]); // Store the history with timestamps
   const [showChestModal, setShowChestModal] = useState<boolean>(false); // Controls chest modal visibility
 
   const navigate = useNavigate();
@@ -62,6 +77,14 @@ const MainPlayerView: React.FC = () => {
 
   const handleSubmitResponse = () => {
     if (userResponse.trim() === "") return;
+
+    // Append the response with a timestamp to the chat history
+    const timestamp = new Date().toLocaleTimeString();
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { text: `You chose to: ${userResponse}`, timestamp },
+    ]);
+
     setGameText(`You chose to: ${userResponse}`);
     setUserResponse(""); // Clear input after submission
   };
@@ -98,7 +121,7 @@ const MainPlayerView: React.FC = () => {
       >
         {/* Top Bar */}
         <div className="top-bar">
-          <h1>BEAN BOYS - The Last Game </h1>
+          <h1>BEAN BOYS - The Last Game</h1>
         </div>
 
         {/* Main Container */}
@@ -130,19 +153,29 @@ const MainPlayerView: React.FC = () => {
             </div>
 
             {/* Buttons */}
-            <button className="view-deck-button" onClick={() => navigate("/deck")}>
+            <button className="button" onClick={() => navigate("/deck")}>
               View Deck
             </button>
-            <button className="action-button" onClick={handleOpenChest}>
+            <button className="button" onClick={handleOpenChest}>
               Open Chest
             </button>
-            <button className="action-button" onClick={() => navigate("/boss")}>
+            <button className="button" onClick={() => navigate("/boss")}>
               Enter Boss Fight
             </button>
           </div>
 
           {/* TEXT CONTENT SECTION */}
           <div className="text-container">
+            {/* Chat History */}
+            <div className="chat-history">
+              {chatHistory.map((entry, index) => (
+                <div key={index} className="chat-entry">
+                  <span className="timestamp">[{entry.timestamp}]</span>
+                  <span className="chat-text">{entry.text}</span>
+                </div>
+              ))}
+            </div>
+
             <div className="text-content">
               <p>{gameText}</p>
             </div>
@@ -167,10 +200,16 @@ const MainPlayerView: React.FC = () => {
           <div className="modal-content">
             <h2>You've Found 3 Cards!</h2>
             <div className="card-container">
-              {/* You can replace these with actual card images */}
-              <img alt="Card 1" className="card" />
-              <img alt="Card 2" className="card" />
-              <img alt="Card 3" className="card" />
+              {cards.map((card) => (
+                <div key={card.id} className="card" style={{ backgroundImage: `url(${card.image})` }}>
+                  <h3>{card.name}</h3>
+                  <p>{card.effect}</p>
+                  <div className="card-footer">
+                    <span className="card-level">LV: {card.level}</span>
+                    <span className="card-type">{card.type}</span>
+                  </div>
+                </div>
+              ))}
             </div>
             <button className="close-button" onClick={handleCloseChest}>
               Close

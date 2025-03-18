@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
+import backgroundImage from "../images/Login background.jpg"; // Import the background image
 
 interface Character {
   character_id: number;
@@ -51,14 +52,21 @@ const CharacterAccountPage: React.FC = () => {
   return (
     <div
       style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        height: "100vh",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        minHeight: "100vh",
-        backgroundColor: "#222222",
-        color: "#E3C9CE",
+        minHeight: "100vh", // Ensure it takes full viewport height
+        color: "#E3C9CE", // White text color for better readability
         textAlign: "center",
+        padding: "2rem",
+        boxSizing: "border-box",
       }}
     >
       <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
@@ -81,26 +89,11 @@ const CharacterAccountPage: React.FC = () => {
         {characters.map((char) => (
           <div
             key={char.character_id}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              cursor: "pointer",
-              padding: "10px",
-              backgroundColor: "#444",
-              borderRadius: "12px",
-              border: "3px solid #20683F",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-              transition: "0.3s ease",
-            }}
-            onClick={() => handleCharacterSelect(char.character_id)} 
+            className="card" // Ensure this matches the CSS class for cards
+            onClick={() => handleCharacterSelect(char.character_id)}
           >
-            <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#FFF" }}>
-              {char.character_name}
-            </h3>
-            <p style={{ fontSize: "1.1rem", color: "#AAAAAA" }}>
-  HP: {`${char.current_hp}/${char.max_hp}`} | Mana: {`${char.current_mana}/${char.max_mana}`}
-</p>
+            <h3>{char.character_name}</h3>
+            <p>HP: {`${char.current_hp}/${char.max_hp}`} | Mana: {`${char.current_mana}/${char.max_mana}`}</p>
           </div>
         ))}
       </div>

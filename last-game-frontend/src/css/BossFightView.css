@@ -1,136 +1,135 @@
-/* Full-screen container with a limited background image height */
+/* Global styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #E3C9CE;
+}
+
+/* Boss Fight Container */
 .boss-fight-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    background: url('../images/background.jpg') no-repeat center center;
-    background-size: 100% 70vh;
-    background-position: top;
-    padding: 1rem;
-    position: relative;
-  }
-  
-  /* Fight area - positions characters properly */
-  .fight-area {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 85%;
-    height: 66vh;
-    position: relative;
-  }
-  
-  /* Player & Boss sides */
-  .player-side, .boss-side {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 18%;
-    position: relative;
-  }
-  
-  /* Bigger Character Images */
-  .character-img {
-    width: 180px;
-    height: 260px;
-    border-radius: 15px;
-    border: 3px solid #ff4757;
-    box-shadow: 0px 0px 15px rgba(255, 71, 87, 0.8);
-  }
-  
-  .boss-side .character-img {
-    border-color: #d63031;
-    box-shadow: 0px 0px 15px rgba(214, 48, 49, 0.7);
-  }
-  
-  /* Character Names */
-  .character-name {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-top: 10px;
-    text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
-  }
-  
-  /* Health Bars under the images */
-  .health-bar-container {
-    width: 100%;
-    margin-top: 10px;
-    background: #333;
-    border-radius: 5px;
-    height: 12px;
-    overflow: hidden;
-  }
-  
-  .health-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #ff3b3b, #990000);
-    transition: width 0.3s ease-in-out;
-  }
-  
-  /* VS in the center */
-  .vs-text {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #ff4757;
-    text-shadow: 0px 0px 20px rgba(255, 71, 87, 0.8);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  /* Stats Section - Now Full Width */
-  .stats-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%; /* Now stretches across the entire screen */
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: rgba(20, 20, 20, 0.95);
-    border-radius: 0px; /* Removed border-radius to extend to the edges */
-  }
-  
-  /* Individual Stats Box */
-  .stats-box {
-    width: 45%;
-    padding: 10px;
-  }
-  
-  .stats-box h3 {
-    font-size: 1.4rem;
-    color: #fff;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  
-  .stats-box p {
-    font-size: 1.2rem;
-    color: #ddd;
-    margin: 5px 0;
-  }
-  
-  /* View Deck Button - Locked to Bottom Left */
-  .bottom-actions {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-  }
-  
-  .view-deck-button {
-    padding: 1.2rem 2.5rem;
-    font-size: 1.5rem;
-    background: linear-gradient(45deg, #1b5e20, #388e3c);
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 12px;
-    transition: 0.3s ease-in-out;
-    box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
-  }
-  
-  .view-deck-button:hover {
-    background: linear-gradient(45deg, #388e3c, #1b5e20);
-    transform: scale(1.1);
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  background-image: url('../images/Login background.jpg'); /* Your login border image */
+  background-size: cover;
+  background-position: center;
+  padding-top: 80px;
+  border-radius: 10px;  /* Optional: Adds a rounded border to the whole container */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Optional: Adds a shadow for better visual separation */
+}
+
+/* Player & Boss Layout */
+.fight-area {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.character-img {
+  width: 200px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.character-name {
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.vs-text {
+  font-size: 2.5rem;
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Health Bar Styling */
+.health-bar-container {
+  width: 200px;
+  height: 20px;
+  background-color: #555;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.health-bar {
+  height: 100%;
+  border-radius: 10px;
+}
+
+/* Stats Section */
+.stats-section {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin-top: 20px;
+}
+
+.stats-box {
+  width: 45%;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  color: #fff;
+}
+
+.player-stats {
+  background-color: #20683F;
+}
+
+.boss-stats {
+  background-color: #b71c1c;
+}
+
+.stats-box h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.stats-box p {
+  font-size: 1.2rem;
+}
+
+/* Bottom Action Buttons */
+.bottom-actions {
+  position: absolute;
+  bottom: 10%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.action-button,
+.view-deck-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #1b5e20, #388e3c);
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
+}
+
+.action-button:hover,
+.view-deck-button:hover {
+  background: linear-gradient(45deg, #388e3c, #1b5e20);
+  transform: scale(1.05);
+}
+
+.action-button:active,
+.view-deck-button:active {
+  transform: scale(0.95);
+}

@@ -1,138 +1,99 @@
-/* Page Container */
+/* Styling for the entire page */
 .card-view-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    background: url('../images/card-background.jpg') no-repeat center center;
-    background-size: cover;
-    color: white;
-    padding: 2rem;
-    position: relative;
-  }
-  
-  /* Page Title */
-  .page-title {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8);
-  }
-  
-  /* Card Grid - FLEXBOX WRAP */
-  .card-grid {
-    display: flex;
-    flex-wrap: wrap; /* Allows cards to wrap */
-    justify-content: center; /* Centers cards */
-    gap: 40px; /* Space between cards */
-    width: 90%;
-    max-width: 1200px;
-  }
-  
-  /* Card Styling */
-  .card {
-    width: 250px;
-    height: 350px;
-    background-size: cover;
-    background-position: center;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
-    padding: 15px;
-    color: white;
-    text-shadow: 0px 0px 5px black;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .card:hover {
-    transform: scale(1.05);
-  }
-  
-  /* Mana Cost (Top Left) */
-  .mana-cost {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 35px;
-    height: 35px;
-    background: gold;
-    color: black;
-    font-weight: bold;
-    font-size: 1.2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 0px 5px rgba(255, 215, 0, 0.8);
-  }
-  
-  /* Card Title */
-  .card-title {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.3rem;
-    font-weight: bold;
-  }
-  
-  /* Card Effect */
-  .card-effect {
-    position: absolute;
-    bottom: 35%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.492);
-    padding: 5px 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    text-align: center;
-  }
-  
-/* Card Footer (Wider & More Prominent) */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #E3C9CE;
+  padding: 2rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Title */
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Scrollable Card Container */
+.card-scroll-container {
+  display: flex;
+  flex-wrap: nowrap; /* Ensure the cards stay in a single row */
+  gap: 20px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  max-width: 90%; /* Adjust width to be 90% of the container */
+  padding: 10px;
+  margin-top: 20px;
+  scroll-snap-type: x mandatory; /* Ensure smooth scrolling and snapping */
+}
+
+/* Card Styling */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black for readability */
+  border-radius: 12px;
+  border: 3px solid #20683F;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  transition: 0.3s ease;
+  height: 300px; /* Fixed height */
+  width: 200px; /* Fixed width */
+  background-size: cover;
+  background-position: center;
+  color: white;
+  scroll-snap-align: start; /* Ensures cards snap to the start position */
+}
+
+/* Card Text */
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-effect {
+  font-size: 1.1rem;
+  color: #AAAAAA;
+  margin-top: 10px;
+}
+
 .card-footer {
-    margin-left: -10px;
-    margin-top: 133%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1 rem; /* Slightly larger text */
-    padding: 12px; /* Increased padding to make it wider */
-    border-radius: 0 0 12px 12px;
-    width: 110%; /* Ensures it stretches across the full card */
-  }
-  
-  /* Card Level */
-  .card-level {
-    font-weight: bold;
-    color: white;
-  }
-  
-  /* Card Type */
-  .card-type {
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  
-  /* Back to Game Button - Bottom Left */
-  .back-button {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    padding: 1.2rem 2rem;
-    font-size: 1.3rem;
-    background: linear-gradient(45deg, #1b5e20, #388e3c);
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 12px;
-    transition: 0.3s ease-in-out;
-    box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
-  }
-  
-  .back-button:hover {
-    background: linear-gradient(45deg, #388e3c, #1b5e20);
-    transform: scale(1.08);
-  }
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #AAAAAA;
+}
+
+.mana-cost {
+  font-size: 1.2rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+/* Back Button Styling */
+.back-button {
+  margin-top: 2rem;
+  width: 200px;
+  height: 50px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
