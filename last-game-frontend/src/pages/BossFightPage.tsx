@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { GameContext } from '../context/GameContext';
 import '../css/BossFightView.css'; // Make sure to import your updated CSS
 import playerImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
-import backgroundImage from '../images/Login background.jpg';
 import bossImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
 
 const BossFightPage: React.FC = () => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg"; // Import the background image
+import axios from "axios";
 
 interface Character {
   character_id: number;
@@ -32,7 +33,7 @@ const MainPlayerView: React.FC = () => {
   const [character, setCharacter] = useState<Character | null>(null);
   const [gameText, setGameText] = useState<string>("Welcome to the adventure! What will you do next?");
   const [userResponse, setUserResponse] = useState<string>("");
-  const [chatHistory, setChatHistory] = useState<{ text: string, timestamp: string }[]>([]); // Store the history with timestamps
+  const [chatHistory, setChatHistory] = useState<{ text: string, timestamp: string, sender: string }[]>([]); // Store the history with timestamps and sender type (user or AI)
   const [showChestModal, setShowChestModal] = useState<boolean>(false); // Controls chest modal visibility
 
   const navigate = useNavigate();
@@ -75,18 +76,43 @@ const MainPlayerView: React.FC = () => {
       .catch((error) => console.error("Error fetching character:", error));
   }, [navigate, userId, characterId]);
 
-  const handleSubmitResponse = () => {
+  const handleSubmitResponse = async () => {
     if (userResponse.trim() === "") return;
 
-    // Append the response with a timestamp to the chat history
+    // Append the user response with a timestamp to the chat history
     const timestamp = new Date().toLocaleTimeString();
     setChatHistory((prevHistory) => [
       ...prevHistory,
-      { text: `You chose to: ${userResponse}`, timestamp },
+      { text: `You chose to: ${userResponse}`, timestamp, sender: "user" },
     ]);
 
-    setGameText(`You chose to: ${userResponse}`);
-    setUserResponse(""); // Clear input after submission
+    // Set game text to indicate AI is generating content
+    setGameText("AI is generating content...");
+
+    try {
+      // Send the user response to the backend to generate the story
+      const response = await axios.post("http://localhost:8080/v1/story", {
+        prompt: userResponse,
+        response: "", // If needed, send any other additional information here
+      });
+
+      // Extract the message from the backend response (Story object)
+      const aiMessage = response.data.response;  // 'response' contains the story message
+
+      // Add AI response to the chat history with a timestamp
+      const aiTimestamp = new Date().toLocaleTimeString();
+      setChatHistory((prevHistory) => [
+        ...prevHistory,
+        { text: `AI: ${aiMessage}`, timestamp: aiTimestamp, sender: "AI" },
+      ]);
+
+      // Clear the user response and update gameText to reflect AI response
+      setUserResponse(""); 
+      setGameText(""); // Game text doesn't show the AI response anymore, just keeps track of user actions
+    } catch (error) {
+      console.error("Error fetching AI response", error);
+      setGameText("Sorry, something went wrong.");
+    }
   };
 
   const handleOpenChest = () => {
@@ -121,7 +147,7 @@ const MainPlayerView: React.FC = () => {
       >
         {/* Top Bar */}
         <div className="top-bar">
-          <h1>BEAN BOYS - The Last Game</h1>
+          <h1>The Last Game</h1>
         </div>
 
         {/* Main Container */}
@@ -169,7 +195,7 @@ const MainPlayerView: React.FC = () => {
             {/* Chat History */}
             <div className="chat-history">
               {chatHistory.map((entry, index) => (
-                <div key={index} className="chat-entry">
+                <div key={index} className={`chat-entry ${entry.sender}`}>
                   <span className="timestamp">[{entry.timestamp}]</span>
                   <span className="chat-text">{entry.text}</span>
                 </div>

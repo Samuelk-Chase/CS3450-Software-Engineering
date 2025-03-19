@@ -24,7 +24,8 @@ func Routes() http.Handler {
 	r.Get("/characters", GetCharacters)         // ✅ This should be present	r.Get("/deck/{id}", getCards)               // Returns a deck object as JSON
 	r.Post("/card", getCard)                    // Returns a newly created card object as JSON
 	r.Post("/getNewCharacter", getNewCharacter) // Returns a newly created character as JSON object
-	r.Get("/boss", getBoss)                     // Returns a boss object as JSON
-
+	r.Post("/boss", getBoss)                    // Returns a boss object as JSON
+	r.Post("/story", generateStory)             // Returns a story object as JSON
+	r.Post("/image", generateImage)             // Returns a generated image as JSON
 	return r
 }
