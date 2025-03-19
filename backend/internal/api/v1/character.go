@@ -2,12 +2,15 @@ package v1
 
 import (
 	"beanboys-lastgame-backend/internal/db"
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/openai/openai-go"
 )
 
 // Character defines the structure of a character object.
@@ -22,16 +25,49 @@ type Character struct {
 	MaxHealth     int    `json:"max_health"`
 }
 
+type JSONCharacter struct {
+	Description string `json:"description"`
+	MaxMana     int    `json:"max_mana"`
+	MaxHealth   int    `json:"max_health"`
+}
+
 func generateCharacterLLM(userID int, name string) (Character, error) {
 	fmt.Println("Generating character for user:", userID)
+
+	// Get the response from the OpenAI API
+	client := openai.NewClient()
+	// Define the messages for the chat completion
+	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(character_system_prompt),
+		openai.UserMessage(name),
+	})
+
+	req := openai.ChatCompletionNewParams{
+		Model:    openai.F(openai.ChatModelGPT4oMini),
+		Messages: messages,
+	}
+
+	// Make the API request
+	response, err := client.Chat.Completions.New(context.Background(), req)
+	if err != nil {
+		log.Fatalf("ChatCompletion error: %v", err)
+	}
+
+	jsonCharacter := JSONCharacter{}
+
+	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &jsonCharacter)
+	if err != nil {
+		fmt.Println("Error parsing JSON:", err)
+	}
 
 	newCharacter := Character{
 		UserID:        userID,
 		Name:          name, // Now only includes `character_name`
-		CurrentMana:   10,
-		MaxMana:       10,
-		CurrentHealth: 100, // Uses `current_hp`
-		MaxHealth:     100, // Uses `max_hp`
+		Description:   jsonCharacter.Description,
+		CurrentMana:   jsonCharacter.MaxMana,
+		MaxMana:       jsonCharacter.MaxMana,
+		CurrentHealth: jsonCharacter.MaxHealth, // Uses `current_hp`
+		MaxHealth:     jsonCharacter.MaxHealth, // Uses `max_hp`
 	}
 
 	// Insert into database
