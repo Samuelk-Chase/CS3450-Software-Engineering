@@ -1,0 +1,47 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .card-details {
+    margin-top: 10px;
+  }
+  
+  .card-details p {
+    margin: 5px 0;
+  }
+  
+  .close-button {
+    background-color: #ff5c5c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
