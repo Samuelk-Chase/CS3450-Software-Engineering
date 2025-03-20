@@ -1,22 +1,29 @@
-import React from 'react';
-import { Card } from 'primereact/card';
-import {Card as CardType} from '../context/GameContext';
+import React from "react";
+import "../css/CardComponent.css"; // Import the new CSS
 
-//this mirrors the interfaec in context file
-interface CardProps extends CardType {}
+interface CardProps {
+  card: {
+    id: number;
+    name: string;
+    type: string;
+    level: number;
+    mana: number;
+    effect: string;
+    image: string;
+  };
+}
 
-const CardComponent: React.FC<CardProps> = ({ id, name, level, type, description, image, mana }) => {
+const CardComponent: React.FC<CardProps> = ({ card }) => {
   return (
-    <Card title={name}
-        header={<img alt="Card" src={image} />}
-        subTitle={`LV: ${level} | MANA: ${mana}`} 
-        //we can change this to dynamically render a button that either adds the card to the deck
-        //or uses the card in the game
-        footer={<button>USE (placeholder)</button>}
-        style={{ width: '100%' }}>
-        <p>{description}</p>
-        <div className="p-text-right">{type}</div>
-    </Card>
+    <div className="individual-card" style={{ backgroundImage: `url(${card.image})` }}>
+      <div className="individual-mana-cost">{card.mana}</div>
+      <h3 className="individual-card-title">{card.name}</h3>
+      <div className="individual-card-effect">{card.effect}</div>
+      <div className="individual-card-footer">
+        <span className="card-level">LV: {card.level}</span>
+        <span className="card-type">{card.type}</span>
+      </div>
+    </div>
   );
 };
 

@@ -18,11 +18,11 @@ export interface Character {
 export interface Card {
   id: number;
   name: string;
+  type: string;
   level: number;
-  type: 'ATTACK' | 'ABILITY' | 'POWER';
-  description: string;
-  image: string;
   mana: number;
+  effect: string;
+  image: string;
 }
 
 export interface Boss {
