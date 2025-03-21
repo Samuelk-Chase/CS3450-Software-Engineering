@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GameContext } from '../context/GameContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { GameContext, Boss } from '../context/GameContext';
 import '../css/BossFightView.css'; // Make sure to import your updated CSS
 import playerImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
 import bossImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
@@ -8,8 +8,12 @@ import bossImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Fac
 const BossFightPage: React.FC = () => {
   const { character, updateStats } = useContext(GameContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the boss data from the state passed via the route
+  const { boss } = location.state || {};
 
-  const [bossHealth, setBossHealth] = useState(100);
+  const [bossHealth, setBossHealth] = useState<number>(boss?.health ?? 100);
 
   const handleAttack = () => {
     setBossHealth((prev) => Math.max(prev - 10, 0));
@@ -46,8 +50,9 @@ const BossFightPage: React.FC = () => {
 
         {/* Boss */}
         <div className="boss-side">
+          {/*<img src={boss?.image_url ?? ''} alt="Boss" className="character-img" /> Use this once images work */}
           <img src={bossImage} alt="Boss" className="character-img" />
-          <h3 className="character-name">Dark Fiend</h3>
+          <h3 className="character-name">{boss?.name ?? 'Dark Fiend'}</h3>
 
           {/* Boss Health Bar */}
           <div className="health-bar-container">
@@ -65,21 +70,21 @@ const BossFightPage: React.FC = () => {
           <p><strong>Mana:</strong> {character?.mana ?? 100}</p>
           <p><strong>Strength:</strong> {15}</p>
           <p><strong>Defense:</strong> {12}</p>
-          <p><strong>Speed:</strong> {10}</p>
+          <p><strong>Speed:</strong> {10}</p> 
           <p><strong>Critical Hit Chance:</strong> 5%</p>
           <p><strong>Fire Resistance:</strong> 20%</p>
         </div>
 
         {/* Boss Stats */}
         <div className="stats-box">
-          <h3>Dark Fiend Stats</h3>
+          <h3>{boss?.name ?? 'Dark Fiend'} Stats</h3>
           <p><strong>Health:</strong> {bossHealth}</p>
-          <p><strong>Mana:</strong> ???</p>
-          <p><strong>Strength:</strong> 25</p>
-          <p><strong>Defense:</strong> 18</p>
-          <p><strong>Speed:</strong> 8</p>
-          <p><strong>Poison Damage:</strong> 10 per turn</p>
-          <p><strong>Shadow Resistance:</strong> 40%</p>
+          <p><strong>Mana:</strong> {boss?.mana ?? '???'}</p>
+          <p><strong>Strength:</strong> {25}</p> 
+          <p><strong>Defense:</strong> {18}</p>
+          <p><strong>Speed:</strong> {8}</p> 
+          <p><strong>Poison Damage:</strong> 10 per turn</p> 
+          <p><strong>Shadow Resistance:</strong> 40%</p> 
         </div>
       </div>
 

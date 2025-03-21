@@ -5,7 +5,8 @@ import backgroundImage from "../images/Login background.jpg"; // Import the back
 import axios from "axios";
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
-import { Card } from "../context/GameContext"
+import { Card, Boss } from "../context/GameContext"
+
 
 interface Character {
   character_id: number;
@@ -32,7 +33,7 @@ const MainPlayerView: React.FC = () => {
   const [newCard, setNewCard] = useState<Card | null>(null); //state to store new card for popup
   const [showCardPopup, setShowCardPopup] = useState<boolean>(false); //card popup toggle
   const [showBossPopup, setShowBossPopup] = useState<boolean>(false); // New state for the Boss Popup
-  const [newBoss, setNewBoss] = useState<any>(null);
+  const [newBoss, setNewBoss] = useState<Boss | null>(null);
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
@@ -120,16 +121,28 @@ const MainPlayerView: React.FC = () => {
         setShowCardPopup(true);
         setGameText(aiMessage.replace("*Receive card reward*", "")); // Remove the pattern from the message
       }
-      else if (aiMessage.includes("*boss combat begins*")) {
-        // Fetch boss details from backend
-        const bossResponse = await axios.get("http://localhost:8080/v1/boss"); // Adjust your endpoint if needed
-        setNewBoss(bossResponse.data); // Set the new boss data
-        setShowBossPopup(true); // Show the boss popup
-        setGameText(aiMessage.replace("*boss combat begins*", "")); 
-      } 
-      else {
+      else if (aiMessage.includes("*Boss combat begins.*")) {
+        try {
+          // Fetch boss details from backend using POST
+          const response = await axios.post(
+            "http://localhost:8080/v1/boss", 
+            {
+              prompt: aiMessage // Example prompt, customize it as needed
+            }
+          );
+          
+          setNewBoss(response.data); // Set the new boss data
+          setShowBossPopup(true); // Show the boss popup
+          console.log(response.data); // Log the response data for debugging
+          setGameText(aiMessage.replace("*Boss combat begins.*", "")); 
+        } catch (error) {
+          console.error("Error fetching boss:", error);
+          // Handle the error (you can show an error message to the user)
+        }
+      } else {
         setGameText(aiMessage);
       }
+      
       
       // Add AI response to the chat history with a timestamp
       const aiTimestamp = new Date().toLocaleTimeString();
@@ -156,9 +169,8 @@ const MainPlayerView: React.FC = () => {
   const handleCloseCardPopup = () => {
     setShowCardPopup(false);
   };
-  const handleBossCombat = () => {
-    setShowBossPopup(false); // Close the popup
-    navigate(`/boss/${newBoss.name}`, { state: { boss: newBoss } }); // Navigate to the Boss Fight page and pass the boss data
+  const handleBossFight = (boss: Boss) => {
+    navigate('/boss', { state: { boss } });
   };
   const handleCloseBossPopup = () => {
     setShowBossPopup(false); // Close the popup
@@ -200,7 +212,8 @@ const MainPlayerView: React.FC = () => {
           <BossPopupComponent 
             boss={newBoss} 
             onClose={handleCloseBossPopup} 
-            onStartBossFight={handleBossCombat} 
+            onStartBossFight={() => handleBossFight(newBoss)}
+        
           />
         )}
         {/* Main Container */}
