@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { GameContext, Boss } from '../context/GameContext';
-import '../css/BossFightView.css'; // Make sure to import your updated CSS
+import '../css/BossFightView.css';
 import playerImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
 import bossImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
 

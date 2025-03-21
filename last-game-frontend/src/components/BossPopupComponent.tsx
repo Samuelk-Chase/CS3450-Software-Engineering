@@ -1,14 +1,15 @@
 import React from "react";
-import "../css/BossPopupComponent.css"; // Import the CSS file
+import "../css/BossPopupComponent.css";
 import { Boss } from "../context/GameContext";
 
 interface BossPopupProps {
-  boss: Boss; // Type it more specifically if you have more details about the boss structure
+  boss: Boss;
   onClose: () => void;
   onStartBossFight: () => void;
 }
 
 const BossPopup: React.FC<BossPopupProps> = ({ boss, onClose, onStartBossFight }) => {
+  console.log(boss.name);
     return (
       <div className="modal-overlay">
         <div className="modal-content">

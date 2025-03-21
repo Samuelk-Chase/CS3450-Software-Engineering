@@ -21,7 +21,7 @@ const NewCardComponent: React.FC<NewCardComponentProps> = ({ card, onClose }) =>
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <CardComponent card={card} /> {/* Uses the separated styling */}
+        <CardComponent card={card} /> {/* Uses the separated stylin */}
         <button className="close-button" onClick={onClose}>
           Close
         </button>
