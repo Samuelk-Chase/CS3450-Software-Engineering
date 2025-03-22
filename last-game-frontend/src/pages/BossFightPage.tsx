@@ -1,19 +1,54 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { GameContext, Boss } from '../context/GameContext';
+import { GameContext } from '../context/GameContext';
 import '../css/BossFightView.css';
 import playerImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
-import bossImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
+// Remove hard-coded bossImage import
 
 const BossFightPage: React.FC = () => {
   const { character, updateStats } = useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the boss data from the state passed via the route
+  // Get the boss data from the state passed via the route (if any)
   const { boss } = location.state || {};
-
+  
+  // Boss health state (default to boss.health if provided, else 100)
   const [bossHealth, setBossHealth] = useState<number>(boss?.health ?? 100);
+
+  // NEW: State to hold the generated boss image and prompt input
+  const [bossImage, setBossImage] = useState<string>('');
+  const [bossNameInput, setBossNameInput] = useState<string>(boss?.name || '');
+
+  // NEW: Function to fetch boss image based on boss name prompt
+  const fetchBossImage = async (prompt: string) => {
+    const requestBody = { prompt };
+    const response = await fetch("http://localhost:8080/v1/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+    const data = await response.json();
+    if (data.length > 0 && data[0].b64_json) {
+      return `data:image/jpeg;base64,${data[0].b64_json}`;
+    }
+    throw new Error("No image data received");
+  };
+
+  // NEW: Handle generating the boss image
+  const handleGenerateBossImage = async () => {
+    if (bossNameInput.trim() === "") return;
+    try {
+      const imgDataUrl = await fetchBossImage(bossNameInput);
+      setBossImage(imgDataUrl);
+    } catch (error) {
+      console.error("Failed to generate boss image:", error);
+    }
+  };
 
   const handleAttack = () => {
     setBossHealth((prev) => Math.max(prev - 10, 0));
@@ -29,14 +64,13 @@ const BossFightPage: React.FC = () => {
 
   return (
     <div className="boss-fight-container">
-      {/* Player & Boss Layout */}
+      {/* Fight Area */}
       <div className="fight-area">
-        {/* Player */}
+        {/* Player Side */}
         <div className="player-side">
           <img src={playerImage} alt="Player" className="character-img" />
           <h3 className="character-name">{character?.name ?? 'Warmonger'}</h3>
-
-          {/* Health Bar */}
+          {/* Player Health Bar */}
           <div className="health-bar-container">
             <div
               className="health-bar"
@@ -45,14 +79,29 @@ const BossFightPage: React.FC = () => {
           </div>
         </div>
 
-        {/* VS in Center */}
+        {/* VS Text */}
         <div className="vs-text">VS</div>
 
-        {/* Boss */}
+        {/* Boss Side */}
         <div className="boss-side">
-          <img src={bossImage} alt="Boss" className="character-img" />
-          <h3 className="character-name">{boss?.name ?? 'Dark Fiend'}</h3>
-
+          {/* Instead of a hard-coded boss image, display a text box and a generate button */}
+          {bossImage ? (
+            <img src={bossImage} alt="Boss" className="character-img" />
+          ) : (
+            <div className="boss-generator">
+              <input
+                type="text"
+                placeholder="Enter boss name..."
+                value={bossNameInput}
+                onChange={(e) => setBossNameInput(e.target.value)}
+                className="boss-input"
+              />
+              <button onClick={handleGenerateBossImage} className="generate-boss-button">
+                Generate Boss Image
+              </button>
+            </div>
+          )}
+          <h3 className="character-name">{(boss?.name ?? bossNameInput) || 'Dark Fiend'}</h3>
           {/* Boss Health Bar */}
           <div className="health-bar-container">
             <div className="health-bar" style={{ width: `${bossHealth}%` }}></div>
@@ -60,7 +109,7 @@ const BossFightPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Section - Full Width */}
+      {/* Stats Section */}
       <div className="stats-section">
         {/* Player Stats */}
         <div className="stats-box">
@@ -76,7 +125,7 @@ const BossFightPage: React.FC = () => {
 
         {/* Boss Stats */}
         <div className="stats-box">
-          <h3>{boss?.name ?? 'Dark Fiend'} Stats</h3>
+          <h3>{(boss?.name ?? bossNameInput) || 'Dark Fiend'} Stats</h3>
           <p><strong>Health:</strong> {bossHealth}</p>
           <p><strong>Mana:</strong> {boss?.mana ?? '???'}</p>
           <p><strong>Strength:</strong> {25}</p>
@@ -87,10 +136,13 @@ const BossFightPage: React.FC = () => {
         </div>
       </div>
 
-      {/* View Deck Button - Locked to Bottom Left */}
+      {/* Bottom Actions */}
       <div className="bottom-actions">
         <button className="view-deck-button" onClick={handleViewDeck}>
           View Deck
+        </button>
+        <button className="attack-button" onClick={handleAttack}>
+          Attack
         </button>
       </div>
     </div>
