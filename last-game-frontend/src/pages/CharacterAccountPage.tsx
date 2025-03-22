@@ -20,7 +20,7 @@ const CharacterAccountPage: React.FC = () => {
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) {
       console.error("Invalid user ID! Redirecting to login...");
-      localStorage.removeItem("userId"); // Remove incorrect value
+      localStorage.removeItem("userId");
       navigate("/login");
       return;
     }
@@ -45,8 +45,8 @@ const CharacterAccountPage: React.FC = () => {
   // Function to select a character and navigate to the game
   const handleCharacterSelect = (characterId: number) => {
     console.log(`Selected character ID: ${characterId}`);
-    localStorage.setItem("characterId", String(characterId)); // ✅ Store in localStorage
-    navigate("/main"); // ✅ Redirect to game
+    localStorage.setItem("characterId", String(characterId)); // Store in localStorage
+    navigate("/main"); // Redirect to game
   };
 
   return (
@@ -62,8 +62,8 @@ const CharacterAccountPage: React.FC = () => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        minHeight: "100vh", // Ensure it takes full viewport height
-        color: "#E3C9CE", // White text color for better readability
+        minHeight: "100vh",
+        color: "#E3C9CE",
         textAlign: "center",
         padding: "2rem",
         boxSizing: "border-box",
@@ -86,16 +86,57 @@ const CharacterAccountPage: React.FC = () => {
           maxWidth: "800px",
         }}
       >
-        {characters.map((char) => (
-          <div
-            key={char.character_id}
-            className="card" // Ensure this matches the CSS class for cards
-            onClick={() => handleCharacterSelect(char.character_id)}
-          >
-            <h3>{char.character_name}</h3>
-            <p>HP: {`${char.current_hp}/${char.max_hp}`} | Mana: {`${char.current_mana}/${char.max_mana}`}</p>
-          </div>
-        ))}
+        {characters.map((char) => {
+          const safeName = char.character_name.toLowerCase().replace(/\s+/g, "_");
+          const imageUrl = `http://localhost:8080/character_images/${safeName}.png`;
+          console.log("Rendering character:", char.character_name, "with image URL:", imageUrl);
+
+          return (
+            <div
+              key={char.character_id}
+              className="card"
+              onClick={() => handleCharacterSelect(char.character_id)}
+              style={{
+                position: "relative",
+                cursor: "pointer",
+                border: "1px solid #27ae60",
+                borderRadius: "8px",
+                width: "250px",
+                height: "500px", // Increased height for a taller card
+                overflow: "hidden",
+              }}
+            >
+              <img
+                src={imageUrl}
+                alt={char.character_name}
+                onError={(e) => {
+                  console.log("Error loading image for:", char.character_name, "at URL:", imageUrl);
+                  e.currentTarget.src = "/default-image.png"; // Fallback image if error occurs
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+              {/* Overlay text at the bottom of the image */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  width: "100%",
+                  background: "rgba(0, 0, 0, 0.5)",
+                  color: "#E3C9CE",
+                  textAlign: "center",
+                  padding: "0.5rem",
+                }}
+              >
+                <h3 style={{ margin: 0 }}>{char.character_name}</h3>
+            
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Create Character Button */}
