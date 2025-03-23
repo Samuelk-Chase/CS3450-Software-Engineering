@@ -1,51 +1,83 @@
 /* Base Card Styling */
 .individual-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black for readability */
-    border-radius: 12px;
-    border: 3px solid #20683F;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    transition: 0.3s ease;
-    height: 300px;
-    width: 200px;
-    background-size: cover;
-    background-position: center;
-    color: white;
-  }
-  
-  /* Card Text */
-  .individual-card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .individual-card-effect {
-    font-size: 1.1rem;
-    color: #AAAAAA;
-    margin-top: 10px;
-  }
-  
-  .individual-card-footer {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #AAAAAA;
-  }
-  
-  .individual-mana-cost {
-    font-size: 1.2rem;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 5px 10px;
-    border-radius: 8px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* Align the content towards the bottom for better spacing */
+  cursor: pointer;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black for readability */
+  border-radius: 15px; /* Rounded corners */
+  border: 3px solid #20683F;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+  transition: 0.3s ease-in-out; /* Smooth hover transition */
+  height: 350px; /* Increased height for more space */
+  width: 220px; /* Adjusted width */
+  background-size: cover;
+  background-position: center;
+  color: white;
+  position: relative; /* Needed for positioning the mana cost */
+  overflow: hidden;
+}
+
+/* Hover Effect */
+.individual-card:hover {
+  transform: scale(1.05); /* Slight scale-up on hover */
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.6); /* Enhanced shadow on hover */
+}
+
+/* Card Title */
+.individual-card-title {
+  font-size: 1.6rem; /* Slightly bigger for better visibility */
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6); /* Adding a subtle text shadow for contrast */
+}
+
+/* Card Effect Description */
+.individual-card-effect {
+  font-size: 1rem;
+  color: #DDDDDD; /* Lighter text color */
+  margin-top: 10px;
+  text-align: center; /* Center the effect text */
+  padding: 0 10px; /* Padding for better spacing */
+  height: 70px;
+  overflow: hidden; /* Hide any text overflow */
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+}
+
+/* Card Footer */
+.individual-card-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #DDDDDD;
+  font-weight: bold;
+}
+
+/* Mana Cost Badge */
+.individual-mana-cost {
+  font-size: 1.3rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker for better visibility */
+  padding: 8px 15px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Optional Gradient Overlay */
+.individual-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+  border-radius: 15px;
+  pointer-events: none; /* Ensure it doesn't interfere with clicking */
+}
