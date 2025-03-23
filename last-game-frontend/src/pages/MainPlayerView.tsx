@@ -110,7 +110,7 @@ const MainPlayerView: React.FC = () => {
         setNewCard(mappedCard);
         setShowCardPopup(true);
       }
-      if (aiMessage.includes("*Boss combat begins.*")) {
+      if (aiMessage.includes("*Boss combat begins.*") || (aiMessage.includes("*boss combat begins.*"))) {
         try {
           const response = await axios.post("http://localhost:8080/v1/boss", {
             prompt: aiMessage,

@@ -6,7 +6,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   color: #E3C9CE;
 }
 
@@ -17,12 +17,20 @@ body {
   align-items: center;
   justify-content: flex-start;
   height: 100vh;
-  background-image: url('../images/Login background.jpg'); /* Your login border image */
+  background-image: url('../images/Login background.jpg');
   background-size: cover;
   background-position: center;
   padding-top: 80px;
-  border-radius: 10px;  /* Optional: Adds a rounded border to the whole container */
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Optional: Adds a shadow for better visual separation */
+  border-radius: 20px;
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+  padding-bottom: 100px; /* Reduced to provide enough space for the buttons */
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect for container */
+.boss-fight-container:hover {
+  transform: scale(1.02);
 }
 
 /* Player & Boss Layout */
@@ -31,31 +39,38 @@ body {
   justify-content: space-around;
   align-items: center;
   width: 80%;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  position: relative;
 }
 
 .character-img {
-  width: 200px;
+  width: 180px; /* Slightly smaller for better cohesion */
   height: auto;
-  border-radius: 10px;
+  border-radius: 12px;
+  border: 3px solid #fff;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.8);
 }
 
 .character-name {
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* Slightly smaller for better alignment */
+  font-weight: bold;
   text-align: center;
+  margin-top: 10px;
 }
 
 .vs-text {
-  font-size: 2.5rem;
-  color: #fff;
+  font-size: 2rem; /* Adjusted to fit better */
+  color: #E3C9CE;
   font-weight: bold;
   text-transform: uppercase;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  letter-spacing: 2px;
 }
 
 /* Health Bar Styling */
 .health-bar-container {
-  width: 200px;
+  width: 180px; /* Adjusted for consistency */
   height: 20px;
   background-color: #555;
   border-radius: 10px;
@@ -70,17 +85,20 @@ body {
 /* Stats Section */
 .stats-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 90%;
-  margin-top: 20px;
+  margin-top: 30px;
+  padding: 0 10px;
+  margin-bottom: 30px; /* Adjusted margin to give space between stats and buttons */
 }
 
 .stats-box {
   width: 45%;
-  padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 8px;
+  padding: 0.8rem; /* Further reduced padding to make the box shorter */
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 15px;
   color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
 }
 
 .player-stats {
@@ -92,22 +110,29 @@ body {
 }
 
 .stats-box h3 {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
+  font-size: 1.2rem; /* Reduced font size */
+  margin-bottom: 0.6rem; /* Reduced margin */
   text-align: center;
+  font-weight: bold;
 }
 
 .stats-box p {
-  font-size: 1.2rem;
+  font-size: 0.9rem; /* Even smaller font size */
+  margin: 0.3rem 0; /* Reduced margin */
+  color: #e3c9ce;
 }
 
 /* Bottom Action Buttons */
 .bottom-actions {
   position: absolute;
-  bottom: 10%;
+  bottom: 0; /* Positioning at the bottom of the page */
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 25px;
+  width: 100%;
+  padding: 20px; /* Adds padding to prevent overlap with bottom */
+  background-color: rgba(0, 0, 0, 0.6); /* Slight background to make buttons stand out */
+  border-radius: 0 0 20px 20px; /* Rounded corners for the bottom */
 }
 
 .action-button,
@@ -118,7 +143,7 @@ body {
   border: none;
   color: white;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 15px;
   transition: 0.3s ease-in-out;
   box-shadow: 0px 0px 15px rgba(76, 175, 80, 0.8);
 }
@@ -126,10 +151,49 @@ body {
 .action-button:hover,
 .view-deck-button:hover {
   background: linear-gradient(45deg, #388e3c, #1b5e20);
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .action-button:active,
 .view-deck-button:active {
   transform: scale(0.95);
+}
+
+.generate-boss-button {
+  padding: 10px 20px;
+  background-color: #FF5722;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  transition: 0.3s;
+  box-shadow: 0px 0px 15px rgba(255, 87, 34, 0.6);
+}
+
+.generate-boss-button:hover {
+  background-color: #FF7043;
+  transform: scale(1.05);
+}
+
+.boss-generator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.boss-input {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #E3C9CE;
+  color: #333;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.boss-input:focus {
+  outline: none;
+  border-color: #FF5722;
 }

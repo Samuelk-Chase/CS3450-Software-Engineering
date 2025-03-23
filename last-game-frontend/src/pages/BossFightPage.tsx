@@ -3,24 +3,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { GameContext } from '../context/GameContext';
 import '../css/BossFightView.css';
 import playerImage from '../images/Bruce-Wayne-the-Batman-Elden-Ring-Character-Face.jpg';
-// Remove hard-coded bossImage import
 
 const BossFightPage: React.FC = () => {
   const { character, updateStats } = useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the boss data from the state passed via the route (if any)
   const { boss } = location.state || {};
   
-  // Boss health state (default to boss.health if provided, else 100)
   const [bossHealth, setBossHealth] = useState<number>(boss?.health ?? 100);
-
-  // NEW: State to hold the generated boss image and prompt input
   const [bossImage, setBossImage] = useState<string>('');
   const [bossNameInput, setBossNameInput] = useState<string>(boss?.name || '');
 
-  // NEW: Function to fetch boss image based on boss name prompt
   const fetchBossImage = async (prompt: string) => {
     const requestBody = { prompt };
     const response = await fetch("http://localhost:8080/v1/image", {
@@ -39,7 +33,6 @@ const BossFightPage: React.FC = () => {
     throw new Error("No image data received");
   };
 
-  // NEW: Handle generating the boss image
   const handleGenerateBossImage = async () => {
     if (bossNameInput.trim() === "") return;
     try {
@@ -62,15 +55,16 @@ const BossFightPage: React.FC = () => {
     navigate('/deck');
   };
 
+  const handleBackToMain = () => {
+    navigate('/main');  // Navigate back to the main page
+  };
+
   return (
     <div className="boss-fight-container">
-      {/* Fight Area */}
       <div className="fight-area">
-        {/* Player Side */}
         <div className="player-side">
           <img src={playerImage} alt="Player" className="character-img" />
           <h3 className="character-name">{character?.name ?? 'Warmonger'}</h3>
-          {/* Player Health Bar */}
           <div className="health-bar-container">
             <div
               className="health-bar"
@@ -79,12 +73,9 @@ const BossFightPage: React.FC = () => {
           </div>
         </div>
 
-        {/* VS Text */}
         <div className="vs-text">VS</div>
 
-        {/* Boss Side */}
         <div className="boss-side">
-          {/* Instead of a hard-coded boss image, display a text box and a generate button */}
           {bossImage ? (
             <img src={bossImage} alt="Boss" className="character-img" />
           ) : (
@@ -102,17 +93,14 @@ const BossFightPage: React.FC = () => {
             </div>
           )}
           <h3 className="character-name">{(boss?.name ?? bossNameInput) || 'Dark Fiend'}</h3>
-          {/* Boss Health Bar */}
           <div className="health-bar-container">
             <div className="health-bar" style={{ width: `${bossHealth}%` }}></div>
           </div>
         </div>
       </div>
 
-      {/* Stats Section */}
       <div className="stats-section">
-        {/* Player Stats */}
-        <div className="stats-box">
+        <div className="stats-box player-stats">
           <h3>{character?.name ?? 'Warmonger'} Stats</h3>
           <p><strong>Health:</strong> {character?.health ?? 100}</p>
           <p><strong>Mana:</strong> {character?.mana ?? 100}</p>
@@ -123,8 +111,7 @@ const BossFightPage: React.FC = () => {
           <p><strong>Fire Resistance:</strong> 20%</p>
         </div>
 
-        {/* Boss Stats */}
-        <div className="stats-box">
+        <div className="stats-box boss-stats">
           <h3>{(boss?.name ?? bossNameInput) || 'Dark Fiend'} Stats</h3>
           <p><strong>Health:</strong> {bossHealth}</p>
           <p><strong>Mana:</strong> {boss?.mana ?? '???'}</p>
@@ -136,14 +123,16 @@ const BossFightPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Actions */}
       <div className="bottom-actions">
         <button className="view-deck-button" onClick={handleViewDeck}>
           View Deck
         </button>
-        <button className="attack-button" onClick={handleAttack}>
+        <button className="action-button" onClick={handleAttack}>
           Attack
         </button>
+        <button className="action-button" onClick={handleBackToMain}>
+          Back to Main
+        </button> {/* Button for returning to the main home page */}
       </div>
     </div>
   );
