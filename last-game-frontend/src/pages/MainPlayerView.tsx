@@ -100,7 +100,7 @@ const MainPlayerView: React.FC = () => {
         const mappedCard: Card = {
           id: generatedCard.card_id,
           name: "Fireball",
-          type: "test",
+          type: generatedCard.type_id,
           level: generatedCard.power_level,
           mana: generatedCard.mana_cost,
           effect: "Generates a fireball dealing 50 damage to the opponent",
