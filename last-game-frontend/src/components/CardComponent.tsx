@@ -16,14 +16,30 @@ interface CardProps {
 
 const CardComponent: React.FC<CardProps> = ({ card }) => {
   return (
-    <div className="individual-card" style={{ backgroundImage: `url(${cardImage})` }}>
-      <div className="individual-mana-cost">{card.mana}</div>
-      <h3 className="individual-card-title">{card.name}</h3>
-      <div className="individual-card-effect">{card.effect}</div>
-      <div className="individual-card-footer">
-        <span className="card-level">LV: {card.level}</span>
-        <span className="card-type">{card.type}</span>
+    <div className="individual-card-wrapper">
+      <div className="individual-card">
+        {/* Image container */}
+        <div className="individual-card-image">
+          <img src={cardImage} alt={card.name} className="card-image" />
+        </div>
+        
+        {/* Card Content */}
+        <div className="card-content">
+          {/* Card Title */}
+          <h3 className="individual-card-title">{card.name}</h3>
+          
+          {/* Card Effect Description */}
+          <div className="individual-card-effect">{card.effect}</div>
+          
+          {/* Card Footer */}
+          <div className="individual-card-footer">
+            <span className="card-level">LV: {card.level}</span>
+            <span className="card-type">{card.type}</span>
+          </div>
+        </div>
       </div>
+      {/* Mana Cost */}
+      <div className="individual-mana-cost">{card.mana}</div>
     </div>
   );
 };

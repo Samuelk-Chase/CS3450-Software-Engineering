@@ -1,7 +1,6 @@
 import React from "react";
-import "../css/CardComponent.css"; // Apply only individual card styling
+import "../css/NewCardComponent.css"; // Apply only individual card styling
 import CardComponent from "./CardComponent";
-
 
 interface NewCardComponentProps {
   card: {

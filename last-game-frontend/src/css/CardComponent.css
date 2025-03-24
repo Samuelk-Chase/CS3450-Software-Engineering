@@ -1,60 +1,91 @@
-/* Base Card Styling */
-.individual-card {
+/* Card Wrapper: Used to wrap the card */
+.individual-card-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* Align the content towards the bottom for better spacing */
-  cursor: pointer;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black for readability */
-  border-radius: 15px; /* Rounded corners */
-  border: 3px solid #20683F;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
-  transition: 0.3s ease-in-out; /* Smooth hover transition */
-  height: 350px; /* Increased height for more space */
-  width: 220px; /* Adjusted width */
-  background-size: cover;
-  background-position: center;
-  color: white;
-  position: relative; /* Needed for positioning the mana cost */
-  overflow: hidden;
+  justify-content: center;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 250px;
 }
 
-/* Hover Effect */
-.individual-card:hover {
-  transform: scale(1.05); /* Slight scale-up on hover */
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.6); /* Enhanced shadow on hover */
+/* Individual Card: Contains the image and content */
+.individual-card {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker background for text readability */
+  padding: 20px;
+  border-radius: 15px;
+  overflow: hidden; /* Ensures the image does not overflow outside the rounded corners */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Adjust to make sure everything aligns properly */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  min-height: 350px; /* Set a minimum height for the card */
+  height: auto; /* Allow the height to grow based on content */
+}
+
+/* Image Container */
+.individual-card-image {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px; /* Space between the image and title */
+}
+
+/* Image styling */
+.card-image {
+  width: 150px; /* Adjust the image size */
+  height: 150px;
+  object-fit: cover; /* Ensure image covers the space without distortion */
+  border-radius: 12px; /* Rounded corners for the image */
+  border: 3px solid #fff; /* Border around the image */
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* Card Title */
 .individual-card-title {
-  font-size: 1.6rem; /* Slightly bigger for better visibility */
+  font-size: 1.5rem; /* Larger font size */
   font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Text shadow for contrast */
   margin-bottom: 10px;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6); /* Adding a subtle text shadow for contrast */
+  text-align: center;
 }
 
-/* Card Effect Description */
+/* Card Effect */
 .individual-card-effect {
   font-size: 1rem;
-  color: #DDDDDD; /* Lighter text color */
-  margin-top: 10px;
-  text-align: center; /* Center the effect text */
-  padding: 0 10px; /* Padding for better spacing */
-  height: 70px;
-  overflow: hidden; /* Hide any text overflow */
-  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+  color: #ddd;
+  text-align: center;
+  margin: 10px 0;
+  z-index: 1; /* Ensures the effect text stays on top */
+  padding: 0 10px;
+  min-height: 70px;
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis;
+  height: auto;
 }
 
-/* Card Footer */
+/* Card Footer (Level and Type) */
 .individual-card-footer {
   display: flex;
   justify-content: space-between;
   width: 100%;
   margin-top: 10px;
   font-size: 0.9rem;
-  color: #DDDDDD;
+  color: #ddd;
   font-weight: bold;
+  padding: 0 10px;
+  text-align: center;
 }
 
 /* Mana Cost Badge */
@@ -63,21 +94,10 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker for better visibility */
+  background-color: rgba(0, 0, 0, 0.7);
   padding: 8px 15px;
   border-radius: 20px;
+  color: white;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-}
-
-/* Optional Gradient Overlay */
-.individual-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
-  border-radius: 15px;
-  pointer-events: none; /* Ensure it doesn't interfere with clicking */
+  z-index: 2;
 }

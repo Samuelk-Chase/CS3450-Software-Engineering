@@ -4,17 +4,19 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(10px); /* Apply blur effect to the background */
+  -webkit-backdrop-filter: blur(10px); /* Ensure compatibility with Safari */
 }
 
 .modal-content {
-  background-color: #333333;
+  background-color: #444444; /* Slightly darker background for the modal */
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 16px;
   max-width: 350px;
   text-align: center;
   position: relative;
@@ -25,19 +27,40 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+.card-wrapper {
+  background-color: #333333; /* Dark background for the card itself */
+  border: 2px solid #ffffff; /* White border around the card */
+  padding: 20px;
+  border-radius: 12px; /* Rounded corners for the card */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Soft shadow for the card */
+  width: 100%; /* Make sure the card fills the container */
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10px; /* Space between title and image */
+}
+
 .card-image {
   width: 100%;
   height: auto;
   max-width: 250px;
-  margin: 0 auto;
+  border-radius: 12px; /* Rounded corners for the image */
+  border: 5px solid #ffffff; /* White border for the image */
+  margin-bottom: 10px; /* Space between the image and the description */
 }
 
 .card-details {
-  margin-top: 10px;
-}
-
-.card-details p {
-  margin: 5px 0;
+  font-size: 16px;
+  color: white;
+  font-weight: normal;
+  line-height: 1.5;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Text shadow for contrast */
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker background for readability */
+  padding: 10px;
+  border-radius: 8px; /* Rounded corners for the text */
 }
 
 .close-button {

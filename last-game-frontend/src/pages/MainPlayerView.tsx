@@ -93,20 +93,20 @@ const MainPlayerView: React.FC = () => {
 
       if (aiMessage.includes("*Receive card reward*")) {
         const cardResponse = await axios.post("http://localhost:8080/v1/card", {
-          name: "Fireball",
-          description: "Generates an explosive fireball dealing 50 damage to the opponent",
+          prompt: aiMessage,
         });
+        console.log(cardResponse.data)
         const generatedCard = cardResponse.data;
-        console.log(generatedCard);
         const mappedCard: Card = {
           id: generatedCard.card_id,
-          name: generatedCard.title,
+          name: "Fireball",
           type: "test",
           level: generatedCard.power_level,
           mana: generatedCard.mana_cost,
-          effect: generatedCard.card_description,
+          effect: "Generates a fireball dealing 50 damage to the opponent",
           image: generatedCard.image_url,
         };
+
         setNewCard(mappedCard);
         setShowCardPopup(true);
       }
