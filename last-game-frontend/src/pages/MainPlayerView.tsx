@@ -102,7 +102,7 @@ const MainPlayerView: React.FC = () => {
         const mappedCard: Card = {
           id: generatedCard.card_id,
           name: generatedCard.title,
-          type: "test",
+          type: generatedCard.type_id,
           level: generatedCard.power_level,
           mana: generatedCard.mana_cost,
           effect: generatedCard.card_description,
