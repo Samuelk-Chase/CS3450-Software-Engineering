@@ -32,6 +32,12 @@ type JSONCharacter struct {
 	MaxHealth   int    `json:"max_hp"`
 }
 
+type JSONCharacter struct {
+	Description string `json:"description"`
+	MaxMana     int    `json:"max_mana"`
+	MaxHealth   int    `json:"max_health"`
+}
+
 func generateCharacterLLM(userID int, name string) (Character, error) {
 	fmt.Println("Generating character for user:", userID)
 

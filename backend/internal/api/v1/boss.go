@@ -35,9 +35,7 @@ type JSONBossAtk struct {
 
 // getBoss is an HTTP handler that returns a boss object as JSON.
 func getBoss(w http.ResponseWriter, r *http.Request) {
-
 	fmt.Println("get boss called!")
-	// Create a sample boss.
 
 	var requestData struct {
 		Prompt string `json:"prompt"`
@@ -83,7 +81,6 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 
 	// Create a the boss object to pass back.
 	boss := Boss{
-
 		Name:      jsonBoss.Name,
 		Health:    jsonBoss.Health,
 		BossLevel: 10,
