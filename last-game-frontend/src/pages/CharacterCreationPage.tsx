@@ -2,67 +2,129 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { Dialog } from "primereact/dialog";
 import { ProgressSpinner } from "primereact/progressspinner";
+
+// 1) Import your background image
+import backgroundImage from "../images/Login background.jpg";
 
 const CharacterCreationPage: React.FC = () => {
   const [characterName, setCharacterName] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
 
-  // Check if user is logged in
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-
     if (!storedUserId || isNaN(Number(storedUserId))) {
-      alert("You are not logged in. Redirecting to login...");
-      localStorage.removeItem("userId"); // Remove invalid value
+      localStorage.removeItem("userId");
       navigate("/login");
       return;
     }
-
-    setUserId(Number(storedUserId)); // Convert to number
+    setUserId(Number(storedUserId));
   }, [navigate]);
 
-  // Handle character creation
+  // Common function to fetch image from backend endpoint
+  const fetchImage = async (prompt: string) => {
+    const requestBody = { prompt };
+    const response = await fetch("http://localhost:8080/v1/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+    const data = await response.json();
+    if (data.length > 0 && data[0].b64_json) {
+      return `data:image/jpeg;base64,${data[0].b64_json}`;
+    }
+    throw new Error("No image data received");
+  };
+
+  const handleGenerateImage = async () => {
+    if (characterName.trim() === "") return;
+    setLoading(true);
+    try {
+      const imgDataUrl = await fetchImage(characterName);
+      setImageUrl(imgDataUrl);
+    } catch (error) {
+      console.error("Failed to generate image:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegenerateImage = async () => {
+    if (characterName.trim() === "") return;
+    setLoading(true);
+    try {
+      const imgDataUrl = await fetchImage(characterName);
+      setImageUrl(imgDataUrl);
+    } catch (error) {
+      console.error("Failed to regenerate image:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateCharacter = async () => {
-    if (userId === null) {
-      alert("User not logged in!");
+    if (userId === null || characterName.trim() === "" || imageUrl === "") {
       return;
     }
-    if (characterName.trim() === "") {
-      alert("Please enter a character name.");
-      return;
-    }
-
-    setLoading(true); // Show loading spinner
-
-    const requestBody = {
-      user_id: userId,
-      name: characterName,
-    };
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/v1/getNewCharacter", {
+      // Convert the data URL (base64) to a blob.
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      // Create a FormData object and append the character name and image file.
+      const formData = new FormData();
+      formData.append("characterName", characterName);
+      const safeName = characterName.toLowerCase().replace(/\s+/g, "_");
+      formData.append("characterImage", blob, `${safeName}.png`);
+
+      // Upload image using the /uploadCharacterImage endpoint.
+      const uploadResponse = await fetch("http://localhost:8080/v1/uploadCharacterImage", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        throw new Error(errorText);
+      }
+      const savedFileName = await uploadResponse.text();
+
+      // Now create the character record using the saved image filename.
+      const requestBody = {
+        user_id: userId,
+        name: characterName,
+        image: savedFileName,
+        mode: mode, // include the selected mode
+      };
+
+      const createResponse = await fetch("http://localhost:8080/v1/getNewCharacter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
-      if (response.ok) {
-        alert("Character created successfully!");
-        setCharacterName(""); // Reset input field
-        navigate("/character-account"); // Redirect back to character selection
+      if (createResponse.ok) {
+        const data = await createResponse.json();
+        console.log("Character created successfully:", data);
+        setCharacterName("");
+        setImageUrl("");
+        navigate("/character-account"); // Navigate to the account page
       } else {
-        const errorText = await response.text();
+        const errorText = await createResponse.text();
         console.error("Failed to create character:", errorText);
-        alert(`Failed to create character: ${errorText}`);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error creating character.");
     } finally {
       setLoading(false);
     }
@@ -71,82 +133,156 @@ const CharacterCreationPage: React.FC = () => {
   return (
     <div
       style={{
-        backgroundColor: "#333333",
+        // Use your background image
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         minHeight: "100vh",
-        padding: "4rem",
-        color: "#E3C9CE",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "space-between",
+        color: "#E3C9CE",
       }}
     >
-      <h3 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
-        Enter Your Character Name
-      </h3>
-      <InputText
-        value={characterName}
-        onChange={(e) => setCharacterName(e.target.value)}
+      {/* Main row: left half text, right half image */}
+      <div
         style={{
-          width: "50%",
-          padding: "10px",
-          fontSize: "1.4rem",
-          backgroundColor: "#444444",
-          color: "#E3C9CE",
-          border: "2px solid #20683F",
-          borderRadius: "8px",
-          marginBottom: "2rem",
+          display: "flex",
+          flexDirection: "row",
+          flex: 1,
+          padding: "2rem",
         }}
-        placeholder="Enter your character name..."
-      />
-
-      {/* Create Character Button */}
-      <Button
-        label="Create Character"
-        className="p-button p-button-rounded p-shadow-3"
-        style={{
-          width: "50%",
-          height: "60px",
-          fontSize: "1.8rem",
-          fontWeight: "bold",
-          background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
-          border: "none",
-          borderRadius: "12px",
-        }}
-        onClick={() => setShowDialog(true)}
-      />
-
-      {/* Confirmation Dialog */}
-      <Dialog
-        visible={showDialog}
-        onHide={() => setShowDialog(false)}
-        header="Confirm Character Creation"
-        modal
-        style={{ width: "30vw" }}
       >
-        <p style={{ textAlign: "center", fontSize: "1.2rem" }}>
-          Are you sure you want to create the character <b>{characterName}</b>?
-        </p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-          <Button
-            label="Cancel"
-            className="p-button-secondary"
-            onClick={() => setShowDialog(false)}
-          />
-          <Button
-            label="Confirm"
-            className="p-button-success"
-            onClick={handleCreateCharacter}
-          />
-        </div>
-      </Dialog>
+        {/* LEFT HALF: All text (Hard/Soft modes, name input, generate button) */}
+        <div style={{ flex: 1, marginRight: "1rem", padding: "9rem" }}>
+          <h2 style={{ textAlign: "center" }}>GAME PLAY</h2>
+          <div style={{ margin: "1rem 0" }}>
+            <h3>Hard Beans:</h3>
+            <p>
+              In hard beans, players will play as if they are experiencing
+              the story in real life. Players get one life and realistic
+              health and stamina.
+            </p>
+          </div>
+          <div style={{ margin: "1rem 0" }}>
+            <h3>Soft Beans:</h3>
+            <p>
+              In soft beans, players will have merciful experiences. Games will
+              be fun and challenging. If you die, you simply go back to the
+              last successful save.
+            </p>
+          </div>
 
-      {/* Loading Spinner */}
-      {loading && (
-        <div style={{ marginTop: "20px" }}>
-          <ProgressSpinner />
+          {/* Radio Buttons to Choose Hard/Soft */}
+          <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+            <label style={{ marginRight: "1rem" }}>
+              <input
+                type="radio"
+                name="mode"
+                value="hard"
+                checked={mode === "hard"}
+                onChange={() => setMode("hard")}
+                style={{ marginRight: "0.5rem" }}
+              />
+              Hard Beans
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="soft"
+                checked={mode === "soft"}
+                onChange={() => setMode("soft")}
+                style={{ marginRight: "0.5rem" }}
+              />
+              Soft Beans
+            </label>
+          </div>
+
+          {/* Character Name Input + Generate Image Button */}
+          <h3 style={{ textAlign: "center", marginBottom: "9rem" }}>
+            Enter Your Character Name
+          </h3>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "2rem" }}>
+            <InputText
+              value={characterName}
+              onChange={(e) => setCharacterName(e.target.value)}
+              style={{
+                flex: 1,
+                padding: "10px",
+                fontSize: "1.4rem",
+                backgroundColor: "#444444",
+                color: "#E3C9CE",
+                border: "2px solid #20683F",
+                borderRadius: "8px",
+                marginRight: "1rem",
+              }}
+              placeholder="Enter your character name..."
+            />
+            <Button
+              label="Generate Image"
+              className="p-button p-button-rounded p-shadow-3"
+              style={{
+                height: "60px",
+                fontSize: "1.2rem",
+                background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
+                border: "none",
+                borderRadius: "12px",
+              }}
+              onClick={handleGenerateImage}
+            />
+          </div>
         </div>
-      )}
+
+        {/* RIGHT HALF: Display Generated Image */}
+        <div style={{ flex: 1, marginLeft: "1rem", display: "flex", flexDirection: "column" }}>
+          {imageUrl && (
+            <div style={{ textAlign: "center", marginBottom: "2rem", marginTop: "9rem" }}>
+              <img
+                src={imageUrl}
+                alt="Character"
+                style={{
+                  maxWidth: "80%",
+                  border: "3px solid #27ae60",
+                  borderRadius: "10px",
+                  marginBottom: "1rem",
+                }}
+              />
+              <div>
+                <Button
+                  label="Generate New Image"
+                  className="p-button-warning"
+                  onClick={handleRegenerateImage}
+                />
+              </div>
+            </div>
+          )}
+          {loading && (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <ProgressSpinner />
+            </div>
+          )}
+        </div>
+      </div>
+
+   {/* BOTTOM: Centered "Create Character" Button */}
+<div style={{ display: "flex", justifyContent: "center", marginBottom: "10rem" }}>
+  <Button
+    label="Create Character"
+    className="p-button p-button-rounded p-shadow-3"
+    style={{
+      width: "250px",
+      height: "50px",
+      fontSize: "1.4rem",
+      fontWeight: "bold",
+      background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
+      border: "none",
+      borderRadius: "12px",
+    }}
+    onClick={handleCreateCharacter}
+  />
+</div>
     </div>
   );
 };

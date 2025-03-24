@@ -18,21 +18,19 @@ export interface Character {
 export interface Card {
   id: number;
   name: string;
+  type: string;
   level: number;
-  type: 'ATTACK' | 'ABILITY' | 'POWER';
-  description: string;
-  image: string;
   mana: number;
+  effect: string;
+  image: string;
 }
 
 export interface Boss {
-  id: number;
-  name: string;
-  level: number;
-  health: number;
-  mana: number;
-  deck: Card[];
-  image: string;
+  bossLevel: number;  // Represents the boss's level
+  health: number;     // Represents the boss's health
+  image_url: string;  // Represents the URL of the boss's image
+  mana: number;       // Represents the boss's mana
+  name: string;       // Represents the name of the boss
 }
 
 interface GameContextProps {

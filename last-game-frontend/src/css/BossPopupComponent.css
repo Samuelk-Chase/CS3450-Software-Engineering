@@ -1,0 +1,95 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark background to highlight the modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #333333; /* Dark background for modern look */
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
+  color: white;
+}
+
+/* Title */
+.modal-content h2 {
+  color: #fff;
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Boss Info Section */
+.modal-content p {
+  color: #fff;
+  font-size: 16px;
+  margin: 10px 0;
+  font-weight: normal;
+}
+
+/* Button Styling */
+.button,
+.close-button {
+  padding: 12px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+}
+
+/* "Enter Boss Fight" Button */
+.button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px); /* Button hover effect */
+}
+
+/* "Close" Button */
+.close-button {
+  background-color: #ff5c5c;
+  color: white;
+}
+
+.close-button:hover {
+  background-color: #e04a4a;
+  transform: translateY(-2px); /* Button hover effect */
+}
+
+/* Optional close button on top-right if you want one */
+.close-modal-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.close-modal-button:hover {
+  color: #ff5c5c;
+}

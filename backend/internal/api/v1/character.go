@@ -21,8 +21,15 @@ type Character struct {
 	Description   string `json:"description"`
 	CurrentMana   int    `json:"current_mana"`
 	MaxMana       int    `json:"max_mana"`
-	CurrentHealth int    `json:"current_health"`
-	MaxHealth     int    `json:"max_health"`
+	CurrentHealth int    `json:"current_hp"` // updated tag
+	MaxHealth     int    `json:"max_hp"`     // updated tag
+
+}
+
+type JSONCharacter struct {
+	Description string `json:"description"`
+	MaxMana     int    `json:"max_mana"`
+	MaxHealth   int    `json:"max_hp"`
 }
 
 type JSONCharacter struct {
