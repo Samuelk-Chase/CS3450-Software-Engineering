@@ -26,11 +26,11 @@ type Character struct {
 
 }
 
-type JSONCharacter struct {
-	Description string `json:"description"`
-	MaxMana     int    `json:"max_mana"`
-	MaxHealth   int    `json:"max_hp"`
-}
+// type JSONCharacter struct {
+// 	Description string `json:"description"`
+// 	MaxMana     int    `json:"max_mana"`
+// 	MaxHealth   int    `json:"max_hp"`
+// }
 
 type JSONCharacter struct {
 	Description string `json:"description"`
