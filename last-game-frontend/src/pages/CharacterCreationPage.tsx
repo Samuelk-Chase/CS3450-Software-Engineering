@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
-
-// 1) Import your background image
 import backgroundImage from "../images/Login background.jpg";
 
 const CharacterCreationPage: React.FC = () => {
   const [characterName, setCharacterName] = useState("");
+  const [characterDescription, setCharacterDescription] = useState("");
+  const [adventureDescription, setAdventureDescription] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -25,30 +25,29 @@ const CharacterCreationPage: React.FC = () => {
     setUserId(Number(storedUserId));
   }, [navigate]);
 
-  // Common function to fetch image from backend endpoint
-  const fetchImage = async (prompt: string) => {
-    const requestBody = { prompt };
-    const response = await fetch("http://localhost:8080/v1/image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
-    }
-    const data = await response.json();
-    if (data.length > 0 && data[0].b64_json) {
-      return `data:image/jpeg;base64,${data[0].b64_json}`;
-    }
-    throw new Error("No image data received");
-  };
+const fetchImage = async () => {
+  const prompt = `Generate an image of a character named ${characterName}, described as: ${characterDescription}.`;
+  const response = await fetch("http://localhost:8080/v1/image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+  const data = await response.json();
+  if (data.length > 0 && data[0].b64_json) {
+    return `data:image/jpeg;base64,${data[0].b64_json}`;
+  }
+  throw new Error("No image data received");
+};
 
   const handleGenerateImage = async () => {
     if (characterName.trim() === "") return;
     setLoading(true);
     try {
-      const imgDataUrl = await fetchImage(characterName);
+      const imgDataUrl = await fetchImage();
       setImageUrl(imgDataUrl);
     } catch (error) {
       console.error("Failed to generate image:", error);
@@ -58,16 +57,7 @@ const CharacterCreationPage: React.FC = () => {
   };
 
   const handleRegenerateImage = async () => {
-    if (characterName.trim() === "") return;
-    setLoading(true);
-    try {
-      const imgDataUrl = await fetchImage(characterName);
-      setImageUrl(imgDataUrl);
-    } catch (error) {
-      console.error("Failed to regenerate image:", error);
-    } finally {
-      setLoading(false);
-    }
+    await handleGenerateImage();
   };
 
   const handleCreateCharacter = async () => {
@@ -75,19 +65,15 @@ const CharacterCreationPage: React.FC = () => {
       return;
     }
     setLoading(true);
-
     try {
-      // Convert the data URL (base64) to a blob.
       const response = await fetch(imageUrl);
       const blob = await response.blob();
 
-      // Create a FormData object and append the character name and image file.
       const formData = new FormData();
       formData.append("characterName", characterName);
       const safeName = characterName.toLowerCase().replace(/\s+/g, "_");
       formData.append("characterImage", blob, `${safeName}.png`);
 
-      // Upload image using the /uploadCharacterImage endpoint.
       const uploadResponse = await fetch("http://localhost:8080/v1/uploadCharacterImage", {
         method: "POST",
         body: formData,
@@ -97,14 +83,14 @@ const CharacterCreationPage: React.FC = () => {
         const errorText = await uploadResponse.text();
         throw new Error(errorText);
       }
+
       const savedFileName = await uploadResponse.text();
 
-      // Now create the character record using the saved image filename.
       const requestBody = {
         user_id: userId,
         name: characterName,
         image: savedFileName,
-        mode: mode, // include the selected mode
+        mode: mode,
       };
 
       const createResponse = await fetch("http://localhost:8080/v1/getNewCharacter", {
@@ -118,7 +104,7 @@ const CharacterCreationPage: React.FC = () => {
         console.log("Character created successfully:", data);
         setCharacterName("");
         setImageUrl("");
-        navigate("/character-account"); // Navigate to the account page
+        navigate("/character-account");
       } else {
         const errorText = await createResponse.text();
         console.error("Failed to create character:", errorText);
@@ -133,7 +119,6 @@ const CharacterCreationPage: React.FC = () => {
   return (
     <div
       style={{
-        // Use your background image
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -145,7 +130,6 @@ const CharacterCreationPage: React.FC = () => {
         color: "#E3C9CE",
       }}
     >
-      {/* Main row: left half text, right half image */}
       <div
         style={{
           display: "flex",
@@ -154,7 +138,6 @@ const CharacterCreationPage: React.FC = () => {
           padding: "2rem",
         }}
       >
-        {/* LEFT HALF: All text (Hard/Soft modes, name input, generate button) */}
         <div style={{ flex: 1, marginRight: "1rem", padding: "9rem" }}>
           <h2 style={{ textAlign: "center" }}>GAME PLAY</h2>
           <div style={{ margin: "1rem 0" }}>
@@ -174,7 +157,6 @@ const CharacterCreationPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Radio Buttons to Choose Hard/Soft */}
           <div style={{ marginBottom: "2rem", textAlign: "center" }}>
             <label style={{ marginRight: "1rem" }}>
               <input
@@ -200,26 +182,35 @@ const CharacterCreationPage: React.FC = () => {
             </label>
           </div>
 
-          {/* Character Name Input + Generate Image Button */}
-          <h3 style={{ textAlign: "center", marginBottom: "9rem" }}>
-            Enter Your Character Name
-          </h3>
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "2rem" }}>
-            <InputText
-              value={characterName}
-              onChange={(e) => setCharacterName(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "10px",
-                fontSize: "1.4rem",
-                backgroundColor: "#444444",
-                color: "#E3C9CE",
-                border: "2px solid #20683F",
-                borderRadius: "8px",
-                marginRight: "1rem",
-              }}
-              placeholder="Enter your character name..."
-            />
+          {/* Character Name */}
+          <h3 style={{ textAlign: "center" }}>Enter Your Character Name</h3>
+          <InputText
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            style={inputStyle}
+            placeholder="Character name..."
+          />
+
+          {/* Character Description */}
+          <h3 style={{ textAlign: "center", marginTop: "2rem" }}>Describe Your Character</h3>
+          <InputText
+            value={characterDescription}
+            onChange={(e) => setCharacterDescription(e.target.value)}
+            style={inputStyle}
+            placeholder="E.g., tall elf archer with glowing tattoos..."
+          />
+
+          {/* Adventure Description */}
+          <h3 style={{ textAlign: "center", marginTop: "2rem" }}>Describe Your Adventure World</h3>
+          <InputText
+            value={adventureDescription}
+            onChange={(e) => setAdventureDescription(e.target.value)}
+            style={inputStyle}
+            placeholder="E.g., snowy mountain kingdom ruled by dragons..."
+          />
+
+          {/* Generate Button */}
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <Button
               label="Generate Image"
               className="p-button p-button-rounded p-shadow-3"
@@ -235,10 +226,10 @@ const CharacterCreationPage: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT HALF: Display Generated Image */}
+        {/* RIGHT SIDE - Image Display */}
         <div style={{ flex: 1, marginLeft: "1rem", display: "flex", flexDirection: "column" }}>
           {imageUrl && (
-            <div style={{ textAlign: "center", marginBottom: "2rem", marginTop: "9rem" }}>
+            <div style={{ textAlign: "center", marginTop: "9rem" }}>
               <img
                 src={imageUrl}
                 alt="Character"
@@ -266,25 +257,36 @@ const CharacterCreationPage: React.FC = () => {
         </div>
       </div>
 
-   {/* BOTTOM: Centered "Create Character" Button */}
-<div style={{ display: "flex", justifyContent: "center", marginBottom: "10rem" }}>
-  <Button
-    label="Create Character"
-    className="p-button p-button-rounded p-shadow-3"
-    style={{
-      width: "250px",
-      height: "50px",
-      fontSize: "1.4rem",
-      fontWeight: "bold",
-      background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
-      border: "none",
-      borderRadius: "12px",
-    }}
-    onClick={handleCreateCharacter}
-  />
-</div>
+      {/* Create Character Button */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "10rem" }}>
+        <Button
+          label="Create Character"
+          className="p-button p-button-rounded p-shadow-3"
+          style={{
+            width: "250px",
+            height: "50px",
+            fontSize: "1.4rem",
+            fontWeight: "bold",
+            background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
+            border: "none",
+            borderRadius: "12px",
+          }}
+          onClick={handleCreateCharacter}
+        />
+      </div>
     </div>
   );
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  fontSize: "1.2rem",
+  backgroundColor: "#444444",
+  color: "#E3C9CE",
+  border: "2px solid #20683F",
+  borderRadius: "8px",
+  marginTop: "0.5rem",
 };
 
 export default CharacterCreationPage;

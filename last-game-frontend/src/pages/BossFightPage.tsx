@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { GameContext } from '../context/GameContext';
 import '../css/BossFightView.css';
@@ -8,9 +8,9 @@ const BossFightPage: React.FC = () => {
   const { character, updateStats } = useContext(GameContext);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { boss } = location.state || {};
-  
+
   const [bossHealth, setBossHealth] = useState<number>(boss?.health ?? 100);
   const [bossImage, setBossImage] = useState<string>('');
   const [bossNameInput, setBossNameInput] = useState<string>(boss?.name || '');
@@ -43,6 +43,26 @@ const BossFightPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!boss) return;
+
+    setBossHealth(boss.health ?? 100);
+    setBossNameInput(boss.name ?? '');
+
+    const autoGenerateImage = async () => {
+      try {
+        const imgDataUrl = await fetchBossImage(boss.name);
+        setBossImage(imgDataUrl);
+      } catch (error) {
+        console.error("Auto-generation failed:", error);
+      }
+    };
+
+    if (boss.name) {
+      autoGenerateImage();
+    }
+  }, [boss]);
+
   const handleAttack = () => {
     setBossHealth((prev) => Math.max(prev - 10, 0));
     if (character) {
@@ -56,7 +76,7 @@ const BossFightPage: React.FC = () => {
   };
 
   const handleBackToMain = () => {
-    navigate('/main');  // Navigate back to the main page
+    navigate('/main');
   };
 
   return (
@@ -79,18 +99,20 @@ const BossFightPage: React.FC = () => {
           {bossImage ? (
             <img src={bossImage} alt="Boss" className="character-img" />
           ) : (
-            <div className="boss-generator">
-              <input
-                type="text"
-                placeholder="Enter boss name..."
-                value={bossNameInput}
-                onChange={(e) => setBossNameInput(e.target.value)}
-                className="boss-input"
-              />
-              <button onClick={handleGenerateBossImage} className="generate-boss-button">
-                Generate Boss Image
-              </button>
-            </div>
+            !boss?.name && (
+              <div className="boss-generator">
+                <input
+                  type="text"
+                  placeholder="Enter boss name..."
+                  value={bossNameInput}
+                  onChange={(e) => setBossNameInput(e.target.value)}
+                  className="boss-input"
+                />
+                <button onClick={handleGenerateBossImage} className="generate-boss-button">
+                  Generate Boss Image
+                </button>
+              </div>
+            )
           )}
           <h3 className="character-name">{(boss?.name ?? bossNameInput) || 'Dark Fiend'}</h3>
           <div className="health-bar-container">
@@ -132,7 +154,7 @@ const BossFightPage: React.FC = () => {
         </button>
         <button className="action-button" onClick={handleBackToMain}>
           Back to Main
-        </button> {/* Button for returning to the main home page */}
+        </button>
       </div>
     </div>
   );
