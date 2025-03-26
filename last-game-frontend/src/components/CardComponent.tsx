@@ -20,7 +20,7 @@ const CardComponent: React.FC<CardProps> = ({ card }) => {
       <div className="individual-card">
         {/* Image container */}
         <div className="individual-card-image">
-          <img src={cardImage} alt={card.name} className="card-image" />
+          <img src={card.image} alt={card.name} className="card-image" />
         </div>
         
         {/* Card Content */}

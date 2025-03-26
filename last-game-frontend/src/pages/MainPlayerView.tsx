@@ -92,11 +92,15 @@ const MainPlayerView: React.FC = () => {
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
+        const sanitizedPrompt = aiMessage.replace(/\*/g, "");
         
         const cardResponse = await axios.post("http://localhost:8080/v1/card", {
-          prompt: aiMessage,
+          prompt: sanitizedPrompt,
           
         });
+        
+        
+   
         console.log(cardResponse.data);
         const generatedCard = cardResponse.data;
         const mappedCard: Card = {
@@ -136,6 +140,7 @@ const MainPlayerView: React.FC = () => {
       setGameText("Sorry, something went wrong.");
     }
   };
+ 
 
   const handleOpenChest = () => {
     setShowChestModal(true);
@@ -164,6 +169,8 @@ const MainPlayerView: React.FC = () => {
   // Derive the player's image URL based on their character name.
   const safeName = character.character_name.toLowerCase().replace(/\s+/g, "_");
   const playerImageUrl = `http://localhost:8080/character_images/${safeName}.png`;
+  //until andy updates db
+  //const playerImageUrl = `src/images/background/jpg`;
 
   return (
     <>

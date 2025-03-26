@@ -1,3 +1,5 @@
+
+
 package v1
 
 import (
@@ -9,16 +11,15 @@ import (
 	"strconv"
 
 	db "beanboys-lastgame-backend/internal/db/cards_db"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/openai/openai-go"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"os"
+	"strings"
+	"encoding/base64"
 )
-
-// Deck defines the structure of our deck object.
-type Deck struct {
-	ID       int `json:"id"`
-	Quantity int `json:"quantity"`
-}
 
 // Card defines the structure of our card object.
 type Card struct {
@@ -36,13 +37,16 @@ type JSONCard struct {
 	Description string `json:"description"`
 	Cost        int    `json:"cost"`
 }
+// Deck defines the structure of our deck object.
+type Deck struct {
+	ID       int `json:"id"`
+	Quantity int `json:"quantity"`
+}
 
 // generateCard creates a card object with the given name and description.
-func generateCard(prompt string) db.Card {
-
-	// Get the response from the OpenAI API
+func generateCard(prompt string) (db.Card, error) {
+	// Get the response from OpenAI API
 	client := openai.NewClient()
-	// Define the messages for the chat completion
 	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
 		openai.SystemMessage(card_system_prompt),
 		openai.UserMessage(prompt),
@@ -53,7 +57,6 @@ func generateCard(prompt string) db.Card {
 		Messages: messages,
 	}
 
-	// Make the API request
 	response, err := client.Chat.Completions.New(context.Background(), req)
 	if err != nil {
 		log.Fatalf("ChatCompletion error: %v", err)
@@ -66,17 +69,85 @@ func generateCard(prompt string) db.Card {
 		fmt.Println("Error parsing JSON:", err)
 	}
 
-	return db.Card{
-		TypeID:          1, // Default type ID
+	// Create the db.Card using the parsed data
+	card := db.Card{
 		Title:           jsonCard.Name,
-		ManaCost:        jsonCard.Cost, // Default mana cost
 		CardDescription: jsonCard.Description,
-		ImageURL:        "http://example.com/sample-card.jpg", // Default image URL
-		PowerLevel:      10,                                   // Default power level
+		ImageURL:        "", // Placeholder, will be set after image upload
+		PowerLevel:           1,  // Default level
+		TypeID:          1,  // Default type
+		ManaCost:        jsonCard.Cost,
+		
 	}
-}
 
-// getCards is an HTTP handler that returns a deck object as JSON.
+	// Generate and upload the image, and retrieve the URL
+	imageURL, err := generateImageAndUploadToS3(card, prompt)
+	if err != nil {
+		return db.Card{}, fmt.Errorf("Image upload error: %v", err)
+	}
+
+	// Set the image URL in the card object
+	card.ImageURL = imageURL
+
+	// Insert the card into the database
+	cardID, err := db.InsertCard(card)
+	if err != nil {
+		return db.Card{}, fmt.Errorf("Database insert error: %v", err)
+	}
+
+	// Retrieve the inserted card from the database to return as a response
+	insertedCard, err := db.GetCardByID(cardID)
+	if err != nil {
+		return db.Card{}, fmt.Errorf("Failed to retrieve inserted card: %v", err)
+	}
+
+	return insertedCard, nil
+}
+// generateImageAndUploadToS3 generates an image for the card description and uploads it to S3
+func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
+	// Generate the image using OpenAI API
+	client := openai.NewClient()
+	response, err := client.Images.Generate(context.Background(), openai.ImageGenerateParams{
+		Prompt:         openai.F(prompt),
+		Model:          openai.F(openai.ImageModelDallE3),
+		ResponseFormat: openai.F(openai.ImageGenerateParamsResponseFormatB64JSON),
+		Size:           openai.F(openai.ImageGenerateParamsSize1024x1024),
+	})
+	if err != nil {
+		return "", fmt.Errorf("Image generation error: %v", err)
+	}
+
+	// Decode the Base64 image string
+	imageBytes, err := base64.StdEncoding.DecodeString(response.Data[0].B64JSON)
+	if err != nil {
+		return "", fmt.Errorf("Error decoding base64 image: %v", err)
+	}
+
+	// Upload the image to S3
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-2"),
+	})
+	if err != nil {
+		return "", fmt.Errorf("AWS session error: %v", err)
+	}
+
+	uploader := s3manager.NewUploader(sess)
+	fileName := fmt.Sprintf("%s.jpg", strings.ReplaceAll(card.Title, " ", "_"))
+
+	// Upload the image to the S3 bucket
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
+		Key:    aws.String("card_images/" + fileName),
+		Body:   strings.NewReader(string(imageBytes)),
+	})
+	if err != nil {
+		return "", fmt.Errorf("S3 upload error: %v", err)
+	}
+
+	// Construct the URL of the uploaded image
+	imageURL := fmt.Sprintf("https://%s.s3.amazonaws.com/card_images/%s", os.Getenv("AWS_BUCKET"), fileName)
+	return imageURL, nil
+}
 func getCards(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("get cards called!")
 
@@ -124,28 +195,18 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate the card using the provided name and description.
-	card := generateCard(requestData.Prompt)
-
-	// Insert the card into the database.
-	cardID, err := db.InsertCard(card)
+	// Generate the card using the provided prompt
+	card, err := generateCard(requestData.Prompt)
 	if err != nil {
-		http.Error(w, "Failed to insert card", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Card generation error: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Retrieve the inserted card to return as a response.
-	insertedCard, err := db.GetCardByID(cardID)
-	if err != nil {
-		http.Error(w, "Failed to retrieve inserted card", http.StatusInternalServerError)
-		return
-	}
-
-	// Set the response header to indicate JSON content.
+	// Set the response header to indicate JSON content
 	w.Header().Set("Content-Type", "application/json")
 
-	// Encode the card object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(insertedCard); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// Encode the db.Card object to JSON and write it to the response
+	if err := json.NewEncoder(w).Encode(card); err != nil {
+		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
 	}
 }
