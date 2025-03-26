@@ -80,22 +80,18 @@ func generateCard(prompt string) (db.Card, error) {
 		
 	}
 	fmt.Println("Card Generated")
-	// Generate and upload the image, and retrieve the URL
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Image upload error: %v", err)
 	}
 	fmt.Println("Image generated and stored")
-	// Set the image URL in the card object
 	card.ImageURL = imageURL
 
-	// Insert the card into the database
 	cardID, err := db.InsertCard(card)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Database insert error: %v", err)
 	}
 
-	// Retrieve the inserted card from the database to return as a response
 	insertedCard, err := db.GetCardByID(cardID)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Failed to retrieve inserted card: %v", err)
@@ -103,9 +99,8 @@ func generateCard(prompt string) (db.Card, error) {
 
 	return insertedCard, nil
 }
-// generateImageAndUploadToS3 generates an image for the card description and uploads it to S3
+// generateImageAndUploadToS3 generates an image from prompt and uploads it to S3
 func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
-	// Generate the image using OpenAI API
 	client := openai.NewClient()
 	response, err := client.Images.Generate(context.Background(), openai.ImageGenerateParams{
 		Prompt:         openai.F(prompt),
@@ -116,13 +111,12 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Image generation error: %v", err)
 	}
-	// Decode the Base64 image string
+
 	imageBytes, err := base64.StdEncoding.DecodeString(response.Data[0].B64JSON)
 	if err != nil {
 		return "", fmt.Errorf("Error decoding base64 image: %v", err)
 	}
-	
-	// Upload the image to S3
+
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2"),
 	})
@@ -133,7 +127,6 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	uploader := s3manager.NewUploader(sess)
 	fileName := fmt.Sprintf("%s.jpg", strings.ReplaceAll(card.Title, " ", "_"))
 
-	// Upload the image to the S3 bucket
 	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
 		Key:    aws.String("card_images/" + fileName),
@@ -143,7 +136,6 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 		return "", fmt.Errorf("S3 upload error: %v", err)
 	}
 
-	// Construct the URL of the uploaded image
 	imageURL := fmt.Sprintf("https://%s.s3.amazonaws.com/card_images/%s", os.Getenv("AWS_BUCKET"), fileName)
 	return imageURL, nil
 }
