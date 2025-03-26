@@ -2,14 +2,11 @@ package v1
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-
 )
 
 // uploadCharacterImage handles saving the uploaded character image using the character's name as the file name.
@@ -42,60 +39,36 @@ func uploadCharacterImage(w http.ResponseWriter, r *http.Request) {
 	// Build the file name using the sanitized character name.
 	fileName := fmt.Sprintf("%s%s", safeCharacterName, ext)
 
-
-
-
-	//s3 implementation
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-2"),
-		})
-	if err != nil {
-		http.Error(w, "Failed to initialize AWS session", http.StatusInternalServerError)
+	// Define the target directory for storing character images.
+	targetDir := "./character_images"
+	// Ensure the directory exists. If not, create it.
+	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
+		http.Error(w, "Unable to create directory", http.StatusInternalServerError)
 		return
 	}
 
-	uploader := s3manager.NewUploader(sess)
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
-		Key:    aws.String("character_images/" + fileName),
-		Body:   file,
-	})
+	// Construct the full target path.
+	targetPath := filepath.Join(targetDir, fileName)
+
+	// Create the target file.
+	out, err := os.Create(targetPath)
 	if err != nil {
-		http.Error(w, "S3 upload failed: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Unable to create file", http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	// Copy the uploaded file's data to the target file.
+	if _, err = io.Copy(out, file); err != nil {
+		http.Error(w, "Unable to save file", http.StatusInternalServerError)
 		return
 	}
 
-
-	// // Define the target directory for storing character images.
-	// targetDir := "./character_images"
-	// // Ensure the directory exists. If not, create it.
-	// if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
-	// 	http.Error(w, "Unable to create directory", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// // Construct the full target path.
-	// targetPath := filepath.Join(targetDir, fileName)
-
-	// // Create the target file.
-	// out, err := os.Create(targetPath)
-	// if err != nil {
-	// 	http.Error(w, "Unable to create file", http.StatusInternalServerError)
-	// 	return
-	// }
-	// defer out.Close()
-
-	// // Copy the uploaded file's data to the target file.
-	// if _, err = io.Copy(out, file); err != nil {
-	// 	http.Error(w, "Unable to save file", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// // Optionally, update the character record in your database with the fileName if needed.
-	// // For example:
-	// // characterID := r.FormValue("characterID")
-	// // err = updateCharacterImage(characterID, fileName)
-	// // if err != nil { ... }
+	// Optionally, update the character record in your database with the fileName if needed.
+	// For example:
+	// characterID := r.FormValue("characterID")
+	// err = updateCharacterImage(characterID, fileName)
+	// if err != nil { ... }
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fileName))
