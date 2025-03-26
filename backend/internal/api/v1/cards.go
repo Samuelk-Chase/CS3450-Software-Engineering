@@ -79,13 +79,13 @@ func generateCard(prompt string) (db.Card, error) {
 		ManaCost:        jsonCard.Cost,
 		
 	}
-
+	fmt.Println("Card Generated")
 	// Generate and upload the image, and retrieve the URL
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Image upload error: %v", err)
 	}
-
+	fmt.Println("Image generated and stored")
 	// Set the image URL in the card object
 	card.ImageURL = imageURL
 
@@ -116,13 +116,12 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Image generation error: %v", err)
 	}
-
 	// Decode the Base64 image string
 	imageBytes, err := base64.StdEncoding.DecodeString(response.Data[0].B64JSON)
 	if err != nil {
 		return "", fmt.Errorf("Error decoding base64 image: %v", err)
 	}
-
+	
 	// Upload the image to S3
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2"),
