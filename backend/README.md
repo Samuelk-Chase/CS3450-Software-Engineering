@@ -39,7 +39,7 @@ Database access operations go in `internal/db`
 To run for testing, 
 ```bash
 # inside this directory
-go run cmd/api/main.go --port <PORT>
+go run cmd/api/main.go --port 8080
 ```
 
 To build, run

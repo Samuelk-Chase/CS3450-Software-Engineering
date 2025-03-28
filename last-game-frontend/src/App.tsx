@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import CharacterCreationPage from './pages/CharacterCreationPage';
@@ -15,8 +15,62 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => 
 };
 
 function App() {
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isAudioAllowed, setIsAudioAllowed] = useState(false); // Track if user interaction has occurred
+
+  useEffect(() => {
+    const fetchAudio = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/v1/backgroundaudio');
+        if (!response.ok) {
+          throw new Error('Failed to fetch audio');
+        }
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioSrc(audioUrl);
+      } catch (error) {
+        console.error('Error fetching audio:', error);
+      }
+    };
+
+    fetchAudio();
+  }, []);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (!isAudioAllowed) {
+        setIsAudioAllowed(true); // Allow audio playback after user interaction
+        if (audioRef.current) {
+          audioRef.current.play().catch((e) => {
+            console.error('Error playing audio:', e);
+          });
+        }
+      }
+    };
+
+    // Add event listeners for user interaction
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
+  }, [isAudioAllowed]);
+
   return (
     <Router>
+      {/* Background audio */}
+      {audioSrc && (
+        <audio ref={audioRef} loop>
+          <source src={audioSrc} type="audio/wav" />
+          Your browser does not support the audio element.
+        </audio>
+      )}
+
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LoginPage />} />
