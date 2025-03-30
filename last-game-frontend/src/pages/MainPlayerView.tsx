@@ -14,6 +14,7 @@ interface Character {
   max_hp: number;
   current_mana: number;
   max_mana: number;
+  image_url: string;
 }
 
 const cards: Card[] = [
@@ -166,12 +167,6 @@ const MainPlayerView: React.FC = () => {
     return <p>Loading character...</p>;
   }
 
-  // Derive the player's image URL based on their character name.
-  const safeName = character.character_name.toLowerCase().replace(/\s+/g, "_");
-  const playerImageUrl = `http://localhost:8080/character_images/${safeName}.png`;
-  //until andy updates db
-  //const playerImageUrl = `src/images/background/jpg`;
-
   return (
     <>
       {/* Background Wrapper */}
@@ -211,7 +206,7 @@ const MainPlayerView: React.FC = () => {
           <div className="left-panel">
             {/* Player Image centered */}
             <img
-              src={playerImageUrl}
+              src={character.image_url}
               alt={character.character_name}
               onError={(e) => {
                 console.log("Error loading player image for:", character.character_name);

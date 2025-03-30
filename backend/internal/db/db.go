@@ -20,6 +20,7 @@ type Character struct {
 	MaxMana       int    `json:"max_mana"`
 	CurrentHealth int    `json:"current_hp"` // updated tag
 	MaxHealth     int    `json:"max_hp"`     // updated tag
+	ImageURL      string `json:"image_url"`
 }
 
 // InsertCharacter adds a new character to the database.
@@ -27,14 +28,14 @@ func InsertCharacter(character Character) (int, error) {
 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/character"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-	// Remove `description` since it's not in the table
 	body, err := json.Marshal(map[string]interface{}{
 		"user_id":        character.UserID,
-		"character_name": character.Name, // Matches `character_name`
+		"character_name": character.Name,
 		"current_hp":     character.CurrentHealth,
 		"max_hp":         character.MaxHealth,
 		"current_mana":   character.CurrentMana,
 		"max_mana":       character.MaxMana,
+		"image_url":      character.ImageURL,
 	})
 	if err != nil {
 		return 0, err
