@@ -36,6 +36,7 @@ func Routes() http.Handler {
 	r.Post("/story", generateStory)             // Returns a story object as JSON
 	r.Post("/image", generateImage)             // Returns a generated image as JSON
 	r.Post("/uploadCharacterImage", uploadCharacterImage)
+	r.Get("/backgroundaudio", ServeWAV)
 
 	r.Get("/character_image/{name}", func(w http.ResponseWriter, r *http.Request) {
 		// Log the working directory.

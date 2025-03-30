@@ -25,29 +25,29 @@ const CharacterCreationPage: React.FC = () => {
     setUserId(Number(storedUserId));
   }, [navigate]);
 
-const fetchImage = async () => {
-  const prompt = `Generate an image of a character named ${characterName}, described as: ${characterDescription}.`;
-  const response = await fetch("http://localhost:8080/v1/image", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText);
-  }
-  const data = await response.json();
-  if (data.length > 0 && data[0].b64_json) {
-    return `data:image/jpeg;base64,${data[0].b64_json}`;
-  }
-  throw new Error("No image data received");
-};
+  const fetchImage = async () => {
+    const prompt = `Generate an image of a character named ${characterName}, described as: ${characterDescription}.`;
+    const response = await fetch("http://localhost:8080/v1/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+    const data = await response.json();
+    if (data.length > 0 && data[0].b64_json) {
+      return `data:image/jpeg;base64,${data[0].b64_json}`;
+    }
+    throw new Error("No image data received");
+  };
 
   const handleGenerateImage = async () => {
     if (characterName.trim() === "") return;
     setLoading(true);
     try {
-      const imgDataUrl = await fetchImage();
+      const imgDataUrl = await fetchImage(); // Fixed: changed 'consta' to 'const'
       setImageUrl(imgDataUrl);
     } catch (error) {
       console.error("Failed to generate image:", error);
@@ -226,9 +226,39 @@ const fetchImage = async () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE - Image Display */}
+        {/* RIGHT SIDE - Image Display or Loading Symbol */}
         <div style={{ flex: 1, marginLeft: "1rem", display: "flex", flexDirection: "column" }}>
-          {imageUrl && (
+          {loading ? (
+            <div style={{ textAlign: "center", marginTop: "calc(9rem + 200px)" }}>
+              <div
+                className="loading-container"
+                style={{
+                  position: "relative",
+                  width: "400px",
+                  height: "400px",
+                  margin: "0 auto",
+                }}
+              >
+                <ProgressSpinner
+                  style={{ width: "400px", height: "400px" }}
+                  strokeWidth="5"
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    color: "#fff",
+                    fontSize: "28px",
+                    textAlign: "center",
+                  }}
+                >
+                  Generating image
+                </div>
+              </div>
+            </div>
+          ) : imageUrl ? (
             <div style={{ textAlign: "center", marginTop: "9rem" }}>
               <img
                 src={imageUrl}
@@ -248,12 +278,7 @@ const fetchImage = async () => {
                 />
               </div>
             </div>
-          )}
-          {loading && (
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-              <ProgressSpinner />
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
 
