@@ -96,7 +96,7 @@ const CharacterAccountPage: React.FC = () => {
   // Navigate to the main view with the selected character
   const handlePlay = () => {
     if (selectedCharacter) {
-      localStorage.setItem("characterId", String(selectedCharacter.character_id));
+      localStorage.setItem("characterId", String(selectedCharacter.character_id)); //characterID stored in local storage
       navigate("/main");
     }
   };

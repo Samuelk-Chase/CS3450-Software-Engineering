@@ -1,5 +1,3 @@
-
-
 package v1
 
 import (
@@ -11,14 +9,15 @@ import (
 	"strconv"
 
 	db "beanboys-lastgame-backend/internal/db/cards_db"
-	"github.com/go-chi/chi/v5"
-	"github.com/openai/openai-go"
+	"encoding/base64"
+	"os"
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
-	"strings"
-	"encoding/base64"
+	"github.com/go-chi/chi/v5"
+	"github.com/openai/openai-go"
 )
 
 // Card defines the structure of our card object.
@@ -37,6 +36,7 @@ type JSONCard struct {
 	Description string `json:"description"`
 	Cost        int    `json:"cost"`
 }
+
 // Deck defines the structure of our deck object.
 type Deck struct {
 	ID       int `json:"id"`
@@ -74,10 +74,9 @@ func generateCard(prompt string) (db.Card, error) {
 		Title:           jsonCard.Name,
 		CardDescription: jsonCard.Description,
 		ImageURL:        "", // Placeholder, will be set after image upload
-		PowerLevel:           1,  // Default level
+		PowerLevel:      1,  // Default level
 		TypeID:          1,  // Default type
 		ManaCost:        jsonCard.Cost,
-		
 	}
 	fmt.Println("Card Generated")
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
@@ -99,6 +98,7 @@ func generateCard(prompt string) (db.Card, error) {
 
 	return insertedCard, nil
 }
+
 // generateImageAndUploadToS3 generates an image from prompt and uploads it to S3
 func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	client := openai.NewClient()
@@ -118,7 +118,7 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	}
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-2"),
+		Region: aws.String(os.Getenv("AWS_REGION")),
 	})
 	if err != nil {
 		return "", fmt.Errorf("AWS session error: %v", err)

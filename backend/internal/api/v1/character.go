@@ -64,7 +64,7 @@ func generateCharacterImageAndUploadToS3(characterName string, prompt string) (s
 	}
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-2"),
+		Region: aws.String(os.Getenv("AWS_REGION")),
 	})
 	if err != nil {
 		return "", fmt.Errorf("AWS session error: %v", err)

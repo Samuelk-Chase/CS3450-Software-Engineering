@@ -12,20 +12,7 @@ Kade Angell, Samuel Chase, Andy Stevenson, Carson Bentley, Justin Plane, Jaden B
 ### Overview
 Our project is an AI-driven multiplayer RPG game designed in a Jackbox-style format, where one central computer runs the game, and players can join using any device with a web connection. The game offers a unique blend of AI-generated storytelling, player-driven choices, and a dynamic, evolving world. Players embark on an adventure where AI adapts the experience in real-time, shaping events, NPC interactions, and challenges based on their decisions.
 
-### Environment Setup
-1. Clone the repository
-2. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-3. Update the `.env` file with your credentials:
-   - AWS credentials (access key, secret key, region, and bucket name)
-   - Database configuration
-   - Other required environment variables
-
-**Note:** Never commit your `.env` file or share your AWS credentials. The `.env` file is already in `.gitignore` to prevent accidental commits.
-
-At the beginning of each session, players can choose a genre such as Fantasy, Mythological, Cyberpunk, Alien, Steampunk, Horror, Zombie Apocalypse, Wild West, Medieval, or WWII. This choice determines the game's environment, setting, and possible encounters. The AI generates the story dynamically, ensuring that every playthrough is different. Players will experience an open-ended narrative where their choices influence the world around them, and AI reacts by modifying scenarios, character dialogues, and challenges accordingly.
+At the beginning of each session, players can choose a genre such as Fantasy, Mythological, Cyberpunk, Alien, Steampunk, Horror, Zombie Apocalypse, Wild West, Medieval, or WWII. This choice determines the game’s environment, setting, and possible encounters. The AI generates the story dynamically, ensuring that every playthrough is different. Players will experience an open-ended narrative where their choices influence the world around them, and AI reacts by modifying scenarios, character dialogues, and challenges accordingly.
 
 
 
