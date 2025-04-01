@@ -141,6 +141,7 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		CurrentHealth: newCharacter.CurrentHealth,
 		MaxHealth:     newCharacter.MaxHealth,
 		ImageURL:      imageURL,
+		Description:   newCharacter.Description,
 	})
 	if err != nil {
 		fmt.Println("Error inserting character:", err)
@@ -184,6 +185,7 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 	// Return created character as response.
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(character)
+	fmt.Printf("Generated character description: %s\n", character.Description)
 }
 
 // GetCharacter retrieves a character by ID and ensures it belongs to the logged-in user.

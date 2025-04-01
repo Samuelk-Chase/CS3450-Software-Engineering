@@ -29,6 +29,7 @@ type Card struct {
 	ImageURL    string `json:"image_url"`
 	Level       int    `json:"level"`
 	Effect      string `json:"effect"`
+	CharacterID int    `json:"character_id"`
 }
 
 type JSONCard struct {
@@ -44,7 +45,7 @@ type Deck struct {
 }
 
 // generateCard creates a card object with the given name and description.
-func generateCard(prompt string) (db.Card, error) {
+func generateCard(prompt string, characterID int) (db.Card, error) {
 	// Get the response from OpenAI API
 	client := openai.NewClient()
 	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
@@ -77,6 +78,7 @@ func generateCard(prompt string) (db.Card, error) {
 		PowerLevel:      1,  // Default level
 		TypeID:          1,  // Default type
 		ManaCost:        jsonCard.Cost,
+		CharacterID:     characterID, // Add character ID to the card
 	}
 	fmt.Println("Card Generated")
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
@@ -139,31 +141,37 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	imageURL := fmt.Sprintf("https://%s.s3.amazonaws.com/card_images/%s", os.Getenv("AWS_BUCKET"), fileName)
 	return imageURL, nil
 }
+
 func getCards(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("get cards called!")
 
-	// Extract the deck ID from the URL path.
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
+	// Extract the character ID from the URL path
+	characterIDStr := chi.URLParam(r, "id")
+	characterID, err := strconv.Atoi(characterIDStr)
 	if err != nil {
-		http.Error(w, "Invalid deck ID", http.StatusBadRequest)
+		http.Error(w, "Invalid character ID", http.StatusBadRequest)
 		return
 	}
 
-	//TODO: Get the deck by ID from the database or other storage.
-
-	// Create a sample deck.
-	deck := Deck{
-		ID:       id,
-		Quantity: 3,
+	// Get cards from the database
+	cards, err := db.GetCardsByCharacterID(characterID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching cards: %v", err), http.StatusInternalServerError)
+		return
 	}
-	fmt.Println("get cards called!")
 
-	// Set the response header to indicate JSON content.
+	// Set the response header to indicate JSON content
 	w.Header().Set("Content-Type", "application/json")
 
-	// Encode the deck object to JSON and write it to the response.
-	if err := json.NewEncoder(w).Encode(deck); err != nil {
+	// Create a response object with the cards array
+	response := struct {
+		Cards []db.Card `json:"cards"`
+	}{
+		Cards: cards,
+	}
+
+	// Encode the response object to JSON and write to response
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -179,7 +187,8 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 
 	// Parse the request body.
 	var requestData struct {
-		Prompt string `json:"prompt"`
+		Prompt      string `json:"prompt"`
+		CharacterID int    `json:"character_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -187,7 +196,7 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate the card using the provided prompt
-	card, err := generateCard(requestData.Prompt)
+	card, err := generateCard(requestData.Prompt, requestData.CharacterID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Card generation error: %v", err), http.StatusInternalServerError)
 		return

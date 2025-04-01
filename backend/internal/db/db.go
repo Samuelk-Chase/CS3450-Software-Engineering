@@ -36,6 +36,7 @@ func InsertCharacter(character Character) (int, error) {
 		"current_mana":   character.CurrentMana,
 		"max_mana":       character.MaxMana,
 		"image_url":      character.ImageURL,
+		"description":    character.Description,
 	})
 	if err != nil {
 		return 0, err
@@ -59,7 +60,6 @@ func InsertCharacter(character Character) (int, error) {
 
 	// Debug print Supabase response
 	respBody, _ := io.ReadAll(resp.Body)
-	fmt.Println("Supabase Response:", string(respBody))
 
 	if resp.StatusCode != http.StatusCreated {
 		return 0, errors.New("failed to insert character")

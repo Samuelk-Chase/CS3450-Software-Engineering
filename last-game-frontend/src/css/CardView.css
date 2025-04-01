@@ -18,20 +18,12 @@
   padding: 2rem;
   max-width: 90vw;
   max-height: 90vh;
-  overflow-y: auto;
   color: #e3c9ce;
   box-shadow: 0 0 20px #000;
-}
-
-.close-button {
-  margin-top: 1rem;
-  background-color: #b93232;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 80px; /* Add space for the fixed close button */
 }
 
 .card-scroll-container {
@@ -40,4 +32,28 @@
   gap: 1rem;
   justify-content: center;
   margin-top: 1rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 150px); /* Adjust for header and close button */
+}
+
+.close-button {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: #b93232;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10000;
+  width: 120px;
+  transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #d13d3d;
 }

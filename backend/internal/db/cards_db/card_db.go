@@ -18,6 +18,7 @@ type Card struct {
 	CardDescription string `json:"card_description"`
 	ImageURL        string `json:"image_url"`
 	PowerLevel      int    `json:"power_level"`
+	CharacterID     int    `json:"character_id"` // Add character ID field
 }
 
 func InsertCard(card Card) (int, error) {
@@ -105,4 +106,35 @@ func GetCardByID(cardID int) (Card, error) {
 	}
 
 	return cards[0], nil
+}
+
+func GetCardsByCharacterID(characterID int) ([]Card, error) {
+	supabaseURL := fmt.Sprintf("%s/rest/v1/card?character_id=eq.%d", os.Getenv("SUPABASE_URL"), characterID)
+	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+	req, err := http.NewRequest("GET", supabaseURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("apikey", supabaseKey)
+	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch cards, status: %d", resp.StatusCode)
+	}
+
+	var cards []Card
+	if err := json.NewDecoder(resp.Body).Decode(&cards); err != nil {
+		return nil, err
+	}
+
+	return cards, nil
 }

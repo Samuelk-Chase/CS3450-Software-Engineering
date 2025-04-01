@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg";
 import axios from "axios";
@@ -7,6 +7,7 @@ import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
 import CardView from "./DeckOverlayPage"; // ✅ Import deck modal component
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 interface Character {
   character_id: number;
@@ -16,6 +17,7 @@ interface Character {
   current_mana: number;
   max_mana: number;
   image_url: string;
+  description: string;
 }
 
 const cards: Card[] = [
@@ -34,11 +36,77 @@ const MainPlayerView: React.FC = () => {
   const [showCardPopup, setShowCardPopup] = useState(false);
   const [showBossPopup, setShowBossPopup] = useState(false);
   const [newBoss, setNewBoss] = useState<Boss | null>(null);
-  const [isDeckOpen, setIsDeckOpen] = useState(false); // ✅ Deck modal toggle
-
+  const [isDeckOpen, setIsDeckOpen] = useState(false);
+  const [deck, setDeck] = useState<Card[]>([]);
+  const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
+
+  const generateDeck = async () => {
+    if (!characterId || !character) return;
+    
+    setIsGeneratingDeck(true);
+    try {
+      // Generate 5 cards
+      for (let i = 0; i < 3; i++) {
+        const response = await axios.post("http://localhost:8080/v1/card", {
+          prompt: character.description,
+          character_id: Number(characterId),
+        });
+        
+        const generatedCard = response.data;
+        const mappedCard: Card = {
+          id: generatedCard.card_id,
+          name: generatedCard.title,
+          type: generatedCard.type_id,
+          level: generatedCard.power_level,
+          mana: generatedCard.mana_cost,
+          effect: generatedCard.card_description,
+          image: generatedCard.image_url,
+        };
+        
+        setDeck(prevDeck => [...prevDeck, mappedCard]);
+      }
+    } catch (error) {
+      console.error("Error generating deck:", error);
+      alert("Failed to generate deck. Please try again.");
+    } finally {
+      setIsGeneratingDeck(false);
+    }
+  };
+
+  const handleDeckButtonClick = async () => {
+    if (deck.length === 0) {
+      await generateDeck();
+    } else {
+      setIsDeckOpen(true);
+    }
+  };
+
+  const fetchDeck = async () => {
+    if (!characterId) return;
+    try {
+      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
+      
+      // Extract cards from the response
+      const cardsData = response.data.cards || [];
+      
+      const cards = cardsData.map((card: any) => ({
+        id: card.card_id,
+        name: card.title,
+        type: card.type_id,
+        level: card.power_level,
+        mana: card.mana_cost,
+        effect: card.card_description,
+        image: card.image_url,
+      }));
+      setDeck(cards);
+    } catch (error) {
+      console.error("Error fetching deck:", error);
+      setDeck([]); // Set empty deck on error
+    }
+  };
 
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) {
@@ -67,6 +135,7 @@ const MainPlayerView: React.FC = () => {
           return;
         }
         setCharacter(data);
+        fetchDeck();
       })
       .catch((error) => console.error("Error fetching character:", error));
   }, [navigate, userId, characterId]);
@@ -81,7 +150,7 @@ const MainPlayerView: React.FC = () => {
     ]);
 
     setGameText("AI is generating content...");
-
+    
     try {
       const response = await axios.post("http://localhost:8080/v1/story", { prompt: userResponse });
       const aiMessage = response.data.response;
@@ -89,6 +158,7 @@ const MainPlayerView: React.FC = () => {
       if (aiMessage.includes("*Receive card reward*")) {
         const cardResponse = await axios.post("http://localhost:8080/v1/card", {
           prompt: aiMessage.replace(/\*/g, ""),
+          character_id: Number(characterId),
         });
         const generatedCard = cardResponse.data;
         const mappedCard: Card = {
@@ -102,6 +172,7 @@ const MainPlayerView: React.FC = () => {
         };
         setNewCard(mappedCard);
         setShowCardPopup(true);
+        setDeck([...deck, mappedCard]);
       }
 
       if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
@@ -161,7 +232,33 @@ const MainPlayerView: React.FC = () => {
           />
         )}
 
-        {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} />} {/* ✅ Deck Modal */}
+        {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} cards={deck} />}
+
+        {isGeneratingDeck && (
+          <div className="loading-container" style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}>
+            <ProgressSpinner style={{ width: '100px', height: '100px' }} strokeWidth="5" />
+            <div style={{
+              color: "#fff",
+              fontSize: "24px",
+              marginTop: "20px",
+              textAlign: "center"
+            }}>
+              Generating your deck...
+            </div>
+          </div>
+        )}
 
         <div className="main-container">
           <div className="left-panel">
@@ -196,9 +293,13 @@ const MainPlayerView: React.FC = () => {
               </div>
             </div>
 
-            {/* ✅ Open Deck Modal */}
-            <button className="button" onClick={() => setIsDeckOpen(true)}>
-              View Deck
+            {/* Updated Deck Button */}
+            <button 
+              className="button" 
+              onClick={handleDeckButtonClick}
+              disabled={isGeneratingDeck}
+            >
+              {isGeneratingDeck ? "Generating Deck..." : deck.length === 0 ? "Generate Deck" : "View Deck"}
             </button>
 
             <button className="button" onClick={() => navigate("/boss")}>

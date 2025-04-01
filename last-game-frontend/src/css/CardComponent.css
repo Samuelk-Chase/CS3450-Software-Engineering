@@ -10,14 +10,14 @@
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   background-color: rgba(0, 0, 0, 0.6);
   width: 100%;
-  max-width: 250px;
+  max-width: 200px;
 }
 
 /* Individual Card: Contains the image and content */
 .individual-card {
   position: relative;
   background-color: rgba(0, 0, 0, 0.7); /* Slightly darker background for text readability */
-  padding: 20px;
+  padding: 15px;
   border-radius: 15px;
   overflow: hidden; /* Ensures the image does not overflow outside the rounded corners */
   width: 100%;
@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: flex-start; /* Adjust to make sure everything aligns properly */
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-  min-height: 350px; /* Set a minimum height for the card */
+  min-height: 300px; /* Set a minimum height for the card */
   height: auto; /* Allow the height to grow based on content */
 }
 
@@ -37,13 +37,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px; /* Space between the image and title */
+  margin-bottom: 15px; /* Space between the image and title */
 }
 
 /* Image styling */
 .card-image {
-  width: 150px; /* Adjust the image size */
-  height: 150px;
+  width: 120px; /* Adjust the image size */
+  height: 120px;
   object-fit: cover; /* Ensure image covers the space without distortion */
   border-radius: 12px; /* Rounded corners for the image */
   border: 3px solid #fff; /* Border around the image */
@@ -53,23 +53,23 @@
 
 /* Card Title */
 .individual-card-title {
-  font-size: 1.5rem; /* Larger font size */
+  font-size: 1.3rem; /* Larger font size */
   font-weight: bold;
   color: white;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* Text shadow for contrast */
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
 /* Card Effect */
 .individual-card-effect {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #ddd;
   text-align: center;
-  margin: 10px 0;
+  margin: 8px 0;
   z-index: 1; /* Ensures the effect text stays on top */
   padding: 0 10px;
-  min-height: 70px;
+  min-height: 60px;
   overflow: hidden; /* Hide overflow text */
   text-overflow: ellipsis;
   height: auto;
@@ -80,8 +80,8 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 10px;
-  font-size: 0.9rem;
+  margin-top: 8px;
+  font-size: 0.8rem;
   color: #ddd;
   font-weight: bold;
   padding: 0 10px;
@@ -90,12 +90,12 @@
 
 /* Mana Cost Badge */
 .individual-mana-cost {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 8px 15px;
+  padding: 6px 12px;
   border-radius: 20px;
   color: white;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
