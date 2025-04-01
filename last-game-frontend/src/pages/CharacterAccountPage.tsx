@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "primereact/button";
 import backgroundImage from "../images/Login background.jpg";
 
@@ -10,6 +10,7 @@ interface Character {
   max_hp: number;     // renamed to match backend
   current_mana: number;
   max_mana: number;
+  image_url: string;
 }
 
 const CharacterAccountPage: React.FC = () => {
@@ -17,6 +18,7 @@ const CharacterAccountPage: React.FC = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [slideIn, setSlideIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -40,9 +42,33 @@ const CharacterAccountPage: React.FC = () => {
       .then((data) => {
         console.log("Fetched characters:", data);
         setCharacters(data);
+        
+        // Check if we have a new character from navigation
+        const newCharacter = location.state?.newCharacter;
+        if (newCharacter) {
+          console.log("New character data:", newCharacter);
+          // Find the complete character data from the fetched characters
+          const completeCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+          if (completeCharacter) {
+            console.log("Found complete character data:", completeCharacter);
+            setSelectedCharacter(completeCharacter);
+            setSlideIn(true);
+          } else {
+            console.log("Waiting for character data to be available...");
+            // If we don't have the complete data yet, wait a short moment and try again
+            setTimeout(() => {
+              const updatedCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+              if (updatedCharacter) {
+                console.log("Found updated character data:", updatedCharacter);
+                setSelectedCharacter(updatedCharacter);
+                setSlideIn(true);
+              }
+            }, 1000);
+          }
+        }
       })
       .catch((error) => console.error("Error fetching characters:", error));
-  }, [navigate, userId]);
+  }, [navigate, userId, location.state]);
 
   // When a character is selected, trigger the slide after the overlay is rendered
   useEffect(() => {
@@ -70,7 +96,7 @@ const CharacterAccountPage: React.FC = () => {
   // Navigate to the main view with the selected character
   const handlePlay = () => {
     if (selectedCharacter) {
-      localStorage.setItem("characterId", String(selectedCharacter.character_id));
+      localStorage.setItem("characterId", String(selectedCharacter.character_id)); //characterID stored in local storage
       navigate("/main");
     }
   };
@@ -112,55 +138,50 @@ const CharacterAccountPage: React.FC = () => {
           width: "100%",
         }}
       >
-        {characters.map((char) => {
-          const safeName = char.character_name.toLowerCase().replace(/\s+/g, "_");
-          const imageUrl = `http://localhost:8080/character_images/${safeName}.png`;
-
-          return (
-            <div
-              key={char.character_id}
-              onClick={() => handleCharacterSelect(char)}
+        {characters.map((char) => (
+          <div
+            key={char.character_id}
+            onClick={() => handleCharacterSelect(char)}
+            style={{
+              flex: "0 0 auto",
+              margin: "0 5px",
+              cursor: "pointer",
+              border: "1px solid #27ae60",
+              borderRadius: "8px",
+              width: "250px",
+              height: "500px",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <img
+              src={char.image_url}
+              alt={char.character_name}
+              onError={(e) => {
+                console.log("Error loading image for:", char.character_name, "at URL:", char.image_url);
+                e.currentTarget.src = "/default-image.png"; // Fallback image if error occurs
+              }}
               style={{
-                flex: "0 0 auto",
-                margin: "0 5px",
-                cursor: "pointer",
-                border: "1px solid #27ae60",
-                borderRadius: "8px",
-                width: "250px",
-                height: "500px",
-                overflow: "hidden",
-                position: "relative",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                background: "rgba(0, 0, 0, 0.5)",
+                color: "#E3C9CE",
+                textAlign: "center",
+                padding: "0.5rem",
               }}
             >
-              <img
-                src={imageUrl}
-                alt={char.character_name}
-                onError={(e) => {
-                  console.log("Error loading image for:", char.character_name, "at URL:", imageUrl);
-                  e.currentTarget.src = "/default-image.png"; // Fallback image if error occurs
-                }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  width: "100%",
-                  background: "rgba(0, 0, 0, 0.5)",
-                  color: "#E3C9CE",
-                  textAlign: "center",
-                  padding: "0.5rem",
-                }}
-              >
-                <h3 style={{ margin: 0 }}>{char.character_name}</h3>
-              </div>
+              <h3 style={{ margin: 0 }}>{char.character_name}</h3>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Create Character Button */}
@@ -220,20 +241,38 @@ const CharacterAccountPage: React.FC = () => {
                 height: "1000px",
               }}
             >
-              <img
-                src={`http://localhost:8080/character_images/${selectedCharacter.character_name
-                  .toLowerCase()
-                  .replace(/\s+/g, "_")}.png`}
-                alt={selectedCharacter.character_name}
-                onError={(e) => {
-                  e.currentTarget.src = "/default-image.png";
-                }}
-                style={{
+              {selectedCharacter.image_url ? (
+                <img
+                  src={selectedCharacter.image_url}
+                  alt={selectedCharacter.character_name}
+                  onError={(e) => {
+                    console.error("Error loading character image:", {
+                      characterName: selectedCharacter.character_name,
+                      imageUrl: selectedCharacter.image_url,
+                      error: e
+                    });
+                    e.currentTarget.src = "/default-image.png";
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <div style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover",
-                }}
-              />
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#333",
+                  color: "#E3C9CE",
+                  fontSize: "1.2rem"
+                }}>
+                  Loading character image...
+                </div>
+              )}
             </div>
             {/* Stats Section */}
             <div

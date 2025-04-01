@@ -11,7 +11,6 @@ const CharacterCreationPage: React.FC = () => {
   const [adventureDescription, setAdventureDescription] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>("");
   const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
 
@@ -25,71 +24,16 @@ const CharacterCreationPage: React.FC = () => {
     setUserId(Number(storedUserId));
   }, [navigate]);
 
-const fetchImage = async () => {
-  const prompt = `Generate an image of a character named ${characterName}, described as: ${characterDescription}.`;
-  const response = await fetch("http://localhost:8080/v1/image", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText);
-  }
-  const data = await response.json();
-  if (data.length > 0 && data[0].b64_json) {
-    return `data:image/jpeg;base64,${data[0].b64_json}`;
-  }
-  throw new Error("No image data received");
-};
-
-  const handleGenerateImage = async () => {
-    if (characterName.trim() === "") return;
-    setLoading(true);
-    try {
-      const imgDataUrl = await fetchImage();
-      setImageUrl(imgDataUrl);
-    } catch (error) {
-      console.error("Failed to generate image:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegenerateImage = async () => {
-    await handleGenerateImage();
-  };
-
   const handleCreateCharacter = async () => {
-    if (userId === null || characterName.trim() === "" || imageUrl === "") {
+    if (userId === null || characterName.trim() === "") {
       return;
     }
     setLoading(true);
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-
-      const formData = new FormData();
-      formData.append("characterName", characterName);
-      const safeName = characterName.toLowerCase().replace(/\s+/g, "_");
-      formData.append("characterImage", blob, `${safeName}.png`);
-
-      const uploadResponse = await fetch("http://localhost:8080/v1/uploadCharacterImage", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text();
-        throw new Error(errorText);
-      }
-
-      const savedFileName = await uploadResponse.text();
-
       const requestBody = {
         user_id: userId,
         name: characterName,
-        image: savedFileName,
+        description: characterDescription,
         mode: mode,
       };
 
@@ -102,9 +46,7 @@ const fetchImage = async () => {
       if (createResponse.ok) {
         const data = await createResponse.json();
         console.log("Character created successfully:", data);
-        setCharacterName("");
-        setImageUrl("");
-        navigate("/character-account");
+        navigate("/character-account", { state: { newCharacter: data } });
       } else {
         const errorText = await createResponse.text();
         console.error("Failed to create character:", errorText);
@@ -209,10 +151,10 @@ const fetchImage = async () => {
             placeholder="E.g., snowy mountain kingdom ruled by dragons..."
           />
 
-          {/* Generate Button */}
+          {/* Create Character Button */}
           <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <Button
-              label="Generate Image"
+              label="Create Character"
               className="p-button p-button-rounded p-shadow-3"
               style={{
                 height: "60px",
@@ -221,58 +163,46 @@ const fetchImage = async () => {
                 border: "none",
                 borderRadius: "12px",
               }}
-              onClick={handleGenerateImage}
+              onClick={handleCreateCharacter}
+              loading={loading}
             />
           </div>
         </div>
 
-        {/* RIGHT SIDE - Image Display */}
+        {/* RIGHT SIDE - Loading Symbol */}
         <div style={{ flex: 1, marginLeft: "1rem", display: "flex", flexDirection: "column" }}>
-          {imageUrl && (
-            <div style={{ textAlign: "center", marginTop: "9rem" }}>
-              <img
-                src={imageUrl}
-                alt="Character"
+          {loading && (
+            <div style={{ textAlign: "center", marginTop: "calc(9rem + 200px)" }}>
+              <div
+                className="loading-container"
                 style={{
-                  maxWidth: "80%",
-                  border: "3px solid #27ae60",
-                  borderRadius: "10px",
-                  marginBottom: "1rem",
+                  position: "relative",
+                  width: "400px",
+                  height: "400px",
+                  margin: "0 auto",
                 }}
-              />
-              <div>
-                <Button
-                  label="Generate New Image"
-                  className="p-button-warning"
-                  onClick={handleRegenerateImage}
+              >
+                <ProgressSpinner
+                  style={{ width: "400px", height: "400px" }}
+                  strokeWidth="5"
                 />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    color: "#fff",
+                    fontSize: "28px",
+                    textAlign: "center",
+                  }}
+                >
+                  Creating character
+                </div>
               </div>
             </div>
           )}
-          {loading && (
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-              <ProgressSpinner />
-            </div>
-          )}
         </div>
-      </div>
-
-      {/* Create Character Button */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "10rem" }}>
-        <Button
-          label="Create Character"
-          className="p-button p-button-rounded p-shadow-3"
-          style={{
-            width: "250px",
-            height: "50px",
-            fontSize: "1.4rem",
-            fontWeight: "bold",
-            background: "linear-gradient(180deg, #27ae60 0%, #1e8449 100%)",
-            border: "none",
-            borderRadius: "12px",
-          }}
-          onClick={handleCreateCharacter}
-        />
       </div>
     </div>
   );

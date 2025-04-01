@@ -9,6 +9,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"encoding/base64"
+	"os"
+	"strings"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-chi/chi/v5"
 	"github.com/openai/openai-go"
 )
@@ -23,7 +30,7 @@ type Character struct {
 	MaxMana       int    `json:"max_mana"`
 	CurrentHealth int    `json:"current_hp"` // updated tag
 	MaxHealth     int    `json:"max_hp"`     // updated tag
-
+	ImageURL      string `json:"image_url"`
 }
 
 // type JSONCharacter struct {
@@ -36,6 +43,47 @@ type JSONCharacter struct {
 	Description string `json:"description"`
 	MaxMana     int    `json:"max_mana"`
 	MaxHealth   int    `json:"max_health"`
+}
+
+// generateCharacterImageAndUploadToS3 generates an image from prompt and uploads it to S3
+func generateCharacterImageAndUploadToS3(characterName string, prompt string) (string, error) {
+	client := openai.NewClient()
+	response, err := client.Images.Generate(context.Background(), openai.ImageGenerateParams{
+		Prompt:         openai.F(prompt),
+		Model:          openai.F(openai.ImageModelDallE3),
+		ResponseFormat: openai.F(openai.ImageGenerateParamsResponseFormatB64JSON),
+		Size:           openai.F(openai.ImageGenerateParamsSize1024x1024),
+	})
+	if err != nil {
+		return "", fmt.Errorf("Image generation error: %v", err)
+	}
+
+	imageBytes, err := base64.StdEncoding.DecodeString(response.Data[0].B64JSON)
+	if err != nil {
+		return "", fmt.Errorf("Error decoding base64 image: %v", err)
+	}
+
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(os.Getenv("AWS_REGION")),
+	})
+	if err != nil {
+		return "", fmt.Errorf("AWS session error: %v", err)
+	}
+
+	uploader := s3manager.NewUploader(sess)
+	fileName := fmt.Sprintf("%s.jpg", strings.ReplaceAll(characterName, " ", "_"))
+
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
+		Key:    aws.String("character_images/" + fileName),
+		Body:   strings.NewReader(string(imageBytes)),
+	})
+	if err != nil {
+		return "", fmt.Errorf("S3 upload error: %v", err)
+	}
+
+	imageURL := fmt.Sprintf("https://%s.s3.amazonaws.com/character_images/%s", os.Getenv("AWS_BUCKET"), fileName)
+	return imageURL, nil
 }
 
 func generateCharacterLLM(userID int, name string) (Character, error) {
@@ -69,22 +117,30 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 
 	newCharacter := Character{
 		UserID:        userID,
-		Name:          name, // Now only includes `character_name`
+		Name:          name,
 		Description:   jsonCharacter.Description,
 		CurrentMana:   jsonCharacter.MaxMana,
 		MaxMana:       jsonCharacter.MaxMana,
-		CurrentHealth: jsonCharacter.MaxHealth, // Uses `current_hp`
-		MaxHealth:     jsonCharacter.MaxHealth, // Uses `max_hp`
+		CurrentHealth: jsonCharacter.MaxHealth,
+		MaxHealth:     jsonCharacter.MaxHealth,
 	}
 
-	// Insert into database
+	// Generate and upload character image
+	imagePrompt := fmt.Sprintf("Generate a character portrait for %s: %s", name, jsonCharacter.Description)
+	imageURL, err := generateCharacterImageAndUploadToS3(name, imagePrompt)
+	if err != nil {
+		return Character{}, fmt.Errorf("Image generation error: %v", err)
+	}
+
+	// Insert into database with image URL
 	characterID, err := db.InsertCharacter(db.Character{
 		UserID:        newCharacter.UserID,
-		Name:          newCharacter.Name, // Uses `character_name`
+		Name:          newCharacter.Name,
 		CurrentMana:   newCharacter.CurrentMana,
 		MaxMana:       newCharacter.MaxMana,
-		CurrentHealth: newCharacter.CurrentHealth, // Uses `current_hp`
-		MaxHealth:     newCharacter.MaxHealth,     // Uses `max_hp`
+		CurrentHealth: newCharacter.CurrentHealth,
+		MaxHealth:     newCharacter.MaxHealth,
+		ImageURL:      imageURL,
 	})
 	if err != nil {
 		fmt.Println("Error inserting character:", err)
