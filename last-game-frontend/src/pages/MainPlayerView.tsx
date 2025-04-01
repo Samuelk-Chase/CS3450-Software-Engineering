@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
-import backgroundImage from "../images/Login background.jpg"; // Import the background image
+import backgroundImage from "../images/Login background.jpg";
 import axios from "axios";
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
+import CardView from "./DeckOverlayPage"; // ✅ Import deck modal component
 
 interface Character {
   character_id: number;
@@ -25,14 +26,16 @@ const cards: Card[] = [
 
 const MainPlayerView: React.FC = () => {
   const [character, setCharacter] = useState<Character | null>(null);
-  const [gameText, setGameText] = useState<string>("Welcome to the adventure! What will you do next?");
-  const [userResponse, setUserResponse] = useState<string>("");
+  const [gameText, setGameText] = useState("Welcome to the adventure! What will you do next?");
+  const [userResponse, setUserResponse] = useState("");
   const [chatHistory, setChatHistory] = useState<{ text: string; timestamp: string; sender: string }[]>([]);
-  const [showChestModal, setShowChestModal] = useState<boolean>(false);
+  const [showChestModal, setShowChestModal] = useState(false);
   const [newCard, setNewCard] = useState<Card | null>(null);
-  const [showCardPopup, setShowCardPopup] = useState<boolean>(false);
-  const [showBossPopup, setShowBossPopup] = useState<boolean>(false);
+  const [showCardPopup, setShowCardPopup] = useState(false);
+  const [showBossPopup, setShowBossPopup] = useState(false);
   const [newBoss, setNewBoss] = useState<Boss | null>(null);
+  const [isDeckOpen, setIsDeckOpen] = useState(false); // ✅ Deck modal toggle
+
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
@@ -52,13 +55,9 @@ const MainPlayerView: React.FC = () => {
     }
 
     const apiUrl = `http://localhost:8080/v1/character/${characterId}`;
-    console.log("Fetching character details from:", apiUrl);
-
     fetch(apiUrl)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP status ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP status ${response.status}`);
         return response.json();
       })
       .then((data) => {
@@ -67,7 +66,6 @@ const MainPlayerView: React.FC = () => {
           navigate("/character-account");
           return;
         }
-        console.log("Fetched character:", data);
         setCharacter(data);
       })
       .catch((error) => console.error("Error fetching character:", error));
@@ -85,24 +83,13 @@ const MainPlayerView: React.FC = () => {
     setGameText("AI is generating content...");
 
     try {
-      const response = await axios.post("http://localhost:8080/v1/story", {
-        prompt: userResponse,
-
-      });
-
+      const response = await axios.post("http://localhost:8080/v1/story", { prompt: userResponse });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
-        const sanitizedPrompt = aiMessage.replace(/\*/g, "");
-        
         const cardResponse = await axios.post("http://localhost:8080/v1/card", {
-          prompt: sanitizedPrompt,
-          
+          prompt: aiMessage.replace(/\*/g, ""),
         });
-        
-        
-   
-        console.log(cardResponse.data);
         const generatedCard = cardResponse.data;
         const mappedCard: Card = {
           id: generatedCard.card_id,
@@ -113,20 +100,14 @@ const MainPlayerView: React.FC = () => {
           effect: generatedCard.card_description,
           image: generatedCard.image_url,
         };
-
         setNewCard(mappedCard);
         setShowCardPopup(true);
       }
-      if (aiMessage.includes("*Boss combat begins.*") || (aiMessage.includes("*boss combat begins.*"))) {
-        try {
-          const response = await axios.post("http://localhost:8080/v1/boss", {
-            prompt: aiMessage,
-          });
-          setNewBoss(response.data);
-          setShowBossPopup(true);
-        } catch (error) {
-          console.error("Error fetching boss:", error);
-        }
+
+      if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
+        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
+        setNewBoss(response.data);
+        setShowBossPopup(true);
       }
 
       setUserResponse("");
@@ -141,35 +122,15 @@ const MainPlayerView: React.FC = () => {
       setGameText("Sorry, something went wrong.");
     }
   };
- 
-
-  const handleOpenChest = () => {
-    setShowChestModal(true);
-  };
-
-  const handleCloseChest = () => {
-    setShowChestModal(false);
-  };
-
-  const handleCloseCardPopup = () => {
-    setShowCardPopup(false);
-  };
 
   const handleBossFight = (boss: Boss) => {
     navigate("/boss", { state: { boss } });
   };
 
-  const handleCloseBossPopup = () => {
-    setShowBossPopup(false);
-  };
-
-  if (!character) {
-    return <p>Loading character...</p>;
-  }
+  if (!character) return <p>Loading character...</p>;
 
   return (
     <>
-      {/* Background Wrapper */}
       <div
         style={{
           backgroundImage: `url(${backgroundImage})`,
@@ -185,80 +146,67 @@ const MainPlayerView: React.FC = () => {
           paddingTop: "80px",
         }}
       >
-        {/* Top Bar */}
         <div className="top-bar">
           <h1>The Last Game</h1>
         </div>
 
         {showCardPopup && newCard && (
-          <NewCardComponent card={newCard} onClose={handleCloseCardPopup} />
+          <NewCardComponent card={newCard} onClose={() => setShowCardPopup(false)} />
         )}
         {showBossPopup && newBoss && (
           <BossPopupComponent
             boss={newBoss}
-            onClose={handleCloseBossPopup}
+            onClose={() => setShowBossPopup(false)}
             onStartBossFight={() => handleBossFight(newBoss)}
           />
         )}
-        {/* Main Container */}
+
+        {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} />} {/* ✅ Deck Modal */}
+
         <div className="main-container">
-          {/* LEFT PANEL: Player Stats, Image & Actions */}
           <div className="left-panel">
-            {/* Player Image centered */}
             <img
               src={character.image_url}
               alt={character.character_name}
-              onError={(e) => {
-                console.log("Error loading player image for:", character.character_name);
-                e.currentTarget.src = "/default-image.png"; // Fallback image if error occurs
-              }}
+              onError={(e) => (e.currentTarget.src = "/default-image.png")}
               style={{
                 width: "150px",
                 height: "150px",
                 borderRadius: "50%",
                 objectFit: "cover",
                 display: "block",
-                margin: "0 auto 1rem auto", // Centered horizontally with bottom margin
+                margin: "0 auto 1rem auto",
               }}
             />
-
             <div className="player-info">
-              <div className="player-details">
-                <strong>{character.character_name}</strong>
-                <div className="health-mana-bars">
-                  <div className="bar-container">
-                    <div
-                      className="bar-fill health-bar-fill"
-                      style={{
-                        width: `${(character.current_hp / character.max_hp) * 100}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="bar-container">
-                    <div
-                      className="bar-fill mana-bar-fill"
-                      style={{
-                        width: `${(character.current_mana / character.max_mana) * 100}%`,
-                      }}
-                    ></div>
-                  </div>
+              <strong>{character.character_name}</strong>
+              <div className="health-mana-bars">
+                <div className="bar-container">
+                  <div
+                    className="bar-fill health-bar-fill"
+                    style={{ width: `${(character.current_hp / character.max_hp) * 100}%` }}
+                  ></div>
+                </div>
+                <div className="bar-container">
+                  <div
+                    className="bar-fill mana-bar-fill"
+                    style={{ width: `${(character.current_mana / character.max_mana) * 100}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
 
-            {/* Buttons */}
-            <button className="button" onClick={() => navigate("/deck")}>
+            {/* ✅ Open Deck Modal */}
+            <button className="button" onClick={() => setIsDeckOpen(true)}>
               View Deck
             </button>
-          
+
             <button className="button" onClick={() => navigate("/boss")}>
               Enter Boss Fight
             </button>
           </div>
 
-          {/* TEXT CONTENT SECTION */}
           <div className="text-container">
-            {/* Chat History */}
             <div className="chat-history">
               {chatHistory.map((entry, index) => (
                 <div key={index} className={`chat-entry ${entry.sender}`}>
@@ -274,7 +222,6 @@ const MainPlayerView: React.FC = () => {
               <p>{gameText}</p>
             </div>
 
-            {/* USER RESPONSE SECTION */}
             <div className="user-response">
               <input
                 type="text"
@@ -288,7 +235,6 @@ const MainPlayerView: React.FC = () => {
         </div>
       </div>
 
-      {/* Chest Modal (Shows Cards) */}
       {showChestModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -305,7 +251,7 @@ const MainPlayerView: React.FC = () => {
                 </div>
               ))}
             </div>
-            <button className="close-button" onClick={handleCloseChest}>
+            <button className="close-button" onClick={() => setShowChestModal(false)}>
               Close
             </button>
           </div>

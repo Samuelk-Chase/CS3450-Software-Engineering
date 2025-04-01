@@ -1,20 +1,63 @@
-// CardView.tsx
 import React from 'react';
 import '../css/CardView.css';
 
 const cards = [
-  { id: 1, name: "Dagger", type: "Attack", level: 1, mana: 3, effect: "Deal a Guaranteed 20 damage per hit", image: "src/images/dagger.jpg" },
-  { id: 2, name: "Necromancy", type: "Ability", level: 6, mana: 7, effect: "Bring back opponent for your team", image: "src/images/necromancy.jpg" },
-  { id: 3, name: "Mirrors", type: "Ability", level: 1, mana: 1, effect: "Any damage done to you reflects to opponent", image: "src/images/magicmirror.jpg" },
-  { id: 4, name: "Health", type: "Power", level: 2, mana: 4, effect: "Heal instantly", image: "src/images/heath.jpg" },
-  { id: 5, name: "Fireball", type: "Attack", level: 3, mana: 10, effect: "Burns opponent, dealing 30 damage over 3 turns", image: "src/images/fireball.jpg" },
+  {
+    id: 1,
+    name: "Dagger",
+    type: "Attack",
+    level: 1,
+    mana: 3,
+    effect: "Deal a Guaranteed 20 damage per hit",
+    image: "src/images/dagger.jpg"
+  },
+  {
+    id: 2,
+    name: "Necromancy",
+    type: "Ability",
+    level: 6,
+    mana: 7,
+    effect: "Bring back opponent for your team",
+    image: "src/images/necromancy.jpg"
+  },
+  {
+    id: 3,
+    name: "Mirrors",
+    type: "Ability",
+    level: 1,
+    mana: 1,
+    effect: "Any damage done to you reflects to opponent",
+    image: "src/images/magicmirror.jpg"
+  },
+  {
+    id: 4,
+    name: "Health",
+    type: "Power",
+    level: 2,
+    mana: 4,
+    effect: "Heal instantly",
+    image: "src/images/heath.jpg"
+  },
+  {
+    id: 5,
+    name: "Fireball",
+    type: "Attack",
+    level: 3,
+    mana: 10,
+    effect: "Burns opponent, dealing 30 damage over 3 turns",
+    image: "src/images/fireball.jpg"
+  }
 ];
 
-const CardView: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface CardViewProps {
+  onClose: () => void;
+}
+
+const CardView: React.FC<CardViewProps> = ({ onClose }) => {
   return (
     <div className="deck-modal-overlay">
       <div className="deck-modal-content">
-        <h2>Your Deck</h2>
+        <h2>Your Card Deck</h2>
         <div className="card-scroll-container">
           {cards.map((card) => (
             <div
@@ -32,7 +75,10 @@ const CardView: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
           ))}
         </div>
-        <button className="close-button" onClick={onClose}>Close</button>
+
+        <button className="close-button" onClick={onClose}>
+          Back
+        </button>
       </div>
     </div>
   );
