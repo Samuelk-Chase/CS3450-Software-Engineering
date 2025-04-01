@@ -18,6 +18,8 @@ type Card struct {
 	CardDescription string `json:"card_description"`
 	ImageURL        string `json:"image_url"`
 	PowerLevel      int    `json:"power_level"`
+	SoundEffect     string `json:"sound_effect"` // New field for sound effect
+	CharacterID     int    `json:"character_id"` // New field for character association
 }
 
 func InsertCard(card Card) (int, error) {

@@ -1,5 +1,3 @@
-
-
 package v1
 
 import (
@@ -11,14 +9,15 @@ import (
 	"strconv"
 
 	db "beanboys-lastgame-backend/internal/db/cards_db"
-	"github.com/go-chi/chi/v5"
-	"github.com/openai/openai-go"
+	"encoding/base64"
+	"os"
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
-	"strings"
-	"encoding/base64"
+	"github.com/go-chi/chi/v5"
+	"github.com/openai/openai-go"
 )
 
 // Card defines the structure of our card object.
@@ -30,6 +29,8 @@ type Card struct {
 	ImageURL    string `json:"image_url"`
 	Level       int    `json:"level"`
 	Effect      string `json:"effect"`
+	SoundEffect string `json:"sound_effect"` // New field for sound effect
+	CharacterID int    `json:"character_id"`
 }
 
 type JSONCard struct {
@@ -37,6 +38,7 @@ type JSONCard struct {
 	Description string `json:"description"`
 	Cost        int    `json:"cost"`
 }
+
 // Deck defines the structure of our deck object.
 type Deck struct {
 	ID       int `json:"id"`
@@ -74,11 +76,20 @@ func generateCard(prompt string) (db.Card, error) {
 		Title:           jsonCard.Name,
 		CardDescription: jsonCard.Description,
 		ImageURL:        "", // Placeholder, will be set after image upload
-		PowerLevel:           1,  // Default level
+		PowerLevel:      1,  // Default level
 		TypeID:          1,  // Default type
 		ManaCost:        jsonCard.Cost,
-		
+		SoundEffect:     "", // Placeholder, will be set after sound effect generation
+		CharacterID:     0,  // Default character ID
 	}
+
+	// Generate the sound effect for the card
+	soundEffect, err := generateSoundEffect(card.CardDescription)
+	if err != nil {
+		return db.Card{}, fmt.Errorf("Sound effect generation error: %v", err)
+	}
+	card.SoundEffect = soundEffect // Assign the sound effect to the card
+
 	fmt.Println("Card Generated")
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
 	if err != nil {
@@ -99,6 +110,37 @@ func generateCard(prompt string) (db.Card, error) {
 
 	return insertedCard, nil
 }
+
+// generateSoundEffect uses the sound_effect_card_prompt to determine the sound effect for a card
+func generateSoundEffect(description string) (string, error) {
+	client := openai.NewClient()
+	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(sound_effect_card_prompt),
+		openai.UserMessage(description),
+	})
+
+	req := openai.ChatCompletionNewParams{
+		Model:    openai.F(openai.ChatModelGPT4oMini),
+		Messages: messages,
+	}
+
+	response, err := client.Chat.Completions.New(context.Background(), req)
+	if err != nil {
+		return "", fmt.Errorf("ChatCompletion error: %v", err)
+	}
+
+	var soundEffectResponse struct {
+		SoundEffect string `json:"sound_effect"`
+	}
+
+	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &soundEffectResponse)
+	if err != nil {
+		return "", fmt.Errorf("Error parsing sound effect JSON: %v", err)
+	}
+
+	return soundEffectResponse.SoundEffect, nil
+}
+
 // generateImageAndUploadToS3 generates an image from prompt and uploads it to S3
 func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 	client := openai.NewClient()
@@ -179,7 +221,8 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 
 	// Parse the request body.
 	var requestData struct {
-		Prompt string `json:"prompt"`
+		Prompt      string `json:"prompt"`
+		CharacterID int    `json:"character_id"` // Add character_id to the request body
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -193,11 +236,28 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Associate the card with the character ID
+	card.CharacterID = requestData.CharacterID // Assuming the Card struct in the database has a CharacterID field
+
+	// Save the card to the database
+	cardID, err := db.InsertCard(card)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Database insert error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Retrieve the inserted card to include in the response
+	insertedCard, err := db.GetCardByID(cardID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to retrieve inserted card: %v", err), http.StatusInternalServerError)
+		return
+	}
+
 	// Set the response header to indicate JSON content
 	w.Header().Set("Content-Type", "application/json")
 
 	// Encode the db.Card object to JSON and write it to the response
-	if err := json.NewEncoder(w).Encode(card); err != nil {
+	if err := json.NewEncoder(w).Encode(insertedCard); err != nil {
 		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
 	}
 }

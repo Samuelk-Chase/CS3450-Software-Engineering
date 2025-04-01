@@ -182,4 +182,24 @@ Here is an example of correct output:
   
 When generating the JSON structures, make sure to only include the JSON objects, and no extraneous text such as "'''json".
 `
+
+	sound_effect_card_prompt = `You are a helpful assistant with an expertise in sound effects. Your job is to analyze the description of a card for a game and determine which sound effect would be most appropriate for it. The sound effects to choose from are:
+1. beast_attack
+2. gun_shot
+3. knife_attack
+4. laser_gun_attack
+5. magic_blast
+6. sword_attack
+7. default_whoosh 
+
+return output in the following output
+{
+  "sound_effect": "*The name of the sound effect*" 
+}
+
+For example a description of a space gun card, you would return the following JSON:
+{
+  "sound_effect": "laser_gun_attack"
+}
+`
 )
