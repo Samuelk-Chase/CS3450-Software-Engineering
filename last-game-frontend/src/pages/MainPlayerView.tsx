@@ -20,11 +20,6 @@ interface Character {
   description: string;
 }
 
-const cards: Card[] = [
-  { id: 1, name: "Dagger", type: "Attack", level: 1, mana: 3, effect: "Deal a Guaranteed 20 damage per hit", image: "src/images/dagger.jpg" },
-  { id: 2, name: "Necromancy", type: "Ability", level: 6, mana: 7, effect: "Bring back opponent for your team", image: "src/images/necromancy.jpg" },
-  { id: 3, name: "Mirrors", type: "Ability", level: 1, mana: 1, effect: "Any damage done to you reflects to opponent", image: "src/images/magicmirror.jpg" },
-];
 
 const MainPlayerView: React.FC = () => {
   const [character, setCharacter] = useState<Character | null>(null);
@@ -336,28 +331,8 @@ const MainPlayerView: React.FC = () => {
         </div>
       </div>
 
-      {showChestModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>You've Found 3 Cards!</h2>
-            <div className="card-container">
-              {cards.map((card) => (
-                <div key={card.id} className="card" style={{ backgroundImage: `url(${card.image})` }}>
-                  <h3>{card.name}</h3>
-                  <p>{card.effect}</p>
-                  <div className="card-footer">
-                    <span className="card-level">LV: {card.level}</span>
-                    <span className="card-type">{card.type}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button className="close-button" onClick={() => setShowChestModal(false)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+     
+      
     </>
   );
 };

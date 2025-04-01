@@ -230,3 +230,83 @@ body {
   line-height: 30px;
   font-size: 14px;
 }
+.card-interface {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.used-cards {
+  width: 20%;
+}
+
+.hand-container {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.next-card {
+  width: 20%;
+}
+
+.card {
+  width: 20vw; /* Scales with viewport width */
+  height: 20vw;
+  min-width: 150px; /* Prevents cards from becoming too small */
+  max-width: 350px; /* Caps the size on larger screens */
+  aspect-ratio: 1 / 1; /* Maintains a square shape */
+  position: relative; /* For absolute positioning of overlays */
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-title {
+  position: absolute;
+  top: 10px;
+  left: 20%; /* Full width from left edge */
+  right: 0; /* Full width to right edge */
+  background: rgba(0, 0, 0, 0.6);
+  padding: 5px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 1rem;
+}
+.card-mana {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+/* Level at bottom left with outlined text */
+.card-level {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  display: inline-block;
+  font-size: 2rem;
+  color: black;
+  -webkit-text-stroke: 1px white; /* Outlined text */
+  text-stroke: 1px white; /* For browsers that support non-webkit version */
+}
