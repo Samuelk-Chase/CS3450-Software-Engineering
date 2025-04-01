@@ -239,7 +239,7 @@ body {
 }
 
 .used-cards {
-  width: 20%;
+  width: -20%;
 }
 
 .hand-container {
@@ -253,7 +253,7 @@ body {
 }
 
 .next-card {
-  width: 20%;
+  width: -20%;
 }
 
 .card {
@@ -276,6 +276,7 @@ body {
   left: 20%; /* Full width from left edge */
   right: 0; /* Full width to right edge */
   background: rgba(0, 0, 0, 0.6);
+  border-radius: 15%;
   padding: 5px 0;
   text-align: center;
   color: #fff;
@@ -309,4 +310,20 @@ body {
   color: black;
   -webkit-text-stroke: 1px white; /* Outlined text */
   text-stroke: 1px white; /* For browsers that support non-webkit version */
+}
+
+.card-description {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 5px;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: normal;           /* Allows text to wrap */
+  overflow-wrap: break-word;     /* Ensures long words wrap properly */
+  width: 90%;                    /* Optional: limits the width for better wrapping */
 }

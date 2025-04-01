@@ -274,18 +274,19 @@ const BossFightPage: React.FC = () => {
       <div className="card-interface">
         <div className="used-cards">Used: {usedCards.length}</div>
         <div className="hand-container">
-          {hand.map((card) => (
-            <div
-              className="card"
-              style={{ backgroundImage: `url(${card.image})` }}
-              key={card.id}
-              onClick={() => playCard(card)}
-            >
-              <div className="card-mana">{card.mana}</div>
-              <div className="card-title">{card.name}</div>
-              <div className="card-level">Level: {card.level}</div>
-            </div>
-          ))}
+        {hand.map((card) => (
+  <div
+    className="card"
+    style={{ backgroundImage: `url(${card.image})` }}
+    key={card.id}
+    onClick={() => playCard(card)}
+  >
+    <div className="card-mana">{card.mana}</div>
+    <div className="card-title">{card.name}</div>
+    <div className="card-level">Level: {card.level}</div>
+    <div className="card-description">{card.effect}</div>
+  </div>
+))}
         </div>
         <div className="next-card">
           {deck.length > 0 ? (
