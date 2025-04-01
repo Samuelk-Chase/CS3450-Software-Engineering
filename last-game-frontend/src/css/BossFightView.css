@@ -197,3 +197,36 @@ body {
   outline: none;
   border-color: #FF5722;
 }
+.health-bar-container {
+  width: 100%;
+  height: 30px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.health-bar-background {
+  background-color: #333;
+  border: 2px solid #555;
+  border-radius: 8px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  background: linear-gradient(to right, #27ae60, #1e8449);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.health-bar-text {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  line-height: 30px;
+  font-size: 14px;
+}
