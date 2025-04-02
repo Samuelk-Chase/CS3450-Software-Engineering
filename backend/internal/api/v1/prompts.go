@@ -190,7 +190,7 @@ When generating the JSON structures, make sure to only include the JSON objects,
  4. laser_gun_attack
  5. magic_blast
  6. sword_attack
- 7. default_whoosh 
+ 7. default_sound 
  
  return output in the following output
  {

@@ -60,7 +60,7 @@ func ServeSoundEffect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Log the error and apply the default sound effect
 		log.Printf("Sound effect '%s' not found, applying default: %v", soundEffectName, err)
-		soundEffectPath = filepath.Join("assets", "audio", "cardSoundEffects", "default_whoosh.mp3")
+		soundEffectPath = filepath.Join("assets", "audio", "cardSoundEffects", "default_sound.mp3")
 		file, err = os.Open(soundEffectPath)
 		if err != nil {
 			log.Printf("Error opening default sound effect: %v", err)
