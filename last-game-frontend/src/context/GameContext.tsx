@@ -23,6 +23,7 @@ export interface Card {
   mana: number;
   effect: string;
   image: string;
+  soundEffect: string;
 }
 
 export interface Boss {

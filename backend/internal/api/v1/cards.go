@@ -80,6 +80,14 @@ func generateCard(prompt string, characterID int) (db.Card, error) {
 		ManaCost:        jsonCard.Cost,
 		CharacterID:     characterID, // Add character ID to the card
 	}
+
+	// Generate sound effect for the card
+	soundEffect, err := generateSoundEffect(card.Title, card.CardDescription)
+	if err != nil {
+		return db.Card{}, fmt.Errorf("Sound effect generation error: %v", err)
+	}
+	card.SoundEffect = soundEffect
+
 	fmt.Println("Card Generated")
 	imageURL, err := generateImageAndUploadToS3(card, prompt)
 	if err != nil {
@@ -140,6 +148,36 @@ func generateImageAndUploadToS3(card db.Card, prompt string) (string, error) {
 
 	imageURL := fmt.Sprintf("https://%s.s3.amazonaws.com/card_images/%s", os.Getenv("AWS_BUCKET"), fileName)
 	return imageURL, nil
+}
+
+// generateSoundEffect generates a sound effect for the card using OpenAI
+func generateSoundEffect(name, description string) (string, error) {
+	client := openai.NewClient()
+	prompt := fmt.Sprintf(`{
+		"name": "%s",
+		"description": "%s"
+	}`, name, description)
+
+	response, err := client.Chat.Completions.New(context.Background(), openai.ChatCompletionNewParams{
+		Model: openai.F(openai.ChatModelGPT4oMini),
+		Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+			openai.SystemMessage(sound_effect_card_prompt),
+			openai.UserMessage(prompt),
+		}),
+	})
+	if err != nil {
+		return "", fmt.Errorf("OpenAI sound effect generation error: %v", err)
+	}
+
+	var soundEffectResponse struct {
+		SoundEffect string `json:"sound_effect"`
+	}
+	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &soundEffectResponse)
+	if err != nil {
+		return "", fmt.Errorf("Error parsing sound effect JSON: %v", err)
+	}
+
+	return soundEffectResponse.SoundEffect, nil
 }
 
 func getCards(w http.ResponseWriter, r *http.Request) {

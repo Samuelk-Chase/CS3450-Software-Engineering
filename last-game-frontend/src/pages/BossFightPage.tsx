@@ -37,6 +37,42 @@ const BossFightPage: React.FC = () => {
   const [usedCards, setUsedCards] = useState<Card[]>([]);
   const characterId = localStorage.getItem("characterId");
 
+  // Cache for sound effects
+  const soundEffectCache = new Map<string, string>();
+
+  const playSoundEffect = async (soundTrack: string) => {
+    console.log("Playing sound effect:", soundTrack);
+    if (soundEffectCache.has(soundTrack)) {
+      // Play from cache
+      const audio = new Audio(soundEffectCache.get(soundTrack));
+      audio.play();
+    } else {
+      try {
+        // Fetch sound effect from backend
+        const response = await fetch(`http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch sound effect:", await response.text());
+          return;
+        }
+
+        const blob = await response.blob();
+        const soundUrl = URL.createObjectURL(blob);
+
+        // Cache the sound effect
+        soundEffectCache.set(soundTrack, soundUrl);
+
+        // Play the sound effect
+        const audio = new Audio(soundUrl);
+        audio.play();
+      } catch (error) {
+        console.error("Error playing sound effect:", error);
+      }
+    }
+  };
+
   // Fetch character data
   useEffect(() => {
     if (!characterId || isNaN(Number(characterId))) {
@@ -73,7 +109,9 @@ const BossFightPage: React.FC = () => {
           mana: card.mana_cost,
           effect: card.card_description,
           image: card.image_url,
+          soundEffect: card.sound_effect,
         }));
+        console.log("Fetched cards:", cards);
         const shuffledCards = shuffle(cards);
         const initialHand = shuffledCards.slice(0, 5);
         const remainingDeck = shuffledCards.slice(5);
@@ -151,10 +189,17 @@ const BossFightPage: React.FC = () => {
 
   // Play card with local state update
   const playCard = (card: Card) => {
+    console.log("Playing card:", card);
+    if (card.soundEffect !== null) {
+      playSoundEffect(card.soundEffect);
+    }
     if (!character || character.mana < card.mana) {
       console.log("Not enough mana");
       return;
     }
+
+    // Play the card's sound effect
+    
 
     const newMana = character.mana - card.mana;
     const damage = card.level;
