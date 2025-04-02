@@ -6,6 +6,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import backgroundImage from '../images/Login background.jpg';
+
 // Supabase and OAuth imports
 import type { Provider } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
@@ -109,13 +110,17 @@ const LoginPage: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/character-account`,
+        redirectTo: `${window.location.origin}/oauth-callback`,
       },
     });
     if (error) {
       const msg = "OAuth login error: " + JSON.stringify(error);
       console.error(msg);
       setErrorMsg(msg);
+    } else if (data?.url) {
+      window.location.replace(data.url)
+    } else {
+      throw new Error("No redirect URL returned from Supabase.");
     }
   };
 
@@ -177,7 +182,7 @@ const LoginPage: React.FC = () => {
           width: '700px',
           backgroundColor: '#2d2d2d',
           borderRadius: '18px',
-          boxShadow: '0 0 40px #20683F',
+          border: '3px solid#20683F',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
