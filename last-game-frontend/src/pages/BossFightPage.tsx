@@ -41,10 +41,10 @@ const BossFightPage: React.FC = () => {
   const soundEffectCache = new Map<string, string>();
 
   const playSoundEffect = async (soundTrack: string) => {
-    console.log("Playing sound effect:", soundTrack);
     if (soundEffectCache.has(soundTrack)) {
       // Play from cache
       const audio = new Audio(soundEffectCache.get(soundTrack));
+      audio.volume = 1.0; // Boost sound effect volume to maximum
       audio.play();
     } else {
       try {
@@ -66,6 +66,7 @@ const BossFightPage: React.FC = () => {
 
         // Play the sound effect
         const audio = new Audio(soundUrl);
+        audio.volume = 1.0; // Boost sound effect volume to maximum
         audio.play();
       } catch (error) {
         console.error("Error playing sound effect:", error);
@@ -225,6 +226,46 @@ const BossFightPage: React.FC = () => {
   };
 
   const handleBackToMain = () => navigate("/main");
+
+  useEffect(() => {
+    const preloadSoundEffects = async () => {
+      const uniqueSoundTracks = new Set<string>();
+
+      // Collect unique sound effect names from the deck
+      [...deck, ...hand].forEach((card) => {
+        if (card.soundEffect) {
+          uniqueSoundTracks.add(card.soundEffect);
+        }
+      });
+
+      // Preload each sound effect if not already cached
+      for (const soundTrack of uniqueSoundTracks) {
+        if (!soundEffectCache.has(soundTrack)) {
+          try {
+            const response = await fetch(
+              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`,
+              { method: "GET" }
+            );
+
+            if (!response.ok) {
+              console.error(`Failed to fetch sound effect for ${soundTrack}:`, await response.text());
+              continue;
+            }
+
+            const blob = await response.blob();
+            const soundUrl = URL.createObjectURL(blob);
+
+            // Cache the sound effect
+            soundEffectCache.set(soundTrack, soundUrl);
+          } catch (error) {
+            console.error(`Error preloading sound effect for ${soundTrack}:`, error);
+          }
+        }
+      }
+    };
+
+    preloadSoundEffects();
+  }, [deck, hand]); // Run whenever the deck or hand changes
 
   return (
     <div className="boss-fight-container">
