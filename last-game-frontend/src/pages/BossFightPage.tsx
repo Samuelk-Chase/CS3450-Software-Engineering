@@ -40,16 +40,19 @@ const BossFightPage: React.FC = () => {
   // Cache for sound effects
   const soundEffectCache = new Map<string, string>();
 
-  const playSoundEffect = async (soundTrack: string) => {
-    if (soundEffectCache.has(soundTrack)) {
+  const playSoundEffect = async (soundTrack: string | null) => {
+    // Use a default sound effect if the provided one is null or empty
+    const validSoundTrack = soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
+
+    if (soundEffectCache.has(validSoundTrack)) {
       // Play from cache
-      const audio = new Audio(soundEffectCache.get(soundTrack));
+      const audio = new Audio(soundEffectCache.get(validSoundTrack));
       audio.volume = 1.0; // Boost sound effect volume to maximum
       audio.play();
     } else {
       try {
         // Fetch sound effect from backend
-        const response = await fetch(`http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`, {
+        const response = await fetch(`http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(validSoundTrack)}`, {
           method: "GET",
         });
 
@@ -62,7 +65,7 @@ const BossFightPage: React.FC = () => {
         const soundUrl = URL.createObjectURL(blob);
 
         // Cache the sound effect
-        soundEffectCache.set(soundTrack, soundUrl);
+        soundEffectCache.set(validSoundTrack, soundUrl);
 
         // Play the sound effect
         const audio = new Audio(soundUrl);
@@ -191,16 +194,14 @@ const BossFightPage: React.FC = () => {
   // Play card with local state update
   const playCard = (card: Card) => {
     console.log("Playing card:", card);
-    if (card.soundEffect !== null) {
-      playSoundEffect(card.soundEffect);
-    }
+
+    // Play the card's sound effect (handles null or empty soundEffect)
+    playSoundEffect(card.soundEffect);
+
     if (!character || character.mana < card.mana) {
       console.log("Not enough mana");
       return;
     }
-
-    // Play the card's sound effect
-    
 
     const newMana = character.mana - card.mana;
     const damage = card.level;
