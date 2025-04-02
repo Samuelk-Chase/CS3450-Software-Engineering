@@ -7,6 +7,7 @@ import BossFightPage from './pages/BossFightPage';
 import DeckOverlayPage from './pages/DeckOverlayPage';
 import CharacterAccountPage from './pages/CharacterAccountPage';
 import SignupPage from './pages/SignupPage';
+import OauthCallback from './pages/OauthCallback';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
@@ -76,6 +77,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/oauth-callback" element={<OauthCallback />} />
 
         {/* Protected Routes */}
         <Route path="/character-creation" element={<ProtectedRoute element={<CharacterCreationPage />} />} />
