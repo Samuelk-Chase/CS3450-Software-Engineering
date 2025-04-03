@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "primereact/button";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the Axios instance
 
 interface Character {
   character_id: number;
@@ -29,26 +30,24 @@ const CharacterAccountPage: React.FC = () => {
       return;
     }
 
-    const apiUrl = `http://localhost:8080/v1/characters?user_id=${userId}`;
+    const apiUrl = `/characters?user_id=${userId}`; // Use relative URL since baseURL is set in axiosInstance
     console.log("Fetching characters from:", apiUrl);
 
-    fetch(apiUrl)
+    axiosInstance
+      .get(apiUrl)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP status ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
+        const data = response.data;
         console.log("Fetched characters:", data);
         setCharacters(data);
-        
+
         // Check if we have a new character from navigation
         const newCharacter = location.state?.newCharacter;
         if (newCharacter) {
           console.log("New character data:", newCharacter);
           // Find the complete character data from the fetched characters
-          const completeCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+          const completeCharacter = data.find(
+            (char: Character) => char.character_id === newCharacter.character_id
+          );
           if (completeCharacter) {
             console.log("Found complete character data:", completeCharacter);
             setSelectedCharacter(completeCharacter);
@@ -57,7 +56,9 @@ const CharacterAccountPage: React.FC = () => {
             console.log("Waiting for character data to be available...");
             // If we don't have the complete data yet, wait a short moment and try again
             setTimeout(() => {
-              const updatedCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+              const updatedCharacter = data.find(
+                (char: Character) => char.character_id === newCharacter.character_id
+              );
               if (updatedCharacter) {
                 console.log("Found updated character data:", updatedCharacter);
                 setSelectedCharacter(updatedCharacter);

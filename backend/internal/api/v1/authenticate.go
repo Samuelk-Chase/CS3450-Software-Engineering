@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,7 +18,19 @@ type User struct {
 	Password string `json:"password"`
 }
 
-// loginUser is an HTTP handler that verifies user credentials
+var jwtSecret = []byte("d31421253bac3d2dd8e589a3d3951437bb4c59e4f081c5fc066125bedc30c6e5") // Replace with a secure key
+
+// GenerateJWT generates a JWT token with user_id as a claim
+func GenerateJWT(userID int) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(), // Token expiration (30 days)
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
+}
+
+// loginUser is an HTTP handler that verifies user credentials and returns a JWT token
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("loginUser called!")
 
@@ -35,8 +49,8 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retrieve user_id and hashed password from Supabase
-	userID, storedHash, err := db.GetUserPasswordHash(requestData.Email) // ✅ Accept userID
+	// Retrieve user_id and hashed password from the database
+	userID, storedHash, err := db.GetUserPasswordHash(requestData.Email)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
@@ -49,10 +63,18 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send success response with user_id
+	// Generate a JWT token
+	token, err := GenerateJWT(userID)
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	// Send the token in the response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"user_id": userID, // ✅ Now returns user_id
+		"token":   token, // Send the JWT token to the client
+		"user_id": userID,
 		"message": "Login successful!",
 	})
 }

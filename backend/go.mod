@@ -17,6 +17,9 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 )
 
-require github.com/jmespath/go-jmespath v0.4.0 // indirect
+require (
+	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+)
 
 // require golang.org/x/crypto v0.35.0 // indirect

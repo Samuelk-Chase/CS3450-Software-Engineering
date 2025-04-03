@@ -5,6 +5,7 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the Axios instance
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,46 +16,41 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/v1/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      // Signup request
+      const signupResponse = await axiosInstance.post("/signup", {
+        email,
+        password,
       });
-      console.log("did this work");
 
-      if (response.ok) {
+      if (signupResponse.status === 201) {
         alert("Signup successful! Logging you in...");
 
-        const loginResponse = await fetch("http://localhost:8080/v1/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+        // Login request
+        const loginResponse = await axiosInstance.post("/login", {
+          email,
+          password,
         });
 
-        if (loginResponse.ok) {
-          console.log("response is ok");
-          const data = await loginResponse.json();
-          console.log("Login successful:", data);
+        const data = loginResponse.data;
+        console.log("Login successful:", data);
 
-          if (!data.user_id) {
-            throw new Error("User ID missing in response!");
-          }
-
-          // Store user ID in local storage
-          localStorage.setItem("userId", String(data.user_id));
-          localStorage.setItem("isLoggedIn", "true");
-
-          alert("Login successful!");
-          navigate("/character-account");
-        } else {
-          throw new Error("Invalid credentials");
+        if (!data.token) {
+          throw new Error("JWT token missing in response!");
         }
+
+        // Store the JWT token and user information in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", String(data.user_id));
+        localStorage.setItem("isLoggedIn", "true");
+
+        alert("Login successful!");
+        navigate("/character-account");
       } else {
         throw new Error("Signup failed");
       }
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Signup failed. Try again.");
+      alert("Signup failed. Please try again.");
     }
   };
 

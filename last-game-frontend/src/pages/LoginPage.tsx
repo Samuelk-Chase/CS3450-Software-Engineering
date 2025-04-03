@@ -12,6 +12,7 @@ import type { Provider } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faGitlab, faBitbucket } from "@fortawesome/free-brands-svg-icons";
+import axiosInstance from "../utils/axiosInstance"; // Import the Axios instance
 
 const LoginPage: React.FC = () => {
   // State for email/password login
@@ -138,24 +139,24 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/v1/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
       });
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        if (!data.user_id) {
-          throw new Error("User ID missing in response!");
-        }
-        localStorage.setItem("userId", String(data.user_id));
-        localStorage.setItem("isLoggedIn", "true");
 
-        navigate("/character-account");
-      } else {
-        throw new Error("Invalid credentials");
+      const data = response.data;
+      console.log("Login successful:", data);
+
+      if (!data.token) {
+        throw new Error("JWT token missing in response!");
       }
+
+      // Store the JWT token and user information in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", String(data.user_id));
+      localStorage.setItem("isLoggedIn", "true");
+
+      navigate("/character-account");
     } catch (error) {
       const msg = "Login error: " + error;
       console.error(msg);

@@ -1,11 +1,16 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v4"
 )
+
+var jwtSecret = []byte("d31421253bac3d2dd8e589a3d3951437bb4c59e4f081c5fc066125bedc30c6e5") // Replace with a secure secret key
 
 func KeyAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -17,9 +22,31 @@ func KeyAuth(next http.Handler) http.Handler {
 
 		keyString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// TODO: implement auth logic
+		// Parse and validate the JWT token
+		token, err := jwt.Parse(keyString, func(token *jwt.Token) (interface{}, error) {
+			// Ensure the signing method is what you expect
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.NewValidationError("unexpected signing method", jwt.ValidationErrorSignatureInvalid)
+			}
+			return jwtSecret, nil
+		})
 
-		log.Println("Received valid key", keyString, "proceeding to the next handler")
+		if err != nil || !token.Valid {
+			writeErrorResponse(w, "Invalid or expired token", http.StatusUnauthorized)
+			return
+		}
+
+		// Extract user_id from claims and add it to the request context
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			if userID, ok := claims["user_id"].(float64); ok { // JWT claims are float64
+				ctx := context.WithValue(r.Context(), "user_id", int(userID))
+				r = r.WithContext(ctx)
+			} else {
+				writeErrorResponse(w, "Invalid token claims", http.StatusUnauthorized)
+				return
+			}
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
