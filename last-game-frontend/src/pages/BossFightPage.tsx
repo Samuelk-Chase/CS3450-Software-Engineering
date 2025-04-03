@@ -39,7 +39,8 @@ const BossFightPage: React.FC = () => {
   const soundEffectCache = new Map<string, string>();
 
   const playSoundEffect = async (soundTrack: string | null) => {
-    const validSoundTrack = soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
+    const validSoundTrack =
+      soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
 
     if (soundEffectCache.has(validSoundTrack)) {
       const audio = new Audio(soundEffectCache.get(validSoundTrack));
@@ -47,9 +48,14 @@ const BossFightPage: React.FC = () => {
       audio.play();
     } else {
       try {
-        const response = await fetch(`http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(validSoundTrack)}`, {
-          method: "GET",
-        });
+        const response = await fetch(
+          `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+            validSoundTrack
+          )}`,
+          {
+            method: "GET",
+          }
+        );
 
         if (!response.ok) {
           console.error("Failed to fetch sound effect:", await response.text());
@@ -77,7 +83,9 @@ const BossFightPage: React.FC = () => {
 
     const fetchCharacter = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/v1/character/${characterId}`);
+        const response = await axios.get(
+          `http://localhost:8080/v1/character/${characterId}`
+        );
         setLocalCharacter(response.data);
       } catch (error) {
         console.error("Error fetching character:", error);
@@ -86,13 +94,15 @@ const BossFightPage: React.FC = () => {
     };
 
     fetchCharacter();
-  }, [navigate]);
+  }, [navigate, characterId]);
 
   useEffect(() => {
     if (!characterId) return;
     const fetchDeck = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`);
+        const response = await axios.get(
+          `http://localhost:8080/v1/cards/${characterId}`
+        );
         const cardsData = response.data.cards || [];
         const cards = cardsData.map((card: any) => ({
           id: card.card_id,
@@ -138,6 +148,13 @@ const BossFightPage: React.FC = () => {
       autoGenerateImage();
     }
   }, [boss]);
+
+  // New effect: Navigate back to main view when boss health reaches 0
+  useEffect(() => {
+    if (bossHealth === 0) {
+      navigate("/main");
+    }
+  }, [bossHealth, navigate]);
 
   const shuffle = (array: Card[]): Card[] => {
     const shuffled = [...array];
@@ -232,12 +249,17 @@ const BossFightPage: React.FC = () => {
         if (!soundEffectCache.has(soundTrack)) {
           try {
             const response = await fetch(
-              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`,
+              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+                soundTrack
+              )}`,
               { method: "GET" }
             );
 
             if (!response.ok) {
-              console.error(`Failed to fetch sound effect for ${soundTrack}:`, await response.text());
+              console.error(
+                `Failed to fetch sound effect for ${soundTrack}:`,
+                await response.text()
+              );
               continue;
             }
 
@@ -245,7 +267,10 @@ const BossFightPage: React.FC = () => {
             const soundUrl = URL.createObjectURL(blob);
             soundEffectCache.set(soundTrack, soundUrl);
           } catch (error) {
-            console.error(`Error preloading sound effect for ${soundTrack}:`, error);
+            console.error(
+              `Error preloading sound effect for ${soundTrack}:`,
+              error
+            );
           }
         }
       }
