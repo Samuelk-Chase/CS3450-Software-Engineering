@@ -42,35 +42,42 @@ const BossFightPage: React.FC = () => {
     const validSoundTrack =
       soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
 
-    if (soundEffectCache.has(validSoundTrack)) {
-      const audio = new Audio(soundEffectCache.get(validSoundTrack));
+    // Check if the sound effect is already in localStorage
+    const cachedSoundUrl = localStorage.getItem(`sound_${validSoundTrack}`);
+    if (cachedSoundUrl) {
+      const audio = new Audio(cachedSoundUrl);
       audio.volume = 1.0;
       audio.play();
-    } else {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
-            validSoundTrack
-          )}`,
-          {
-            method: "GET",
-          }
-        );
+      return;
+    }
 
-        if (!response.ok) {
-          console.error("Failed to fetch sound effect:", await response.text());
-          return;
+    // If not in localStorage, fetch it from the server
+    try {
+      const response = await fetch(
+        `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+          validSoundTrack
+        )}`,
+        {
+          method: "GET",
         }
+      );
 
-        const blob = await response.blob();
-        const soundUrl = URL.createObjectURL(blob);
-        soundEffectCache.set(validSoundTrack, soundUrl);
-        const audio = new Audio(soundUrl);
-        audio.volume = 1.0;
-        audio.play();
-      } catch (error) {
-        console.error("Error playing sound effect:", error);
+      if (!response.ok) {
+        console.error("Failed to fetch sound effect:", await response.text());
+        return;
       }
+
+      const blob = await response.blob();
+      const soundUrl = URL.createObjectURL(blob);
+
+      // Store the sound effect in localStorage
+      localStorage.setItem(`sound_${validSoundTrack}`, soundUrl);
+
+      const audio = new Audio(soundUrl);
+      audio.volume = 1.0;
+      audio.play();
+    } catch (error) {
+      console.error("Error playing sound effect:", error);
     }
   };
 
@@ -246,7 +253,7 @@ const BossFightPage: React.FC = () => {
       });
 
       for (const soundTrack of uniqueSoundTracks) {
-        if (!soundEffectCache.has(soundTrack)) {
+        if (!localStorage.getItem(`sound_${soundTrack}`)) {
           try {
             const response = await fetch(
               `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
@@ -265,7 +272,9 @@ const BossFightPage: React.FC = () => {
 
             const blob = await response.blob();
             const soundUrl = URL.createObjectURL(blob);
-            soundEffectCache.set(soundTrack, soundUrl);
+
+            // Store the sound effect in localStorage
+            localStorage.setItem(`sound_${soundTrack}`, soundUrl);
           } catch (error) {
             console.error(
               `Error preloading sound effect for ${soundTrack}:`,

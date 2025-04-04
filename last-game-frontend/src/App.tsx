@@ -12,37 +12,35 @@ import OauthCallback from './pages/OauthCallback';
 // Protected Route Component
 const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  return isLoggedIn ? <>{element}</> : <Navigate to="/login" />;
-};
-
-function App() {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isAudioAllowed, setIsAudioAllowed] = useState(false); // Track if user interaction has occurred
+  const [isAudioAllowed, setIsAudioAllowed] = useState(false);
 
   useEffect(() => {
-    const fetchAudio = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/v1/backgroundaudio');
-        if (!response.ok) {
-          throw new Error('Failed to fetch audio');
+    if (isLoggedIn) {
+      const fetchAudio = async () => {
+        try {
+          const response = await fetch('http://localhost:8080/v1/backgroundaudio');
+          if (!response.ok) {
+            throw new Error('Failed to fetch audio');
+          }
+
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setAudioSrc(audioUrl);
+        } catch (error) {
+          console.error('Error fetching audio:', error);
         }
+      };
 
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioSrc(audioUrl);
-      } catch (error) {
-        console.error('Error fetching audio:', error);
-      }
-    };
-
-    fetchAudio();
-  }, []);
+      fetchAudio();
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const handleInteraction = () => {
       if (!isAudioAllowed) {
-        setIsAudioAllowed(true); // Allow audio playback after user interaction
+        setIsAudioAllowed(true);
         if (audioRef.current) {
           audioRef.current.play().catch((e) => {
             console.error('Error playing audio:', e);
@@ -51,19 +49,25 @@ function App() {
       }
     };
 
-    // Add event listeners for user interaction
-    window.addEventListener('click', handleInteraction);
-    window.addEventListener('keydown', handleInteraction);
+    if (isLoggedIn) {
+      window.addEventListener('click', handleInteraction);
+      window.addEventListener('keydown', handleInteraction);
+    }
 
-    // Cleanup event listeners on component unmount
     return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('keydown', handleInteraction);
+      if (isLoggedIn) {
+        window.removeEventListener('click', handleInteraction);
+        window.removeEventListener('keydown', handleInteraction);
+      }
     };
-  }, [isAudioAllowed]);
+  }, [isAudioAllowed, isLoggedIn]);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
 
   return (
-    <Router>
+    <>
       {/* Background audio */}
       {audioSrc && (
         <audio ref={audioRef} loop>
@@ -71,7 +75,14 @@ function App() {
           Your browser does not support the audio element.
         </audio>
       )}
+      {element}
+    </>
+  );
+};
 
+function App() {
+  return (
+    <Router>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LoginPage />} />
