@@ -13,12 +13,12 @@ import (
 type Story struct {
 	StoryID     int    `json:"story_id,omitempty"` // Use omitempty to omit when zero
 	CharacterID int    `json:"character_id"`       // Add character ID field
-	Prompt      string `json:"prompt"`
-	Response    string `json:"response"`
+	Prompt      string `json:"prompt_text"`
+	Response    string `json:"response_text"`
 }
 
 func InsertStory(story Story) error {
-	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/story"
+	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/storyEntry"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 	// Create request body matching the database schema
@@ -70,7 +70,7 @@ func InsertStory(story Story) error {
 
 func GetStoriesByCharacterID(characterID int) ([]Story, error) {
 	supabaseURL := fmt.Sprintf(
-		"%s/rest/v1/story?character_id=eq.%d&order=created_at.desc&limit=5", // Limited to 5 most recent stories, ordered by created_at
+		"%s/rest/v1/storyEntry?character_id=eq.%d&order=created_at.desc&limit=5", // Limited to 5 most recent stories, ordered by created_at
 		os.Getenv("SUPABASE_URL"), characterID,
 	)
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")

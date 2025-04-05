@@ -23,7 +23,6 @@ type Story struct {
 
 func generateStory(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
-		Response    string `json:"response"` // TODO: Remove
 		Prompt      string `json:"prompt"`
 		CharacterID int    `json:"character_id"` // Ensure this is included to link story to character
 	}
@@ -126,11 +125,13 @@ func generateIntro(w http.ResponseWriter, r *http.Request) {
 		openai.SystemMessage(intro_system_prompt),
 	}
 
-	// Add prior storyContext (prompt/response pair) to the messages if available
+	// If the character exists, add their description to the messages
+	messageText := ""
+
 	if (currentCharacter != charDb.Character{}) {
+		messageText = "Name: " + currentCharacter.Name + "\n" + "Description: " + currentCharacter.Description
 		messages = append(messages,
-			openai.UserMessage("Name: "+currentCharacter.Name+"\n"+
-				"Description: "+currentCharacter.Description),
+			openai.UserMessage(messageText),
 		)
 	}
 
@@ -147,6 +148,15 @@ func generateIntro(w http.ResponseWriter, r *http.Request) {
 	}
 
 	introResponse := response.Choices[0].Message.Content
+
+	// Insert into database
+	if (messageText != "") && (introResponse != "") {
+		db.InsertStory(db.Story{
+			Prompt:      messageText,
+			Response:    introResponse,
+			CharacterID: requestData.CharacterID,
+		})
+	}
 
 	fmt.Println("Intro generated successfully:", introResponse)
 
