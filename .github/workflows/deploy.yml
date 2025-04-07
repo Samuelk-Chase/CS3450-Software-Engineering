@@ -40,6 +40,7 @@ jobs:
 
       # Step 6: Deploy to server
       - name: Deploy to server
+        uses: webfactory/ssh-agent@v0.9.1
         env:
           SERVER_USER: ubuntu
           SERVER_IP: 13.58.239.54
@@ -47,7 +48,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
           # Copy React build to the server
-          scp -o StrictHostKeyChecking=no -i github-ec2.pem -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
+          scp -v -o StrictHostKeyChecking=no -i github-ec2.pem -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
 
           # Copy Go binary to the server
           scp -o StrictHostKeyChecking=no -i github-ec2.pem backend/last-game-backend $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/
