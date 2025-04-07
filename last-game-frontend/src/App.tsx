@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://api.lastgame.chirality.app' // Production URL
+    ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 
   useEffect(() => {
