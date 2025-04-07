@@ -41,8 +41,8 @@ jobs:
       # Step 6: Deploy to server
       - name: Deploy to server
         env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ubuntu
+          SERVER_IP: 13.58.239.54
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
