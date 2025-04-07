@@ -21,6 +21,10 @@ jobs:
 
       # Step 3: Install dependencies and build React app
       - name: Install React dependencies and build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
         run: |
           cd last-game-frontend
           npm install
