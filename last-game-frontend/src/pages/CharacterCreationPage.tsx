@@ -13,7 +13,7 @@ const CharacterCreationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
-  const baseUrl = process.env.node_env === 'production' 
+  const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // production url
     : 'http://localhost:8080'; // development url
 

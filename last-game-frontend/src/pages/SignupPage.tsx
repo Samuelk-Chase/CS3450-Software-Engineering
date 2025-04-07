@@ -13,7 +13,7 @@ const SignupPage: React.FC = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = window.location.hostname.includes('localhost')
       ? 'https://lastgame-api.chirality.app' // Production URL
       : 'http://localhost:8080'; // Development URL   const baseUrl = 
 

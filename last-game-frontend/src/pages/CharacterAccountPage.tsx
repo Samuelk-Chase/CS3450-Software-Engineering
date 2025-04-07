@@ -29,7 +29,7 @@ const CharacterAccountPage: React.FC = () => {
       return;
     }
 
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = window.location.hostname.includes('localhost')
       ? 'https://lastgame-api.chirality.app' // Production URL
       : 'http://localhost:8080'; // Development URL
     const apiUrl = `${baseUrl}/v1/characters?user_id=${userId}`;

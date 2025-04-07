@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
   // State for printing errors on screen
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const baseUrl = process.env.NODE_ENV === 'production' 
+  const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 

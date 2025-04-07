@@ -35,7 +35,7 @@ const BossFightPage: React.FC = () => {
   const [hand, setHand] = useState<Card[]>([]);
   const [usedCards, setUsedCards] = useState<Card[]>([]);
   const characterId = localStorage.getItem("characterId");
-  const baseUrl = process.env.NODE_ENV === 'production' 
+  const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 
