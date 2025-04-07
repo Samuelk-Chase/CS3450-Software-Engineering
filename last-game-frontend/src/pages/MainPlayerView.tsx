@@ -36,7 +36,7 @@ const MainPlayerView: React.FC = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
-  const baseUrl = process.env.NODE_ENV === 'production' 
+  const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 
