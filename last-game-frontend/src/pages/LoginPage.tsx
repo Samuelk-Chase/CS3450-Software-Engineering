@@ -20,6 +20,9 @@ const LoginPage: React.FC = () => {
   // State for printing errors on screen
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://api.lastgame.chirality.app' // Production URL
+    : 'http://localhost:8080'; // Development URL
 
   /**
    * Insert or fetch the OAuth user in your "users" table.
@@ -138,7 +141,7 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/v1/login", {
+      const response = await fetch(`${baseUrl}/v1/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

@@ -35,6 +35,9 @@ const BossFightPage: React.FC = () => {
   const [hand, setHand] = useState<Card[]>([]);
   const [usedCards, setUsedCards] = useState<Card[]>([]);
   const characterId = localStorage.getItem("characterId");
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://api.lastgame.chirality.app' // Production URL
+    : 'http://localhost:8080'; // Development URL
 
   const soundEffectCache = new Map<string, string>();
 
@@ -54,7 +57,7 @@ const BossFightPage: React.FC = () => {
     // If not in localStorage, fetch it from the server
     try {
       const response = await fetch(
-        `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+        `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
           validSoundTrack
         )}`,
         {
@@ -91,7 +94,7 @@ const BossFightPage: React.FC = () => {
     const fetchCharacter = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/v1/character/${characterId}`
+          `${baseUrl}/v1/character/${characterId}`
         );
         setLocalCharacter(response.data);
       } catch (error) {
@@ -108,7 +111,7 @@ const BossFightPage: React.FC = () => {
     const fetchDeck = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/v1/cards/${characterId}`
+          `${baseUrl}/v1/cards/${characterId}`
         );
         const cardsData = response.data.cards || [];
         const cards = cardsData.map((card: any) => ({
@@ -174,7 +177,7 @@ const BossFightPage: React.FC = () => {
 
   const fetchBossImage = async (prompt: string) => {
     const requestBody = { prompt };
-    const response = await fetch("http://localhost:8080/v1/image", {
+    const response = await fetch(`${baseUrl}/v1/image`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
@@ -256,7 +259,7 @@ const BossFightPage: React.FC = () => {
         if (!localStorage.getItem(`sound_${soundTrack}`)) {
           try {
             const response = await fetch(
-              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+              `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
                 soundTrack
               )}`,
               { method: "GET" }

@@ -36,15 +36,17 @@ const MainPlayerView: React.FC = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://api.lastgame.chirality.app' // Production URL
+    : 'http://localhost:8080'; // Development URL
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
-    
     setIsGeneratingDeck(true);
     try {
       // Generate 3 cards (adjust loop count as needed)
       for (let i = 0; i < 3; i++) {
-        const response = await axios.post("http://localhost:8080/v1/card", {
+        const response = await axios.post(`${baseUrl}/v1/card`, {
           prompt: character.description,
           character_id: Number(characterId),
         });
@@ -82,7 +84,7 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
+      const response = await axios.get(`${baseUrl}/v1/cards/${characterId}`); // Add logging to debug
       
       // Extract cards from the response
       const cardsData = response.data.cards || [];
@@ -118,7 +120,7 @@ const MainPlayerView: React.FC = () => {
       return;
     }
 
-    const apiUrl = `http://localhost:8080/v1/character/${characterId}`;
+    const apiUrl = `${baseUrl}/v1/character/${characterId}`;
     fetch(apiUrl)
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP status ${response.status}`);
@@ -148,11 +150,11 @@ const MainPlayerView: React.FC = () => {
     setGameText("AI is generating content...");
     
     try {
-      const response = await axios.post("http://localhost:8080/v1/story", { prompt: userResponse });
+      const response = await axios.post(`${baseUrl}/v1/story`, { prompt: userResponse });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
-        const cardResponse = await axios.post("http://localhost:8080/v1/card", {
+        const cardResponse = await axios.post(`${baseUrl}/v1/card`, {
           prompt: aiMessage.replace(/\*/g, ""),
           character_id: Number(characterId),
         });
@@ -173,7 +175,7 @@ const MainPlayerView: React.FC = () => {
       }
 
       if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
+        const response = await axios.post(`${baseUrl}/v1/boss`, { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }

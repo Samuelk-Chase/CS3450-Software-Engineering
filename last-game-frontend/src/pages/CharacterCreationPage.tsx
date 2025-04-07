@@ -13,6 +13,9 @@ const CharacterCreationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
+  const baseUrl = process.env.node_env === 'production' 
+    ? 'https://api.lastgame.chirality.app' // production url
+    : 'http://localhost:8080'; // development url
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -37,7 +40,7 @@ const CharacterCreationPage: React.FC = () => {
         mode: mode,
       };
 
-      const createResponse = await fetch("http://localhost:8080/v1/getNewCharacter", {
+      const createResponse = await fetch(`${baseUrl}/v1/getNewCharacter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
