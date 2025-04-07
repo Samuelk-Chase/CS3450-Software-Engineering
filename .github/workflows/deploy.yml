@@ -54,7 +54,7 @@ jobs:
           scp -o StrictHostKeyChecking=no -i github-ec2.pem -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
 
           # Remove old Go binary
-          ssh -o StrictHostKeyChecking=no -i github-ec2.pem $SERVER_USER@$SERVER_IP 'rm /home/$SERVER_USER/last-game-backend'
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem $SERVER_USER@$SERVER_IP 'rm ~/last-game-backend'
 
           # Copy Go binary to the server
           scp -o StrictHostKeyChecking=no -i github-ec2.pem backend/last-game-backend $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/
