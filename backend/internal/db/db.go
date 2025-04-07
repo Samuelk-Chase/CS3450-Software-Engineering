@@ -149,6 +149,44 @@ func GetUserCharacters(userID int) ([]Character, error) {
 	return characters, nil
 }
 
+// VerifyCharacterOwnership checks if a character belongs to a specific user
+func VerifyCharacterOwnership(characterID, userID int) (bool, error) {
+	// Construct the Supabase API URL
+	supabaseURL := fmt.Sprintf("%s/rest/v1/character?character_id=eq.%d&user_id=eq.%d", os.Getenv("SUPABASE_URL"), characterID, userID)
+	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+	// Create the HTTP GET request
+	req, err := http.NewRequest("GET", supabaseURL, nil)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Set("apikey", supabaseKey)
+	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	// Execute the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	// Check if the response status is OK
+	if resp.StatusCode != http.StatusOK {
+		return false, errors.New("failed to verify character ownership")
+	}
+
+	// Parse the response body
+	var characters []Character
+	if err := json.NewDecoder(resp.Body).Decode(&characters); err != nil {
+		return false, err
+	}
+
+	// If no characters are returned, the character does not belong to the user
+	return len(characters) > 0, nil
+}
+
 // Response struct for fetching user_id and password hash
 type getPasswordResponse struct {
 	UserID       int    `json:"user_id"`

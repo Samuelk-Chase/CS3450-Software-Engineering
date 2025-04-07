@@ -156,40 +156,44 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 
 // getNewCharacter is an HTTP handler that creates a character based on user input.
 func getNewCharacter(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("getNewCharacter called!")
-
-	// Ensure the request method is POST.
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	// Extract the user_id from the request context
+	userID, ok := r.Context().Value("user_id").(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Parse request body.
+	// Parse request body
 	var requestData struct {
-		UserID      int    `json:"user_id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Generate character and store in DB.
-	character, err := generateCharacterLLM(requestData.UserID, requestData.Name)
+	// Generate character and store in DB
+	character, err := generateCharacterLLM(userID, requestData.Name)
 	if err != nil {
 		http.Error(w, "Failed to create character", http.StatusInternalServerError)
 		return
 	}
 
-	// Return created character as response.
+	// Return created character as response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(character)
-	fmt.Printf("Generated character description: %s\n", character.Description)
 }
 
 // GetCharacter retrieves a character by ID and ensures it belongs to the logged-in user.
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
+	// Extract the user_id from the request context
+	userID, ok := r.Context().Value("user_id").(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Extract the character ID from the URL path
 	characterIDStr := chi.URLParam(r, "id")
 	characterID, err := strconv.Atoi(characterIDStr)
 	if err != nil {
@@ -197,52 +201,42 @@ func GetCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Fetching character with ID:", characterID)
+	// Verify ownership of the character
+	isOwner, err := db.VerifyCharacterOwnership(characterID, userID)
+	if err != nil || !isOwner {
+		http.Error(w, "Forbidden: You do not own this character", http.StatusForbidden)
+		return
+	}
 
-	character, err := db.GetCharacterByID(characterID) // ✅ Fetch from DB
+	// Fetch the character from the database
+	character, err := db.GetCharacterByID(characterID)
 	if err != nil {
-		fmt.Println("Error fetching character:", err)
 		http.Error(w, "Character not found", http.StatusNotFound)
 		return
 	}
 
-	fmt.Println("Fetched character:", character)
+	// Return the character as JSON
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(character)
 }
 
 // GetCharacters retrieves all characters belonging to a user.
 func GetCharacters(w http.ResponseWriter, r *http.Request) {
-	userIDStr := r.URL.Query().Get("user_id") // ✅ Read user_id from query params
-	if userIDStr == "" {
-		fmt.Println("❌ Missing user_id in request!")
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+	// Extract the user_id from the request context
+	userID, ok := r.Context().Value("user_id").(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
+	// Fetch all characters belonging to the user
+	characters, err := db.GetUserCharacters(userID)
 	if err != nil {
-		fmt.Println("❌ Invalid user_id:", userIDStr)
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		return
-	}
-
-	fmt.Println("✅ Fetching characters for user ID:", userID)
-
-	characters, err := db.GetUserCharacters(userID) // ✅ Fetch characters from DB
-	if err != nil {
-		fmt.Println("❌ Error fetching characters from DB:", err)
 		http.Error(w, "Failed to fetch characters", http.StatusInternalServerError)
 		return
 	}
 
-	if len(characters) == 0 {
-		fmt.Println("⚠ No characters found for user ID:", userID)
-		http.Error(w, "No characters found", http.StatusNotFound) // ✅ Return explicit 404
-		return
-	}
-
-	fmt.Println("✅ Characters found:", characters)
+	// Return the characters as JSON
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(characters)
 }

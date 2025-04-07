@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance"; // Use axiosInstance instead of axios
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
@@ -39,16 +39,16 @@ const MainPlayerView: React.FC = () => {
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
-    
+
     setIsGeneratingDeck(true);
     try {
       // Generate 3 cards (adjust loop count as needed)
       for (let i = 0; i < 3; i++) {
-        const response = await axios.post("http://localhost:8080/v1/card", {
+        const response = await axiosInstance.post("/card", {
           prompt: character.description,
           character_id: Number(characterId),
         });
-        
+
         const generatedCard = response.data;
         const mappedCard: Card = {
           id: generatedCard.card_id,
@@ -60,8 +60,8 @@ const MainPlayerView: React.FC = () => {
           image: generatedCard.image_url,
           soundEffect: generatedCard.sound_effect, // Added soundEffect property
         };
-        
-        setDeck(prevDeck => [...prevDeck, mappedCard]);
+
+        setDeck((prevDeck) => [...prevDeck, mappedCard]);
       }
     } catch (error) {
       console.error("Error generating deck:", error);
@@ -82,11 +82,11 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
-      
+      const response = await axiosInstance.get(`/cards/${characterId}`);
+
       // Extract cards from the response
       const cardsData = response.data.cards || [];
-      
+
       const cards = cardsData.map((card: any) => ({
         id: card.card_id,
         name: card.title,
@@ -118,22 +118,25 @@ const MainPlayerView: React.FC = () => {
       return;
     }
 
-    const apiUrl = `http://localhost:8080/v1/character/${characterId}`;
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP status ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
+    const fetchCharacter = async () => {
+      try {
+        const response = await axiosInstance.get(`/character/${characterId}`);
+        const data = response.data;
+
         if (data.user_id !== Number(userId)) {
           alert("This character does not belong to you. Redirecting...");
           navigate("/character-account");
           return;
         }
+
         setCharacter(data);
         fetchDeck();
-      })
-      .catch((error) => console.error("Error fetching character:", error));
+      } catch (error) {
+        console.error("Error fetching character:", error);
+      }
+    };
+
+    fetchCharacter();
   }, [navigate, userId, characterId]);
 
   const handleSubmitResponse = async () => {
@@ -146,13 +149,13 @@ const MainPlayerView: React.FC = () => {
     ]);
 
     setGameText("AI is generating content...");
-    
+
     try {
-      const response = await axios.post("http://localhost:8080/v1/story", { prompt: userResponse });
+      const response = await axiosInstance.post("/story", { prompt: userResponse });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
-        const cardResponse = await axios.post("http://localhost:8080/v1/card", {
+        const cardResponse = await axiosInstance.post("/card", {
           prompt: aiMessage.replace(/\*/g, ""),
           character_id: Number(characterId),
         });
@@ -173,7 +176,7 @@ const MainPlayerView: React.FC = () => {
       }
 
       if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
+        const response = await axiosInstance.post("/boss", { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
@@ -273,32 +276,32 @@ const MainPlayerView: React.FC = () => {
               }}
             />
             <div className="player-info">
-  <strong>{character.character_name}</strong>
-  <div className="health-mana-bars">
-    <div className="bar-container">
-      <div
-        className="bar-fill health-bar-fill"
-        style={{
-          width: `${(character.current_hp / character.max_hp) * 100}%`,
-        }}
-      ></div>
-      <span className="bar-text">
-        {character.current_hp} / {character.max_hp}
-      </span>
-    </div>
-    <div className="bar-container">
-      <div
-        className="bar-fill mana-bar-fill"
-        style={{
-          width: `${(character.current_mana / character.max_mana) * 100}%`,
-        }}
-      ></div>
-      <span className="bar-text">
-        {character.current_mana} / {character.max_mana}
-      </span>
-    </div>
-  </div>
-</div>
+              <strong>{character.character_name}</strong>
+              <div className="health-mana-bars">
+                <div className="bar-container">
+                  <div
+                    className="bar-fill health-bar-fill"
+                    style={{
+                      width: `${(character.current_hp / character.max_hp) * 100}%`,
+                    }}
+                  ></div>
+                  <span className="bar-text">
+                    {character.current_hp} / {character.max_hp}
+                  </span>
+                </div>
+                <div className="bar-container">
+                  <div
+                    className="bar-fill mana-bar-fill"
+                    style={{
+                      width: `${(character.current_mana / character.max_mana) * 100}%`,
+                    }}
+                  ></div>
+                  <span className="bar-text">
+                    {character.current_mana} / {character.max_mana}
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* Updated Deck Button */}
             <button 

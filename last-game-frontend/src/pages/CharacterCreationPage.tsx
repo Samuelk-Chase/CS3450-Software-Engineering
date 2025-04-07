@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the Axios instance
 
 const CharacterCreationPage: React.FC = () => {
   const [characterName, setCharacterName] = useState("");
@@ -37,22 +38,18 @@ const CharacterCreationPage: React.FC = () => {
         mode: mode,
       };
 
-      const createResponse = await fetch("http://localhost:8080/v1/getNewCharacter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+      // Use axiosInstance to make the POST request
+      const createResponse = await axiosInstance.post("/getNewCharacter", requestBody);
 
-      if (createResponse.ok) {
-        const data = await createResponse.json();
+      if (createResponse.status === 200) {
+        const data = createResponse.data;
         console.log("Character created successfully:", data);
         navigate("/character-account", { state: { newCharacter: data } });
       } else {
-        const errorText = await createResponse.text();
-        console.error("Failed to create character:", errorText);
+        console.error("Failed to create character:", createResponse.statusText);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error creating character:", error);
     } finally {
       setLoading(false);
     }

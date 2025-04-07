@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	dbc "beanboys-lastgame-backend/internal/db"
 	db "beanboys-lastgame-backend/internal/db/cards_db"
 	"encoding/base64"
 	"os"
@@ -181,7 +182,13 @@ func generateSoundEffect(name, description string) (string, error) {
 }
 
 func getCards(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("get cards called!")
+	fmt.Println("getCards called")
+	// Extract the user_id from the request context
+	userID, ok := r.Context().Value("user_id").(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	// Extract the character ID from the URL path
 	characterIDStr := chi.URLParam(r, "id")
@@ -191,39 +198,42 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get cards from the database
-	cards, err := db.GetCardsByCharacterID(characterID)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error fetching cards: %v", err), http.StatusInternalServerError)
+	// Verify ownership of the character
+	isOwner, err := dbc.VerifyCharacterOwnership(characterID, userID)
+	if err != nil || !isOwner {
+		http.Error(w, "Forbidden: You do not own this character", http.StatusForbidden)
 		return
 	}
 
-	// Set the response header to indicate JSON content
+	// Fetch cards for the character
+	cards, err := db.GetCardsByCharacterID(characterID)
+	if err != nil {
+		http.Error(w, "Failed to fetch cards", http.StatusInternalServerError)
+		return
+	}
+
+	// Debug: Print the cards fetched from the database
+	fmt.Printf("Fetched cards for character ID %d: %+v\n", characterID, cards)
+
+	// Wrap the cards in an object with a "cards" key
+	response := map[string]interface{}{
+		"cards": cards,
+	}
+
+	// Return the cards as JSON
 	w.Header().Set("Content-Type", "application/json")
-
-	// Create a response object with the cards array
-	response := struct {
-		Cards []db.Card `json:"cards"`
-	}{
-		Cards: cards,
-	}
-
-	// Encode the response object to JSON and write to response
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func getCard(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("get card called!")
-
-	// Ensure the request method is POST.
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	// Extract the user_id from the request context
+	userID, ok := r.Context().Value("user_id").(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Parse the request body.
+	// Parse the request body
 	var requestData struct {
 		Prompt      string `json:"prompt"`
 		CharacterID int    `json:"character_id"`
@@ -233,18 +243,21 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate the card using the provided prompt
-	card, err := generateCard(requestData.Prompt, requestData.CharacterID)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Card generation error: %v", err), http.StatusInternalServerError)
+	// Verify ownership of the character
+	isOwner, err := dbc.VerifyCharacterOwnership(requestData.CharacterID, userID)
+	if err != nil || !isOwner {
+		http.Error(w, "Forbidden: You do not own this character", http.StatusForbidden)
 		return
 	}
 
-	// Set the response header to indicate JSON content
-	w.Header().Set("Content-Type", "application/json")
-
-	// Encode the db.Card object to JSON and write it to the response
-	if err := json.NewEncoder(w).Encode(card); err != nil {
-		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
+	// Generate the card
+	card, err := generateCard(requestData.Prompt, requestData.CharacterID)
+	if err != nil {
+		http.Error(w, "Failed to generate card", http.StatusInternalServerError)
+		return
 	}
+
+	// Return the card as JSON
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(card)
 }
