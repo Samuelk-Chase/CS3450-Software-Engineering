@@ -37,7 +37,7 @@ const MainPlayerView: React.FC = () => {
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://api.lastgame.chirality.app' // Production URL
+    ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 
   const generateDeck = async () => {

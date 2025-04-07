@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://api.lastgame.chirality.app' // Production URL
+    ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
 
   /**

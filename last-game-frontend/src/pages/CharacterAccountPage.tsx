@@ -30,7 +30,7 @@ const CharacterAccountPage: React.FC = () => {
     }
 
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://api.lastgame.chirality.app' // Production URL
+      ? 'https://lastgame-api.chirality.app' // Production URL
       : 'http://localhost:8080'; // Development URL
     const apiUrl = `${baseUrl}/v1/characters?user_id=${userId}`;
     console.log("Fetching characters from:", apiUrl);
