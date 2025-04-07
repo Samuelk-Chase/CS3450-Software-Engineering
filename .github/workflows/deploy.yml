@@ -40,6 +40,9 @@ jobs:
 
       # Step 6: Set up SSH agent with key from secrets
       - name: Set up SSH agent
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           eval $(ssh-agent -s)  # Start the SSH agent
