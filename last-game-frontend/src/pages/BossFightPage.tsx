@@ -24,7 +24,6 @@ const BossFightPage: React.FC = () => {
   const location = useLocation();
   const { boss } = location.state || {};
 
-  // Local character state
   const [localCharacter, setLocalCharacter] = useState<Character | null>(null);
   const [bossHealth, setBossHealth] = useState<number>(boss?.health ?? 100);
   const [maxBossHealth] = useState<number>(boss?.health ?? 100);
@@ -37,47 +36,51 @@ const BossFightPage: React.FC = () => {
   const [usedCards, setUsedCards] = useState<Card[]>([]);
   const characterId = localStorage.getItem("characterId");
 
-  // Cache for sound effects
   const soundEffectCache = new Map<string, string>();
 
   const playSoundEffect = async (soundTrack: string | null) => {
-    // Use a default sound effect if the provided one is null or empty
-    const validSoundTrack = soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
+    const validSoundTrack =
+      soundTrack && soundTrack.trim() !== "" ? soundTrack : "default_whoosh";
 
-    if (soundEffectCache.has(validSoundTrack)) {
-      // Play from cache
-      const audio = new Audio(soundEffectCache.get(validSoundTrack));
-      audio.volume = 1.0; // Boost sound effect volume to maximum
+    // Check if the sound effect is already in localStorage
+    const cachedSoundUrl = localStorage.getItem(`sound_${validSoundTrack}`);
+    if (cachedSoundUrl) {
+      const audio = new Audio(cachedSoundUrl);
+      audio.volume = 1.0;
       audio.play();
-    } else {
-      try {
-        // Fetch sound effect from backend
-        const response = await fetch(`http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(validSoundTrack)}`, {
+      return;
+    }
+
+    // If not in localStorage, fetch it from the server
+    try {
+      const response = await fetch(
+        `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+          validSoundTrack
+        )}`,
+        {
           method: "GET",
-        });
-
-        if (!response.ok) {
-          console.error("Failed to fetch sound effect:", await response.text());
-          return;
         }
+      );
 
-        const blob = await response.blob();
-        const soundUrl = URL.createObjectURL(blob);
-
-        // Cache the sound effect
-        soundEffectCache.set(validSoundTrack, soundUrl);
-
-        // Play the sound effect
-        const audio = new Audio(soundUrl);
-        audio.volume = 1.0; // Boost sound effect volume to maximum
-        audio.play();
-      } catch (error) {
-        console.error("Error playing sound effect:", error);
+      if (!response.ok) {
+        console.error("Failed to fetch sound effect:", await response.text());
+        return;
       }
+
+      const blob = await response.blob();
+      const soundUrl = URL.createObjectURL(blob);
+
+      // Store the sound effect in localStorage
+      localStorage.setItem(`sound_${validSoundTrack}`, soundUrl);
+
+      const audio = new Audio(soundUrl);
+      audio.volume = 1.0;
+      audio.play();
+    } catch (error) {
+      console.error("Error playing sound effect:", error);
     }
   };
 
-  // Fetch character data
   useEffect(() => {
     if (!characterId || isNaN(Number(characterId))) {
       alert("No character selected! Redirecting to character selection...");
@@ -87,7 +90,9 @@ const BossFightPage: React.FC = () => {
 
     const fetchCharacter = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/v1/character/${characterId}`);
+        const response = await axios.get(
+          `http://localhost:8080/v1/character/${characterId}`
+        );
         setLocalCharacter(response.data);
       } catch (error) {
         console.error("Error fetching character:", error);
@@ -96,14 +101,15 @@ const BossFightPage: React.FC = () => {
     };
 
     fetchCharacter();
-  }, [navigate]);
+  }, [navigate, characterId]);
 
-  // Fetch deck (unchanged)
   useEffect(() => {
     if (!characterId) return;
     const fetchDeck = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`);
+        const response = await axios.get(
+          `http://localhost:8080/v1/cards/${characterId}`
+        );
         const cardsData = response.data.cards || [];
         const cards = cardsData.map((card: any) => ({
           id: card.card_id,
@@ -130,7 +136,6 @@ const BossFightPage: React.FC = () => {
     fetchDeck();
   }, [characterId]);
 
-  // Boss initialization (unchanged)
   useEffect(() => {
     if (!boss) return;
     setBossHealth(boss.health ?? 100);
@@ -151,7 +156,13 @@ const BossFightPage: React.FC = () => {
     }
   }, [boss]);
 
-  // Shuffle function (unchanged)
+  // New effect: Navigate back to main view when boss health reaches 0
+  useEffect(() => {
+    if (bossHealth === 0) {
+      navigate("/main");
+    }
+  }, [bossHealth, navigate]);
+
   const shuffle = (array: Card[]): Card[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -161,7 +172,6 @@ const BossFightPage: React.FC = () => {
     return shuffled;
   };
 
-  // Fetch boss image (unchanged)
   const fetchBossImage = async (prompt: string) => {
     const requestBody = { prompt };
     const response = await fetch("http://localhost:8080/v1/image", {
@@ -177,7 +187,6 @@ const BossFightPage: React.FC = () => {
     throw new Error("No image data received");
   };
 
-  // Generate boss image (unchanged)
   const handleGenerateBossImage = async () => {
     if (bossNameInput.trim() === "") return;
     setLoading(true);
@@ -191,36 +200,41 @@ const BossFightPage: React.FC = () => {
     }
   };
 
-  // Play card with local state update
   const playCard = (card: Card) => {
     console.log("Playing card:", card);
 
-    // Play the card's sound effect (handles null or empty soundEffect)
     playSoundEffect(card.soundEffect);
 
-    if (!character || character.mana < card.mana) {
+    if (!localCharacter || localCharacter.current_mana < card.mana) {
       console.log("Not enough mana");
       return;
     }
 
-    const newMana = character.mana - card.mana;
-    const damage = card.level;
+    const damageMatch = card.effect.match(/Deal (\d+) damage/);
+    const damage = damageMatch ? parseInt(damageMatch[1], 10) : card.level;
+
     setBossHealth((prev) => Math.max(prev - damage, 0));
 
     const bossAttackDamage = 7;
-    const newHealth = Math.max(character.health - bossAttackDamage, 0);
-    updateStats(newHealth, newMana);
+    const newHealth = Math.max(localCharacter.current_hp - bossAttackDamage, 0);
+    const newMana = localCharacter.current_mana - card.mana;
 
     setLocalCharacter((prev) =>
       prev ? { ...prev, current_hp: newHealth, current_mana: newMana } : null
     );
+    updateStats(newHealth, newMana);
 
     const newHand = hand.filter((c) => c.id !== card.id);
     setUsedCards((prev) => [...prev, card]);
+
     if (deck.length > 0) {
       const newCard = deck[0];
       setHand([...newHand, newCard]);
       setDeck(deck.slice(1));
+    } else if (newHand.length === 0 && deck.length === 0 && usedCards.length > 0) {
+      const shuffledUsedCards = shuffle([...usedCards, card]);
+      setHand(shuffledUsedCards.slice(0, 5));
+      setUsedCards([]);
     } else {
       setHand(newHand);
     }
@@ -232,41 +246,47 @@ const BossFightPage: React.FC = () => {
     const preloadSoundEffects = async () => {
       const uniqueSoundTracks = new Set<string>();
 
-      // Collect unique sound effect names from the deck
       [...deck, ...hand].forEach((card) => {
         if (card.soundEffect) {
           uniqueSoundTracks.add(card.soundEffect);
         }
       });
 
-      // Preload each sound effect if not already cached
       for (const soundTrack of uniqueSoundTracks) {
-        if (!soundEffectCache.has(soundTrack)) {
+        if (!localStorage.getItem(`sound_${soundTrack}`)) {
           try {
             const response = await fetch(
-              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`,
+              `http://localhost:8080/v1/soundeffect?name=${encodeURIComponent(
+                soundTrack
+              )}`,
               { method: "GET" }
             );
 
             if (!response.ok) {
-              console.error(`Failed to fetch sound effect for ${soundTrack}:`, await response.text());
+              console.error(
+                `Failed to fetch sound effect for ${soundTrack}:`,
+                await response.text()
+              );
               continue;
             }
 
             const blob = await response.blob();
             const soundUrl = URL.createObjectURL(blob);
 
-            // Cache the sound effect
-            soundEffectCache.set(soundTrack, soundUrl);
+            // Store the sound effect in localStorage
+            localStorage.setItem(`sound_${soundTrack}`, soundUrl);
           } catch (error) {
-            console.error(`Error preloading sound effect for ${soundTrack}:`, error);
+            console.error(
+              `Error preloading sound effect for ${soundTrack}:`,
+              error
+            );
           }
         }
       }
     };
 
     preloadSoundEffects();
-  }, [deck, hand]); // Run whenever the deck or hand changes
+  }, [deck, hand]);
 
   return (
     <div className="boss-fight-container">
@@ -288,9 +308,9 @@ const BossFightPage: React.FC = () => {
             alt={localCharacter?.character_name || "Player"}
             onError={(e) => (e.currentTarget.src = "/default-image.png")}
             style={{
-              width: "150px", // Set desired width
-              height: "auto", // Automatically adjust height to maintain aspect ratio
-              objectFit: "contain", // Ensure the entire image is visible
+              width: "150px",
+              height: "auto",
+              objectFit: "contain",
               display: "block",
               margin: "0 auto 1rem auto",
             }}
@@ -361,19 +381,19 @@ const BossFightPage: React.FC = () => {
       <div className="card-interface">
         <div className="used-cards">Used: {usedCards.length}</div>
         <div className="hand-container">
-        {hand.map((card) => (
-  <div
-    className="card"
-    style={{ backgroundImage: `url(${card.image})` }}
-    key={card.id}
-    onClick={() => playCard(card)}
-  >
-    <div className="card-mana">{card.mana}</div>
-    <div className="card-title">{card.name}</div>
-    <div className="card-level">Level: {card.level}</div>
-    <div className="card-description">{card.effect}</div>
-  </div>
-))}
+          {hand.map((card) => (
+            <div
+              className="card"
+              style={{ backgroundImage: `url(${card.image})` }}
+              key={card.id}
+              onClick={() => playCard(card)}
+            >
+              <div className="card-mana">{card.mana}</div>
+              <div className="card-title">{card.name}</div>
+              <div className="card-level">Level: {card.level}</div>
+              <div className="card-description">{card.effect}</div>
+            </div>
+          ))}
         </div>
         <div className="next-card">
           {deck.length > 0 ? (

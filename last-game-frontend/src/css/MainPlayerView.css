@@ -11,7 +11,6 @@ body {
 }
 
 /* Top Bar */
-/* Top Bar */
 .top-bar {
   background-color: transparent;  /* Make background transparent */
   box-shadow: none;               /* Remove box-shadow */
@@ -71,39 +70,53 @@ body {
   gap: 0.5rem;
 }
 
-/* Health & Mana Bars */
+/* Updated Health & Mana Bars */
 .health-mana-bars {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-/* Health and Mana Bars */
 .bar-container {
-  width: 180px;
-  height: 16px;
-  background-color: #555;
-  border-radius: 4px;
   position: relative;
+  width: 180px;
+  height: 20px;
+  background-color: #555;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 10px;
   position: absolute;
   top: 0;
   left: 0;
 }
 
-/* Gradient for Health Bar */
+/* Health Bar: Green Gradient */
 .health-bar-fill {
-  width: 100%; /* Adjust dynamically as needed */
-  background: linear-gradient(45deg, #1b5e20, #388e3c); /* Green gradient */
+  background: linear-gradient(45deg, #1b5e20, #388e3c);
 }
 
-/* Gradient for Mana Bar */
+/* Mana Bar: Blue Gradient */
 .mana-bar-fill {
-  width: 100%; /* Adjust dynamically as needed */
-  background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Blue gradient */
+  background: linear-gradient(45deg, #1e88e5, #42a5f5);
+}
+
+/* Overlay Text in Bars */
+.bar-text {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* COMMON BUTTON STYLES FOR ALL BUTTONS */
@@ -120,13 +133,11 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* Hover effect: Brighten hovered button */
 .button-common:hover {
   background-color: #28a04a; /* Brighter green */
   transform: scale(1.05); /* Slightly enlarges */
 }
 
-/* Reduce size and dim other buttons when one is hovered */
 .button-common:active {
   background-color: #144d2a; /* Darker green */
   transform: scale(0.95); /* Shrinks slightly */
@@ -134,7 +145,7 @@ body {
 
 /* RIGHT PANEL: Story & Decision Input */
 .right-panel {
-  flex: 0 0 1200px; /* Increased from 320px/400px to 500px */
+  flex: 0 0 1200px; /* Increased width */
   background-color: #2d2d2d;
   border-radius: 8px;
   box-shadow: 0 0 20px #20683F;
@@ -332,9 +343,7 @@ body {
   margin-top: 10px; /* Space between HP/Mana info */
 }
 
-/* MainPlayerView.css */
-
-/* Common button styles */
+/* MainPlayerView.css Additional Styles */
 .button {
   padding: 1.2rem 2.5rem;
   font-size: 1.5rem;
@@ -371,6 +380,7 @@ body {
   height: auto;
   border-radius: 8px; /* Add rounded corners if you prefer */
 }
+
 /* Chat History Section */
 .chat-history {
   margin-top: 1rem;
@@ -423,7 +433,6 @@ body {
   font-size: 1.2rem; /* Reduced font size for a more compact look */
 }
 
-/* USER RESPONSE SECTION - Reduced height */
 .user-response {
   display: flex;
   justify-content: space-between;

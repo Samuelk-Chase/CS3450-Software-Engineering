@@ -1,6 +1,5 @@
 import React from "react";
-import "../css/CardComponent.css"; // Import the new CSS
-import cardImage from "../images/fireball.jpg"; // Static image for background
+import "../css/CardComponent.css"; // Make sure to include or merge the boss fight CSS here
 
 interface CardProps {
   card: {
@@ -10,36 +9,22 @@ interface CardProps {
     level: number;
     mana: number;
     effect: string;
-    image: string; // This is now unnecessary since we're using a static image
+    image: string;
   };
+  onClick?: () => void; // Optional click handler
 }
 
-const CardComponent: React.FC<CardProps> = ({ card }) => {
+const CardComponent: React.FC<CardProps> = ({ card, onClick }) => {
   return (
-    <div className="individual-card-wrapper">
-      <div className="individual-card">
-        {/* Image container */}
-        <div className="individual-card-image">
-          <img src={card.image} alt={card.name} className="card-image" />
-        </div>
-        
-        {/* Card Content */}
-        <div className="card-content">
-          {/* Card Title */}
-          <h3 className="individual-card-title">{card.name}</h3>
-          
-          {/* Card Effect Description */}
-          <div className="individual-card-effect">{card.effect}</div>
-          
-          {/* Card Footer */}
-          <div className="individual-card-footer">
-            <span className="card-level">LV: {card.level}</span>
-            <span className="card-type">{card.type}</span>
-          </div>
-        </div>
-      </div>
-      {/* Mana Cost */}
-      <div className="individual-mana-cost">{card.mana}</div>
+    <div
+      className="card"
+      style={{ backgroundImage: `url(${card.image})` }}
+      onClick={onClick}
+    >
+      <div className="card-mana">{card.mana}</div>
+      <div className="card-title">{card.name}</div>
+      <div className="card-level">Level: {card.level}</div>
+      <div className="card-description">{card.effect}</div>
     </div>
   );
 };

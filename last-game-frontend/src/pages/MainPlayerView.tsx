@@ -7,7 +7,7 @@ import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
 import CardView from "./DeckOverlayPage"; // ✅ Import deck modal component
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface Character {
   character_id: number;
@@ -19,7 +19,6 @@ interface Character {
   image_url: string;
   description: string;
 }
-
 
 const MainPlayerView: React.FC = () => {
   const [character, setCharacter] = useState<Character | null>(null);
@@ -43,7 +42,7 @@ const MainPlayerView: React.FC = () => {
     
     setIsGeneratingDeck(true);
     try {
-      // Generate 5 cards
+      // Generate 3 cards (adjust loop count as needed)
       for (let i = 0; i < 3; i++) {
         const response = await axios.post("http://localhost:8080/v1/card", {
           prompt: character.description,
@@ -59,6 +58,7 @@ const MainPlayerView: React.FC = () => {
           mana: generatedCard.mana_cost,
           effect: generatedCard.card_description,
           image: generatedCard.image_url,
+          soundEffect: generatedCard.sound_effect, // Added soundEffect property
         };
         
         setDeck(prevDeck => [...prevDeck, mappedCard]);
@@ -95,6 +95,7 @@ const MainPlayerView: React.FC = () => {
         mana: card.mana_cost,
         effect: card.card_description,
         image: card.image_url,
+        soundEffect: card.sound_effect, // Added soundEffect property
       }));
       setDeck(cards);
     } catch (error) {
@@ -164,6 +165,7 @@ const MainPlayerView: React.FC = () => {
           mana: generatedCard.mana_cost,
           effect: generatedCard.card_description,
           image: generatedCard.image_url,
+          soundEffect: generatedCard.sound_effect, // Added soundEffect property
         };
         setNewCard(mappedCard);
         setShowCardPopup(true);
@@ -271,22 +273,32 @@ const MainPlayerView: React.FC = () => {
               }}
             />
             <div className="player-info">
-              <strong>{character.character_name}</strong>
-              <div className="health-mana-bars">
-                <div className="bar-container">
-                  <div
-                    className="bar-fill health-bar-fill"
-                    style={{ width: `${(character.current_hp / character.max_hp) * 100}%` }}
-                  ></div>
-                </div>
-                <div className="bar-container">
-                  <div
-                    className="bar-fill mana-bar-fill"
-                    style={{ width: `${(character.current_mana / character.max_mana) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
+  <strong>{character.character_name}</strong>
+  <div className="health-mana-bars">
+    <div className="bar-container">
+      <div
+        className="bar-fill health-bar-fill"
+        style={{
+          width: `${(character.current_hp / character.max_hp) * 100}%`,
+        }}
+      ></div>
+      <span className="bar-text">
+        {character.current_hp} / {character.max_hp}
+      </span>
+    </div>
+    <div className="bar-container">
+      <div
+        className="bar-fill mana-bar-fill"
+        style={{
+          width: `${(character.current_mana / character.max_mana) * 100}%`,
+        }}
+      ></div>
+      <span className="bar-text">
+        {character.current_mana} / {character.max_mana}
+      </span>
+    </div>
+  </div>
+</div>
 
             {/* Updated Deck Button */}
             <button 
@@ -330,9 +342,6 @@ const MainPlayerView: React.FC = () => {
           </div>
         </div>
       </div>
-
-     
-      
     </>
   );
 };
