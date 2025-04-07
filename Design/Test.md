@@ -53,6 +53,21 @@ In this document, we outline our approach and strategy for thoroughly testing ou
   - **Actions:** Simulate image uploads and confirm that each upload generates a correct primary key and a valid image URL.
   - **Expected Outcome:** Each image URL should correctly point to an accessible image on S3, and any errors in the upload process must be gracefully handled.
 
+### 5. Authentication and Authorization Testing for Card, Character, and story Creation
+
+- **Objective:**  
+  Ensure that only authenticated and authorized users can create and access cards, characters, and story text associated with their accounts, preventing unauthorized access or data manipulation.
+
+- **Plan:**  
+  - Implement tests to simulate requests from both authenticated and unauthenticated users attempting to create cards, story, and characters.
+  - Verify that the server correctly restricts access, returning appropriate status codes (e.g., `401 Unauthorized`, `403 Forbidden`) when unauthorized users attempt to perform these actions.
+  - Confirm that authenticated users can only create or modify entities tied to their own accounts.
+
+- **Expected Outcome:**  
+  - Unauthorized requests are blocked with proper error responses.
+  - Authorized users can successfully create and manage their own cards and characters.
+  - No user can access or modify data belonging to another account.
+
 ## Steps to Reproduce Test Results
 
 ### 1. Set Up the Environment
