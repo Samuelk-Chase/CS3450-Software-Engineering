@@ -38,7 +38,17 @@ jobs:
           cd backend
           go build -o last-game-backend cmd/api/main.go
 
-      # Step 6: Copy the built files to the server
+      # Step 6: Set up SSH agent with key from secrets
+      - name: Set up SSH agent
+        run: |
+          mkdir -p ~/.ssh
+          eval $(ssh-agent -s)  # Start the SSH agent
+          echo "$PRIVATE_KEY" | ssh-add -  # Add the private key to the agent
+
+          # Optionally, add EC2 instance to known hosts to prevent SSH warnings
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+
+      # Step 7: Deploy to server
       - name: Deploy to server
         env:
           SERVER_USER: ${{ secrets.SERVER_USER }}
@@ -46,12 +56,10 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           # Copy React build to the server
-          scp -i $PRIVATE_KEY -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
 
           # Copy Go binary to the server
-          scp -i $PRIVATE_KEY backend/last-game-backend $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 backend/last-game-backend $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/
 
           # Restart Go backend service
-          ssh -i $PRIVATE_KEY $SERVER_USER@$SERVER_IP 'sudo systemctl restart last-game-backend'
-
-
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SERVER_USER@$SERVER_IP 'sudo systemctl restart last-game-backend'
