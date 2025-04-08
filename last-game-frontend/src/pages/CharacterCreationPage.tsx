@@ -34,7 +34,7 @@ const CharacterCreationPage: React.FC = () => {
         user_id: userId,
         name: characterName,
         description: characterDescription,
-        mode: mode,
+        adventure_description: adventureDescription,
       };
 
       const createResponse = await fetch("http://localhost:8080/v1/getNewCharacter", {
@@ -46,7 +46,11 @@ const CharacterCreationPage: React.FC = () => {
       if (createResponse.ok) {
         const data = await createResponse.json();
         console.log("Character created successfully:", data);
-        navigate("/character-account", { state: { newCharacter: data } });
+        // Save the character ID and the generated intro in localStorage.
+        localStorage.setItem("characterId", String(data.character.character_id));
+        localStorage.setItem("storyIntro", data.intro);
+        // Automatically redirect to the main player view.
+        navigate("/player");
       } else {
         const errorText = await createResponse.text();
         console.error("Failed to create character:", errorText);

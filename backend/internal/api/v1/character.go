@@ -2,15 +2,15 @@ package v1
 
 import (
 	"beanboys-lastgame-backend/internal/db"
+	story_db "beanboys-lastgame-backend/internal/db/story_db"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
-
-	"encoding/base64"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -33,19 +33,14 @@ type Character struct {
 	ImageURL      string `json:"image_url"`
 }
 
-// type JSONCharacter struct {
-// 	Description string `json:"description"`
-// 	MaxMana     int    `json:"max_mana"`
-// 	MaxHealth   int    `json:"max_hp"`
-// }
-
+// JSONCharacter is used when parsing the LLM response.
 type JSONCharacter struct {
 	Description string `json:"description"`
 	MaxMana     int    `json:"max_mana"`
 	MaxHealth   int    `json:"max_health"`
 }
 
-// generateCharacterImageAndUploadToS3 generates an image from prompt and uploads it to S3
+// generateCharacterImageAndUploadToS3 generates an image from a prompt and uploads it to S3.
 func generateCharacterImageAndUploadToS3(characterName string, prompt string) (string, error) {
 	client := openai.NewClient()
 	response, err := client.Images.Generate(context.Background(), openai.ImageGenerateParams{
@@ -86,12 +81,10 @@ func generateCharacterImageAndUploadToS3(characterName string, prompt string) (s
 	return imageURL, nil
 }
 
+// generateCharacterLLM calls OpenAI to generate character stats and description.
 func generateCharacterLLM(userID int, name string) (Character, error) {
 	fmt.Println("Generating character for user:", userID)
-
-	// Get the response from the OpenAI API
 	client := openai.NewClient()
-	// Define the messages for the chat completion
 	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
 		openai.SystemMessage(character_system_prompt),
 		openai.UserMessage(name),
@@ -102,14 +95,12 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		Messages: messages,
 	}
 
-	// Make the API request
 	response, err := client.Chat.Completions.New(context.Background(), req)
 	if err != nil {
 		log.Fatalf("ChatCompletion error: %v", err)
 	}
 
 	jsonCharacter := JSONCharacter{}
-
 	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &jsonCharacter)
 	if err != nil {
 		fmt.Println("Error parsing JSON:", err)
@@ -125,14 +116,12 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		MaxHealth:     jsonCharacter.MaxHealth,
 	}
 
-	// Generate and upload character image
 	imagePrompt := fmt.Sprintf("Generate a character portrait for %s: %s", name, jsonCharacter.Description)
 	imageURL, err := generateCharacterImageAndUploadToS3(name, imagePrompt)
 	if err != nil {
 		return Character{}, fmt.Errorf("Image generation error: %v", err)
 	}
 
-	// Insert into database with image URL
 	characterID, err := db.InsertCharacter(db.Character{
 		UserID:        newCharacter.UserID,
 		Name:          newCharacter.Name,
@@ -154,41 +143,92 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 	return newCharacter, nil
 }
 
-// getNewCharacter is an HTTP handler that creates a character based on user input.
+func getIntroForCharacter(characterID int, adventureDescription string) (string, error) {
+	character, err := db.GetCharacterByID(characterID)
+	if err != nil {
+		return "", fmt.Errorf("failed to retrieve character: %w", err)
+	}
+
+	messageText := "Name: " + character.Name + "\n"
+	if adventureDescription != "" {
+		messageText += "Adventure: " + adventureDescription
+	} else {
+		messageText += "Description: " + character.Description
+	}
+
+	messages := []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(intro_system_prompt),
+		openai.UserMessage(messageText),
+	}
+	req := openai.ChatCompletionNewParams{
+		Model:    openai.F(openai.ChatModelGPT4oMini),
+		Messages: openai.F(messages),
+	}
+
+	client := openai.NewClient()
+	response, err := client.Chat.Completions.New(context.Background(), req)
+	if err != nil {
+		return "", fmt.Errorf("ChatCompletion error: %w", err)
+	}
+	introResponse := response.Choices[0].Message.Content
+
+	story := story_db.Story{
+		Prompt:      messageText,
+		Response:    introResponse,
+		CharacterID: characterID,
+	}
+	story_db.InsertStory(story)
+
+	return introResponse, nil
+}
+
+// getNewCharacter handles character creation and story intro generation.
 func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("getNewCharacter called!")
 
-	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse request body.
 	var requestData struct {
-		UserID      int    `json:"user_id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		UserID               int    `json:"user_id"`
+		Name                 string `json:"name"`
+		Description          string `json:"description"`
+		AdventureDescription string `json:"adventure_description"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Generate character and store in DB.
+	// Generate the character using LLM.
 	character, err := generateCharacterLLM(requestData.UserID, requestData.Name)
 	if err != nil {
 		http.Error(w, "Failed to create character", http.StatusInternalServerError)
 		return
 	}
 
-	// Return created character as response.
+	// Generate the story introduction using the adventure description.
+	intro, err := getIntroForCharacter(character.CharacterID, requestData.AdventureDescription)
+	if err != nil {
+		log.Printf("Error generating intro: %v", err)
+		intro = "Welcome to your adventure!"
+	}
+
+	responseData := struct {
+		Character Character `json:"character"`
+		Intro     string    `json:"intro"`
+	}{
+		Character: character,
+		Intro:     intro,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(character)
+	json.NewEncoder(w).Encode(responseData)
 	fmt.Printf("Generated character description: %s\n", character.Description)
 }
 
-// GetCharacter retrieves a character by ID and ensures it belongs to the logged-in user.
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
 	characterIDStr := chi.URLParam(r, "id")
 	characterID, err := strconv.Atoi(characterIDStr)
@@ -199,7 +239,7 @@ func GetCharacter(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Fetching character with ID:", characterID)
 
-	character, err := db.GetCharacterByID(characterID) // ✅ Fetch from DB
+	character, err := db.GetCharacterByID(characterID)
 	if err != nil {
 		fmt.Println("Error fetching character:", err)
 		http.Error(w, "Character not found", http.StatusNotFound)
@@ -213,7 +253,7 @@ func GetCharacter(w http.ResponseWriter, r *http.Request) {
 
 // GetCharacters retrieves all characters belonging to a user.
 func GetCharacters(w http.ResponseWriter, r *http.Request) {
-	userIDStr := r.URL.Query().Get("user_id") // ✅ Read user_id from query params
+	userIDStr := r.URL.Query().Get("user_id")
 	if userIDStr == "" {
 		fmt.Println("❌ Missing user_id in request!")
 		http.Error(w, "User ID is required", http.StatusBadRequest)
@@ -229,7 +269,7 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("✅ Fetching characters for user ID:", userID)
 
-	characters, err := db.GetUserCharacters(userID) // ✅ Fetch characters from DB
+	characters, err := db.GetUserCharacters(userID)
 	if err != nil {
 		fmt.Println("❌ Error fetching characters from DB:", err)
 		http.Error(w, "Failed to fetch characters", http.StatusInternalServerError)
@@ -238,7 +278,7 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 
 	if len(characters) == 0 {
 		fmt.Println("⚠ No characters found for user ID:", userID)
-		http.Error(w, "No characters found", http.StatusNotFound) // ✅ Return explicit 404
+		http.Error(w, "No characters found", http.StatusNotFound)
 		return
 	}
 
