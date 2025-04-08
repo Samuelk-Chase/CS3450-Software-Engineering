@@ -20,7 +20,7 @@ import (
 	"github.com/openai/openai-go"
 )
 
-// Card defines the structure of our card object.
+// Card defines the structure of our card object
 type Card struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`

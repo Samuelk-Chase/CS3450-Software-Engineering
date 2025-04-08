@@ -6,8 +6,8 @@ import backgroundImage from "../images/Login background.jpg";
 interface Character {
   character_id: number;
   character_name: string;
-  current_hp: number; // renamed to match backend
-  max_hp: number;     // renamed to match backend
+  current_hp: number; 
+  max_hp: number;     
   current_mana: number;
   max_mana: number;
   image_url: string;

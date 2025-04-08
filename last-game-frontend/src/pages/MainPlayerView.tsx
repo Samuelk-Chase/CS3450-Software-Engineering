@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg";
 import axios from "axios";
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
-import CardView from "./DeckOverlayPage"; // ✅ Import deck modal component
+import CardView from "./DeckOverlayPage";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 interface Character {
@@ -36,6 +36,9 @@ const MainPlayerView: React.FC = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
+
+  // Ref flag to ensure the intro is added only once.
+  const didAddIntroRef = useRef(false);
   const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // Production URL
     : 'http://localhost:8080'; // Development URL
@@ -44,7 +47,6 @@ const MainPlayerView: React.FC = () => {
     if (!characterId || !character) return;
     setIsGeneratingDeck(true);
     try {
-      // Generate 3 cards (adjust loop count as needed)
       for (let i = 0; i < 3; i++) {
         const response = await axios.post(`${baseUrl}/v1/card`, {
           prompt: character.description,
@@ -60,7 +62,7 @@ const MainPlayerView: React.FC = () => {
           mana: generatedCard.mana_cost,
           effect: generatedCard.card_description,
           image: generatedCard.image_url,
-          soundEffect: generatedCard.sound_effect, // Added soundEffect property
+          soundEffect: generatedCard.sound_effect,
         };
         
         setDeck(prevDeck => [...prevDeck, mappedCard]);
@@ -84,11 +86,10 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`${baseUrl}/v1/cards/${characterId}`); // Add logging to debug
+      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
       
       // Extract cards from the response
       const cardsData = response.data.cards || [];
-      
       const cards = cardsData.map((card: any) => ({
         id: card.card_id,
         name: card.title,
@@ -97,14 +98,38 @@ const MainPlayerView: React.FC = () => {
         mana: card.mana_cost,
         effect: card.card_description,
         image: card.image_url,
-        soundEffect: card.sound_effect, // Added soundEffect property
+        soundEffect: card.sound_effect,
       }));
       setDeck(cards);
     } catch (error) {
       console.error("Error fetching deck:", error);
-      setDeck([]); // Set empty deck on error
+      setDeck([]);
     }
   };
+
+  // On mount, add the stored story intro to chat history as an AI message.
+  useEffect(() => {
+    if (!didAddIntroRef.current) {
+      const storedIntro = localStorage.getItem("storyIntro");
+      if (storedIntro) {
+        let introText = storedIntro;
+        try {
+          const parsed = JSON.parse(storedIntro);
+          if (parsed.intro) {
+            introText = parsed.intro;
+          }
+        } catch (e) {
+          console.warn("Could not parse stored intro as JSON:", e);
+        }
+        const timestamp = new Date().toLocaleTimeString();
+        setChatHistory(prevHistory => [
+          ...prevHistory,
+          { text: introText, timestamp, sender: "AI" }
+        ]);
+      }
+      didAddIntroRef.current = true;
+    }
+  }, []);
 
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) {
@@ -142,7 +167,7 @@ const MainPlayerView: React.FC = () => {
     if (userResponse.trim() === "") return;
 
     const timestamp = new Date().toLocaleTimeString();
-    setChatHistory((prevHistory) => [
+    setChatHistory(prevHistory => [
       ...prevHistory,
       { text: `You chose to: ${userResponse}`, timestamp, sender: "user" },
     ]);
@@ -167,7 +192,7 @@ const MainPlayerView: React.FC = () => {
           mana: generatedCard.mana_cost,
           effect: generatedCard.card_description,
           image: generatedCard.image_url,
-          soundEffect: generatedCard.sound_effect, // Added soundEffect property
+          soundEffect: generatedCard.sound_effect,
         };
         setNewCard(mappedCard);
         setShowCardPopup(true);
@@ -175,7 +200,7 @@ const MainPlayerView: React.FC = () => {
       }
 
       if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post(`${baseUrl}/v1/boss`, { prompt: aiMessage });
+        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
@@ -183,7 +208,7 @@ const MainPlayerView: React.FC = () => {
       setUserResponse("");
       setGameText("");
       const aiTimestamp = new Date().toLocaleTimeString();
-      setChatHistory((prevHistory) => [
+      setChatHistory(prevHistory => [
         ...prevHistory,
         { text: `AI: ${aiMessage}`, timestamp: aiTimestamp, sender: "AI" },
       ]);
@@ -234,26 +259,31 @@ const MainPlayerView: React.FC = () => {
         {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} cards={deck} />}
 
         {isGeneratingDeck && (
-          <div className="loading-container" style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}>
-            <ProgressSpinner style={{ width: '100px', height: '100px' }} strokeWidth="5" />
-            <div style={{
-              color: "#fff",
-              fontSize: "24px",
-              marginTop: "20px",
-              textAlign: "center"
-            }}>
+          <div
+            className="loading-container"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+            }}
+          >
+            <ProgressSpinner style={{ width: "100px", height: "100px" }} strokeWidth="5" />
+            <div
+              style={{
+                color: "#fff",
+                fontSize: "24px",
+                marginTop: "20px",
+                textAlign: "center",
+              }}
+            >
               Generating your deck...
             </div>
           </div>
@@ -275,40 +305,43 @@ const MainPlayerView: React.FC = () => {
               }}
             />
             <div className="player-info">
-  <strong>{character.character_name}</strong>
-  <div className="health-mana-bars">
-    <div className="bar-container">
-      <div
-        className="bar-fill health-bar-fill"
-        style={{
-          width: `${(character.current_hp / character.max_hp) * 100}%`,
-        }}
-      ></div>
-      <span className="bar-text">
-        {character.current_hp} / {character.max_hp}
-      </span>
-    </div>
-    <div className="bar-container">
-      <div
-        className="bar-fill mana-bar-fill"
-        style={{
-          width: `${(character.current_mana / character.max_mana) * 100}%`,
-        }}
-      ></div>
-      <span className="bar-text">
-        {character.current_mana} / {character.max_mana}
-      </span>
-    </div>
-  </div>
-</div>
+              <strong>{character.character_name}</strong>
+              <div className="health-mana-bars">
+                <div className="bar-container">
+                  <div
+                    className="bar-fill health-bar-fill"
+                    style={{
+                      width: `${(character.current_hp / character.max_hp) * 100}%`,
+                    }}
+                  ></div>
+                  <span className="bar-text">
+                    {character.current_hp} / {character.max_hp}
+                  </span>
+                </div>
+                <div className="bar-container">
+                  <div
+                    className="bar-fill mana-bar-fill"
+                    style={{
+                      width: `${(character.current_mana / character.max_mana) * 100}%`,
+                    }}
+                  ></div>
+                  <span className="bar-text">
+                    {character.current_mana} / {character.max_mana}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-            {/* Updated Deck Button */}
-            <button 
-              className="button" 
+            <button
+              className="button"
               onClick={handleDeckButtonClick}
               disabled={isGeneratingDeck}
             >
-              {isGeneratingDeck ? "Generating Deck..." : deck.length === 0 ? "Generate Deck" : "View Deck"}
+              {isGeneratingDeck
+                ? "Generating Deck..."
+                : deck.length === 0
+                ? "Generate Deck"
+                : "View Deck"}
             </button>
 
             <button className="button" onClick={() => navigate("/boss")}>
