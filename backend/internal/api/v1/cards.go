@@ -70,13 +70,29 @@ func generateCard(prompt string, characterID int) (db.Card, error) {
 		fmt.Println("Error parsing JSON:", err)
 	}
 
+	// Determine card type based on keywords in the response
+	var cardType int
+	if strings.Contains(jsonCard.Description, "Stunned") {
+		cardType = 1
+	} else if strings.Contains(jsonCard.Description, "Confused") {
+		cardType = 2
+	} else if strings.Contains(jsonCard.Description, "Exposed") {
+		cardType = 3
+	} else if strings.Contains(jsonCard.Description, "Weakened") {
+		cardType = 4
+	} else if strings.Contains(jsonCard.Description, "Slowed") {
+		cardType = 5
+	} else {
+		cardType = 0 // Default ID for Normal or unknown types
+	}
+
 	// Create the db.Card using the parsed data
 	card := db.Card{
 		Title:           jsonCard.Name,
 		CardDescription: jsonCard.Description,
-		ImageURL:        "", // Placeholder, will be set after image upload
-		PowerLevel:      1,  // Default level
-		TypeID:          1,  // Default type
+		ImageURL:        "",       // Placeholder, will be set after image upload
+		PowerLevel:      1,        // Default level
+		TypeID:          cardType, // Set type based on cardType
 		ManaCost:        jsonCard.Cost,
 		CharacterID:     characterID, // Add character ID to the card
 	}
@@ -93,9 +109,11 @@ func generateCard(prompt string, characterID int) (db.Card, error) {
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Image upload error: %v", err)
 	}
+
 	fmt.Println("Image generated and stored")
 	card.ImageURL = imageURL
 
+	//card.ImageURL = "../../character_images/bean_boy.png"
 	cardID, err := db.InsertCard(card)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Database insert error: %v", err)
