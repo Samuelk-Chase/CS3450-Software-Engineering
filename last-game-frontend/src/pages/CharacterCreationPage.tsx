@@ -50,7 +50,7 @@ const CharacterCreationPage: React.FC = () => {
         localStorage.setItem("characterId", String(data.character.character_id));
         localStorage.setItem("storyIntro", data.intro);
         // Automatically redirect to the main player view.
-        navigate("/player");
+        navigate("/character-account");
       } else {
         const errorText = await createResponse.text();
         console.error("Failed to create character:", errorText);

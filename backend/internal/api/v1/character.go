@@ -81,7 +81,6 @@ func generateCharacterImageAndUploadToS3(characterName string, prompt string) (s
 	return imageURL, nil
 }
 
-// generateCharacterLLM calls OpenAI to generate character stats and description.
 func generateCharacterLLM(userID int, name string) (Character, error) {
 	fmt.Println("Generating character for user:", userID)
 	client := openai.NewClient()
@@ -106,12 +105,17 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		fmt.Println("Error parsing JSON:", err)
 	}
 
+	// Ensure MaxMana is at least 80
+	if jsonCharacter.MaxMana < 80 {
+		jsonCharacter.MaxMana = 80
+	}
+
 	newCharacter := Character{
 		UserID:        userID,
 		Name:          name,
 		Description:   jsonCharacter.Description,
-		CurrentMana:   jsonCharacter.MaxMana,
-		MaxMana:       jsonCharacter.MaxMana,
+		CurrentMana:   jsonCharacter.MaxMana, // Set to at least 80
+		MaxMana:       jsonCharacter.MaxMana, // Set to at least 80
 		CurrentHealth: jsonCharacter.MaxHealth,
 		MaxHealth:     jsonCharacter.MaxHealth,
 	}
