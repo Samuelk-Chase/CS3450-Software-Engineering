@@ -33,15 +33,16 @@ const MainPlayerView: React.FC = () => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
   const [deck, setDeck] = useState<Card[]>([]);
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
+  const [showPDF, setShowPDF] = useState(false); // <-- Added state
+
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
 
-  // Ref flag to ensure the intro is added only once.
   const didAddIntroRef = useRef(false);
   const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
+    ? 'https://lastgame-api.chirality.app'
+    : 'http://localhost:8080';
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
@@ -52,7 +53,7 @@ const MainPlayerView: React.FC = () => {
           prompt: character.description,
           character_id: Number(characterId),
         });
-        
+
         const generatedCard = response.data;
         const mappedCard: Card = {
           id: generatedCard.card_id,
@@ -64,7 +65,7 @@ const MainPlayerView: React.FC = () => {
           image: generatedCard.image_url,
           soundEffect: generatedCard.sound_effect,
         };
-        
+
         setDeck(prevDeck => [...prevDeck, mappedCard]);
       }
     } catch (error) {
@@ -86,9 +87,7 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
-      
-      // Extract cards from the response
+      const response = await axios.get(`${baseUrl}/v1/cards/${characterId}`);
       const cardsData = response.data.cards || [];
       const cards = cardsData.map((card: any) => ({
         id: card.card_id,
@@ -107,7 +106,6 @@ const MainPlayerView: React.FC = () => {
     }
   };
 
-  // On mount, add the stored story intro to chat history as an AI message.
   useEffect(() => {
     if (!didAddIntroRef.current) {
       const storedIntro = localStorage.getItem("storyIntro");
@@ -173,7 +171,7 @@ const MainPlayerView: React.FC = () => {
     ]);
 
     setGameText("AI is generating content...");
-    
+
     try {
       const response = await axios.post(`${baseUrl}/v1/story`, { prompt: userResponse });
       const aiMessage = response.data.response;
@@ -200,7 +198,7 @@ const MainPlayerView: React.FC = () => {
       }
 
       if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
+        const response = await axios.post(`${baseUrl}/v1/boss`, { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
@@ -226,6 +224,59 @@ const MainPlayerView: React.FC = () => {
 
   return (
     <>
+      {/* PDF Modal */}
+      {showPDF && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0,
+          width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{
+            width: "80%",
+            height: "80%",
+            backgroundColor: "#fff",
+            borderRadius: "10px",
+            overflow: "hidden",
+            position: "relative",
+            boxShadow: "0 0 20px rgba(0,0,0,0.5)"
+          }}>
+            <button
+              onClick={() => setShowPDF(false)}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "15px",
+                zIndex: 10000,
+                background: "rgba(255, 255, 255, 0.8)",
+                border: "none",
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#333",
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)"
+              }}
+            >
+              &times;
+            </button>
+            <iframe
+              src="/gameManual.pdf"
+              title="PDF Viewer"
+              width="100%"
+              height="100%"
+              style={{ border: "none" }}
+            />
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           backgroundImage: `url(${backgroundImage})`,
@@ -259,31 +310,21 @@ const MainPlayerView: React.FC = () => {
         {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} cards={deck} />}
 
         {isGeneratingDeck && (
-          <div
-            className="loading-container"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-            }}
-          >
+          <div className="loading-container" style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}>
             <ProgressSpinner style={{ width: "100px", height: "100px" }} strokeWidth="5" />
-            <div
-              style={{
-                color: "#fff",
-                fontSize: "24px",
-                marginTop: "20px",
-                textAlign: "center",
-              }}
-            >
+            <div style={{ color: "#fff", fontSize: "24px", marginTop: "20px", textAlign: "center" }}>
               Generating your deck...
             </div>
           </div>
@@ -308,44 +349,30 @@ const MainPlayerView: React.FC = () => {
               <strong>{character.character_name}</strong>
               <div className="health-mana-bars">
                 <div className="bar-container">
-                  <div
-                    className="bar-fill health-bar-fill"
-                    style={{
-                      width: `${(character.current_hp / character.max_hp) * 100}%`,
-                    }}
-                  ></div>
-                  <span className="bar-text">
-                    {character.current_hp} / {character.max_hp}
-                  </span>
+                  <div className="bar-fill health-bar-fill" style={{ width: `${(character.current_hp / character.max_hp) * 100}%` }} />
+                  <span className="bar-text">{character.current_hp} / {character.max_hp}</span>
                 </div>
                 <div className="bar-container">
-                  <div
-                    className="bar-fill mana-bar-fill"
-                    style={{
-                      width: `${(character.current_mana / character.max_mana) * 100}%`,
-                    }}
-                  ></div>
-                  <span className="bar-text">
-                    {character.current_mana} / {character.max_mana}
-                  </span>
+                  <div className="bar-fill mana-bar-fill" style={{ width: `${(character.current_mana / character.max_mana) * 100}%` }} />
+                  <span className="bar-text">{character.current_mana} / {character.max_mana}</span>
                 </div>
               </div>
             </div>
 
-            <button
-              className="button"
-              onClick={handleDeckButtonClick}
-              disabled={isGeneratingDeck}
-            >
+            <button className="button" onClick={handleDeckButtonClick} disabled={isGeneratingDeck}>
               {isGeneratingDeck
                 ? "Generating Deck..."
                 : deck.length === 0
-                ? "Generate Deck"
-                : "View Deck"}
+                  ? "Generate Deck"
+                  : "View Deck"}
             </button>
 
             <button className="button" onClick={() => navigate("/boss")}>
               Enter Boss Fight
+            </button>
+
+            <button className="button" onClick={() => setShowPDF(true)}>
+              View Game Manual (PDF)
             </button>
           </div>
 
