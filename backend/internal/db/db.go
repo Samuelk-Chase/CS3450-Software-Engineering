@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // Character struct for database operations
@@ -203,6 +204,16 @@ type User struct {
 
 // InsertUser adds a new user to the Supabase database and returns user_id
 func InsertUser(email, hashedPassword string) (int, error) {
+	// Validate email format
+	if !strings.Contains(email, "@") || !strings.Contains(email, ".") {
+		return 0, errors.New("invalid email format")
+	}
+
+	// Validate password hash
+	if len(hashedPassword) < 6 {
+		return 0, errors.New("password too short")
+	}
+
 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/users"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 

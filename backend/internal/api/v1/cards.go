@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	db "beanboys-lastgame-backend/internal/db/cards_db"
+	db "beanboys-lastgame-backend/internal/db/cardsdb"
 	"encoding/base64"
 	"os"
 	"strings"
