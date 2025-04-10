@@ -5,6 +5,7 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,31 +15,30 @@ const SignupPage: React.FC = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    const baseUrl = window.location.hostname.includes('localhost')
-      ? 'https://lastgame-api.chirality.app'
-      : 'http://localhost:8080';
 
     try {
-      const response = await fetch(`${baseUrl}/v1/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const signupResponse = await axiosInstance.post("/signup", {
+        email,
+        password,
       });
 
-      if (response.ok) {
+      if (signupResponse.status === 200) {
         alert("Signup successful! Logging you in...");
 
-        const loginResponse = await fetch(`${baseUrl}/v1/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+        const loginResponse = await axiosInstance.post("/login", {
+          email,
+          password,
         });
 
-        if (loginResponse.ok) {
-          const data = await loginResponse.json();
-          if (!data.user_id) throw new Error("User ID missing in response!");
+        if (loginResponse.status === 200) {
+          const data = loginResponse.data;
+          if (!data.token) {
+            throw new Error("token missing in response!");
+          }
 
+          // Store user ID and token in localStorage
           localStorage.setItem("userId", String(data.user_id));
+          localStorage.setItem("token", data.token);
           localStorage.setItem("isLoggedIn", "true");
 
           alert("Login successful!");

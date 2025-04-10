@@ -11,6 +11,7 @@ import type { Provider } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faGitlab, faBitbucket } from "@fortawesome/free-brands-svg-icons";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -19,10 +20,7 @@ const LoginPage: React.FC = () => {
   const [showPDF, setShowPDF] = useState(false); // <-- Added state
 
   const navigate = useNavigate();
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app'
-    : 'http://localhost:8080';
-
+  
   const insertOrFetchOAuthUser = async (oauthUser: any) => {
     console.log("OAuth user object after sign-in:", oauthUser);
     if (!oauthUser.email) {
@@ -60,11 +58,15 @@ const LoginPage: React.FC = () => {
         console.log("Inserted new user:", insertedUser);
         if (insertedUser) {
           localStorage.setItem("userId", insertedUser.user_id);
+          localStorage.setItem("token", insertedUser.access_token);
+          console.log("token for user in login", insertedUser.access_token);
         }
       }
     } else {
       console.log("User already exists:", existingUser);
       localStorage.setItem("userId", existingUser.user_id);
+      localStorage.setItem("token", existingUser.access_token);
+      console.log("token for existing user in login", existingUser.access_token);
     }
   };
 
@@ -91,7 +93,7 @@ const LoginPage: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/oauth-callback`,
+        redirectTo: `http://localhost:5173/oauth-callback`,
       },
     });
     if (error) {
@@ -114,18 +116,23 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${baseUrl}/v1/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
       });
-      if (response.ok) {
-        const data = await response.json();
-        if (!data.user_id) {
-          throw new Error("User ID missing in response!");
+
+      if (response.status === 200) {
+        const data = response.data;
+        if (!data.token) {
+          throw new Error("token missing in response!");
         }
+
+        // Store user ID and token in localStorage
         localStorage.setItem("userId", String(data.user_id));
+        localStorage.setItem("token", data.token);
         localStorage.setItem("isLoggedIn", "true");
+
+        alert("Login successful!");
         navigate("/character-account");
       } else {
         throw new Error("Invalid credentials");
