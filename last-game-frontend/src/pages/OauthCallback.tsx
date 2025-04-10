@@ -28,6 +28,7 @@ const OauthCallback: React.FC = () => {
 
                 if (insertError) throw new Error(insertError.message);
                 localStorage.setItem("userId", insertedUser.user_id);
+                
             } else {
                 localStorage.setItem("userId", existingUser.user_id);
             }
@@ -53,6 +54,9 @@ const OauthCallback: React.FC = () => {
             }
 
             const user = session.user;
+            localStorage.setItem("token", session.access_token);
+            console.log("sesion oauthcallback", session.access_token);
+
             if (!user?.email) {
                 setErrorMsg("User email not available.");
                 setLoading(false);

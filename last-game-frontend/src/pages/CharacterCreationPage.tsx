@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 
 const CharacterCreationPage: React.FC = () => {
   const [characterName, setCharacterName] = useState("");
@@ -13,9 +14,6 @@ const CharacterCreationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // production url
-    : 'http://localhost:8080'; // development url
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -40,23 +38,20 @@ const CharacterCreationPage: React.FC = () => {
         adventure_description: adventureDescription,
       };
 
-      const createResponse = await fetch(`${baseUrl}/v1/getNewCharacter`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+      const createResponse = await axiosInstance.post("/getNewCharacter", requestBody);
 
-      if (createResponse.ok) {
-        const data = await createResponse.json();
+      if (createResponse.status === 200) {
+        const data = createResponse.data;
         console.log("Character created successfully:", data);
+
         // Save the character ID and the generated intro in localStorage.
         localStorage.setItem("characterId", String(data.character.character_id));
         localStorage.setItem("storyIntro", data.intro);
+
         // Automatically redirect to the main player view.
         navigate("/character-account");
       } else {
-        const errorText = await createResponse.text();
-        console.error("Failed to create character:", errorText);
+        console.error("Failed to create character:", createResponse.statusText);
       }
     } catch (error) {
       console.error("Error:", error);

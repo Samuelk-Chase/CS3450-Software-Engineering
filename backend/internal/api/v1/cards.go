@@ -215,10 +215,11 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCard(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("get card called!")
+	fmt.Println("getCard endpoint called!")
 
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
+		fmt.Println("❌ Invalid request method. Expected POST.")
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -228,23 +229,33 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		Prompt      string `json:"prompt"`
 		CharacterID int    `json:"character_id"`
 	}
+	fmt.Println("ℹ️ Decoding request body...")
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		fmt.Printf("❌ Error decoding request body: %v\n", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("✅ Request body decoded successfully: %+v\n", requestData)
 
 	// Generate the card using the provided prompt
+	fmt.Printf("ℹ️ Generating card for CharacterID: %d with Prompt: %s\n", requestData.CharacterID, requestData.Prompt)
 	card, err := generateCard(requestData.Prompt, requestData.CharacterID)
 	if err != nil {
+		fmt.Printf("❌ Card generation error: %v\n", err)
 		http.Error(w, fmt.Sprintf("Card generation error: %v", err), http.StatusInternalServerError)
 		return
 	}
+	fmt.Printf("✅ Card generated successfully: %+v\n", card)
 
 	// Set the response header to indicate JSON content
 	w.Header().Set("Content-Type", "application/json")
 
 	// Encode the db.Card object to JSON and write it to the response
+	fmt.Println("ℹ️ Encoding card to JSON...")
 	if err := json.NewEncoder(w).Encode(card); err != nil {
+		fmt.Printf("❌ JSON encoding error: %v\n", err)
 		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
+		return
 	}
+	fmt.Println("✅ Card response sent successfully!")
 }

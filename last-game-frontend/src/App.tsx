@@ -16,14 +16,14 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
+    ? 'http://localhost:8080/v1' // Production URL
+    : 'https://lastgame-api.chirality.app'; // Development URL
 
   useEffect(() => {
     if (isLoggedIn) {
       const fetchAudio = async () => {
         try {
-          const response = await fetch(`${baseUrl}/v1/backgroundaudio`);
+          const response = await fetch(`${baseUrl}/backgroundaudio`);
           if (!response.ok) {
             throw new Error('Failed to fetch audio');
           }

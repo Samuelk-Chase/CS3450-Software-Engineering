@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
@@ -40,16 +40,13 @@ const MainPlayerView: React.FC = () => {
   const characterId = localStorage.getItem("characterId");
 
   const didAddIntroRef = useRef(false);
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app'
-    : 'http://localhost:8080';
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
     setIsGeneratingDeck(true);
     try {
       for (let i = 0; i < 3; i++) {
-        const response = await axios.post(`${baseUrl}/v1/card`, {
+        const response = await axiosInstance.post("/card", {
           prompt: character.description,
           character_id: Number(characterId),
         });
@@ -66,7 +63,7 @@ const MainPlayerView: React.FC = () => {
           soundEffect: generatedCard.sound_effect,
         };
 
-        setDeck(prevDeck => [...prevDeck, mappedCard]);
+        setDeck((prevDeck) => [...prevDeck, mappedCard]);
       }
     } catch (error) {
       console.error("Error generating deck:", error);
@@ -87,7 +84,7 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`${baseUrl}/v1/cards/${characterId}`);
+      const response = await axiosInstance.get(`/cards/${characterId}`);
       const cardsData = response.data.cards || [];
       const cards = cardsData.map((card: any) => ({
         id: card.card_id,
@@ -143,29 +140,32 @@ const MainPlayerView: React.FC = () => {
       return;
     }
 
-    const apiUrl = `${baseUrl}/v1/character/${characterId}`;
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP status ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
+    const fetchCharacter = async () => {
+      try {
+        const response = await axiosInstance.get(`/character/${characterId}`);
+        const data = response.data;
+
         if (data.user_id !== Number(userId)) {
           alert("This character does not belong to you. Redirecting...");
           navigate("/character-account");
           return;
         }
+
         setCharacter(data);
         fetchDeck();
-      })
-      .catch((error) => console.error("Error fetching character:", error));
+      } catch (error) {
+        console.error("Error fetching character:", error);
+      }
+    };
+
+    fetchCharacter();
   }, [navigate, userId, characterId]);
 
   const handleSubmitResponse = async () => {
     if (userResponse.trim() === "") return;
 
     const timestamp = new Date().toLocaleTimeString();
-    setChatHistory(prevHistory => [
+    setChatHistory((prevHistory) => [
       ...prevHistory,
       { text: `You chose to: ${userResponse}`, timestamp, sender: "user" },
     ]);
@@ -173,11 +173,11 @@ const MainPlayerView: React.FC = () => {
     setGameText("AI is generating content...");
 
     try {
-      const response = await axios.post(`${baseUrl}/v1/story`, { prompt: userResponse });
+      const response = await axiosInstance.post("/story", { prompt: userResponse });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
-        const cardResponse = await axios.post(`${baseUrl}/v1/card`, {
+        const cardResponse = await axiosInstance.post("/card", {
           prompt: aiMessage.replace(/\*/g, ""),
           character_id: Number(characterId),
         });
@@ -196,9 +196,11 @@ const MainPlayerView: React.FC = () => {
         setShowCardPopup(true);
         setDeck([...deck, mappedCard]);
       }
+      console.log("message ia",aiMessage.toLowerCase());
 
-      if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post(`${baseUrl}/v1/boss`, { prompt: aiMessage });
+      if (aiMessage.toLowerCase().includes("*combat begins*") || aiMessage.toLowerCase().includes("*combat begins.*") ) {
+        console.log("Combat begins");
+        const response = await axiosInstance.post("/boss", { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
@@ -206,7 +208,7 @@ const MainPlayerView: React.FC = () => {
       setUserResponse("");
       setGameText("");
       const aiTimestamp = new Date().toLocaleTimeString();
-      setChatHistory(prevHistory => [
+      setChatHistory((prevHistory) => [
         ...prevHistory,
         { text: `AI: ${aiMessage}`, timestamp: aiTimestamp, sender: "AI" },
       ]);
