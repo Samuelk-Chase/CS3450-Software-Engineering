@@ -93,7 +93,7 @@ const LoginPage: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `http://localhost:5173/oauth-callback`,
+        redirectTo: `${window.location.origin}/oauth-callback`,
       },
     });
     if (error) {
