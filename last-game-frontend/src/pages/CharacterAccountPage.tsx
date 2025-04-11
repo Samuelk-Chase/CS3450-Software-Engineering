@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "primereact/button";
 import backgroundImage from "../images/Login background.jpg";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 
 interface Character {
   character_id: number;
@@ -29,48 +30,46 @@ const CharacterAccountPage: React.FC = () => {
       return;
     }
 
-    const baseUrl = window.location.hostname.includes('localhost')
-      ? 'https://lastgame-api.chirality.app' // Production URL
-      : 'http://localhost:8080'; // Development URL
-    const apiUrl = `${baseUrl}/v1/characters?user_id=${userId}`;
-    console.log("Fetching characters from:", apiUrl);
+    const fetchCharacters = async () => {
+      try {
+        const response = await axiosInstance.get(`/characters?user_id=${userId}`);
+        if (response.status === 200) {
+          const data = response.data;
+          console.log("Fetched characters:", data);
+          setCharacters(data);
 
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP status ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Fetched characters:", data);
-        setCharacters(data);
-        
-        // Check if we have a new character from navigation
-        const newCharacter = location.state?.newCharacter;
-        if (newCharacter) {
-          console.log("New character data:", newCharacter);
-          // Find the complete character data from the fetched characters
-          const completeCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
-          if (completeCharacter) {
-            console.log("Found complete character data:", completeCharacter);
-            setSelectedCharacter(completeCharacter);
-            setSlideIn(true);
-          } else {
-            console.log("Waiting for character data to be available...");
-            // If we don't have the complete data yet, wait a short moment and try again
-            setTimeout(() => {
-              const updatedCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
-              if (updatedCharacter) {
-                console.log("Found updated character data:", updatedCharacter);
-                setSelectedCharacter(updatedCharacter);
-                setSlideIn(true);
-              }
-            }, 1000);
+          // Check if we have a new character from navigation
+          const newCharacter = location.state?.newCharacter;
+          if (newCharacter) {
+            console.log("New character data:", newCharacter);
+            // Find the complete character data from the fetched characters
+            const completeCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+            if (completeCharacter) {
+              console.log("Found complete character data:", completeCharacter);
+              setSelectedCharacter(completeCharacter);
+              setSlideIn(true);
+            } else {
+              console.log("Waiting for character data to be available...");
+              // If we don't have the complete data yet, wait a short moment and try again
+              setTimeout(() => {
+                const updatedCharacter = data.find((char: Character) => char.character_id === newCharacter.character_id);
+                if (updatedCharacter) {
+                  console.log("Found updated character data:", updatedCharacter);
+                  setSelectedCharacter(updatedCharacter);
+                  setSlideIn(true);
+                }
+              }, 1000);
+            }
           }
+        } else {
+          throw new Error(`Failed to fetch characters: ${response.statusText}`);
         }
-      })
-      .catch((error) => console.error("Error fetching characters:", error));
+      } catch (error) {
+        console.error("Error fetching characters:", error);
+      }
+    };
+
+    fetchCharacters();
   }, [navigate, userId, location.state]);
 
   // When a character is selected, trigger the slide after the overlay is rendered

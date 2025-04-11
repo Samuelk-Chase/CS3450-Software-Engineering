@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,7 +18,19 @@ type User struct {
 	Password string `json:"password"`
 }
 
-// loginUser is an HTTP handler that verifies user credentials
+var jwtSecret = []byte("VmwI4ReJNJQNQoUwrv9yx5sgil1z4cfHl4U9u5DuRpc8R804kQjJoQNY+UuV6AaP7lbEi5VrmKePIkKFFR7ORw==") // Replace with a secure key
+
+// GenerateJWT generates a JWT token with user_id as a claim
+func GenerateJWT(userID int) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(), // Token expiration (30 days)
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
+}
+
+// loginUser is an HTTP handler that verifies user credentials and returns a JWT token
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("loginUser called!")
 
@@ -36,7 +50,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve user_id and hashed password from Supabase
-	userID, storedHash, err := db.GetUserPasswordHash(requestData.Email) // ✅ Accept userID
+	userID, storedHash, err := db.GetUserPasswordHash(requestData.Email)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
@@ -49,10 +63,18 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send success response with user_id
+	// Generate JWT token
+	token, err := GenerateJWT(userID)
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	// Send success response with user_id and JWT token
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"user_id": userID, // ✅ Now returns user_id
+		"user_id": userID,
+		"token":   token,
 		"message": "Login successful!",
 	})
 }
@@ -66,7 +88,7 @@ func hashAndSalt(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-// createUser is an HTTP handler that creates a user in Supabase.
+// createUser is an HTTP handler that creates a user in Supabase and returns a JWT token
 func createUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("createUser called!")
 
@@ -93,16 +115,24 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store user in Supabase
-	userID, err := db.InsertUser(requestData.Email, hashedPassword) // ✅ Accept user_id from InsertUser
+	userID, err := db.InsertUser(requestData.Email, hashedPassword)
 	if err != nil {
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
 	}
 
-	// Respond with user_id for frontend storage
+	// Generate JWT token
+	token, err := GenerateJWT(userID)
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with user_id and JWT token
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"user_id": userID, // ✅ Return user_id
+		"user_id": userID,
+		"token":   token,
 		"message": "User created successfully!",
 	})
 }

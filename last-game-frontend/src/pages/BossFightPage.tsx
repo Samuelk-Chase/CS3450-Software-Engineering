@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { GameContext } from "../context/GameContext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import "../css/BossFightView.css";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 import { Card } from "../context/GameContext";
 
 // Boss attack types and their effects
@@ -122,12 +122,17 @@ const BossFightPage: React.FC = () => {
   const fetchAndCacheSound = async (soundTrack: string) => {
     try {
       const response = await fetch(
-        `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(soundTrack)}`,
-        { method: "GET" }
+        `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
+          validSoundTrack
+        )}`,
+        {
+          method: "GET",
+        }
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch sound effect: ${response.statusText}`);
+        console.error("Failed to fetch sound effect:", await response.text());
+        return;
       }
 
       const blob = await response.blob();
@@ -150,9 +155,7 @@ const BossFightPage: React.FC = () => {
 
     const fetchCharacter = async () => {
       try {
-        const response = await axios.get(
-          `${baseUrl}/v1/character/${characterId}`
-        );
+        const response = await axiosInstance.get(`/character/${characterId}`);
         setLocalCharacter(response.data);
       } catch (error) {
         console.error("Error fetching character:", error);
@@ -168,9 +171,7 @@ const BossFightPage: React.FC = () => {
     
     const fetchDeck = async () => {
       try {
-        const response = await axios.get(
-          `${baseUrl}/v1/cards/${characterId}`
-        );
+        const response = await axiosInstance.get(`/cards/${characterId}`);
         const cardsData = response.data.cards || [];
         const cards = cardsData.map((card: JSONCard) => ({
           id: card.card_id,
@@ -239,13 +240,8 @@ const BossFightPage: React.FC = () => {
 
   const fetchBossImage = async (prompt: string) => {
     const requestBody = { prompt };
-    const response = await fetch(`${baseUrl}/v1/image`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) throw new Error(await response.text());
-    const data = await response.json();
+    const response = await axiosInstance.post("/image", requestBody);
+    const data = response.data;
     if (data.length > 0 && data[0].b64_json) {
       return `data:image/jpeg;base64,${data[0].b64_json}`;
     }
@@ -394,31 +390,17 @@ const BossFightPage: React.FC = () => {
       for (const soundTrack of uniqueSoundTracks) {
         if (!localStorage.getItem(`sound_${soundTrack}`)) {
           try {
-            const response = await fetch(
-              `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
-                soundTrack
-              )}`,
-              { method: "GET" }
-            );
+            const response = await axiosInstance.get(`/soundeffect?name=${encodeURIComponent(soundTrack)}`, {
+              responseType: "blob",
+            });
 
-            if (!response.ok) {
-              console.error(
-                `Failed to fetch sound effect for ${soundTrack}:`,
-                await response.text()
-              );
-              continue;
-            }
-
-            const blob = await response.blob();
+            const blob = response.data;
             const soundUrl = URL.createObjectURL(blob);
 
             // Store the sound effect in localStorage
             localStorage.setItem(`sound_${soundTrack}`, soundUrl);
           } catch (error) {
-            console.error(
-              `Error preloading sound effect for ${soundTrack}:`,
-              error
-            );
+            console.error(`Error preloading sound effect for ${soundTrack}:`, error);
           }
         }
       }

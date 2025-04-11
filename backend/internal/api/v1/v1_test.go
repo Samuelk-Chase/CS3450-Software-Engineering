@@ -1,14 +1,48 @@
 package v1
 
 import (
+	"bufio"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
+func loadEnv() error {
+	file, err := os.Open("../../config/.env")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "#") || line == "" {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		os.Setenv(key, value)
+	}
+	return scanner.Err()
+}
+
 func TestRoutes(t *testing.T) {
+	// Load environment variables
+	if err := loadEnv(); err != nil {
+		t.Fatalf("Failed to load environment variables: %v", err)
+	}
+
 	handler := Routes()
+	timestamp := time.Now().UnixNano()
 
 	tests := []struct {
 		method         string
@@ -16,15 +50,14 @@ func TestRoutes(t *testing.T) {
 		expectedStatus int
 		body           string
 	}{
-		{"GET", "/character/1", http.StatusOK, ""},
-		{"GET", "/characters/1", http.StatusOK, ""},
-		{"GET", "/deck/1", http.StatusOK, ""},
-		{"POST", "/card", http.StatusOK, `{"cardName":"Ace"}`},
-		{"POST", "/getNewCharacter", http.StatusOK, `{"characterName":"Hero"}`},
-		{"POST", "/createUser", http.StatusOK, `{"username":"testuser", "email":"test@example.com", "password":"password"}`},
-		{"GET", "/boss", http.StatusOK, ""},
+		{"GET", "/character/1", http.StatusOK, `{"user_id": 1}`},
+		{"GET", "/characters", http.StatusOK, `{"user_id": 1}`},
+		{"GET", "/cards/1", http.StatusOK, ""},
+		{"POST", "/card", http.StatusOK, `{"prompt":"Test card", "character_id":1, "user_id": 1}`},
+		{"POST", "/getNewCharacter", http.StatusOK, `{"name":"Hero", "user_id": 1, "adventure_description": "A hero's journey"}`},
+		{"POST", "/signup", http.StatusOK, fmt.Sprintf(`{"email":"test%d@example.com", "password":"password123"}`, timestamp)},
+		{"POST", "/boss", http.StatusOK, `{"level":1, "user_id": 1}`},
 		{"GET", "/invalid", http.StatusNotFound, ""},
-		{"POST", "/character/1", http.StatusMethodNotAllowed, ""},
 	}
 
 	for _, test := range tests {

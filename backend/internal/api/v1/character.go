@@ -196,28 +196,44 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var requestData struct {
-		UserID               int    `json:"user_id"`
+		UserID               string `json:"user_id"` // Change to string to handle incoming JSON
 		Name                 string `json:"name"`
 		Description          string `json:"description"`
 		AdventureDescription string `json:"adventure_description"`
 	}
+
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		fmt.Printf("❌ Error decoding request body: %v\n", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Generate the character using LLM.
-	character, err := generateCharacterLLM(requestData.UserID, requestData.Name)
+	// Convert user_id to an integer
+	userID, err := strconv.Atoi(requestData.UserID)
 	if err != nil {
-		http.Error(w, "Failed to create character", http.StatusInternalServerError)
+		fmt.Printf("❌ Error converting user_id to int: %v\n", err)
+		http.Error(w, "Invalid user_id format", http.StatusBadRequest)
 		return
 	}
 
+	// Use userID as an integer in the rest of the function
+	fmt.Printf("ℹ️ Generating character for user ID: %d, Name: %s\n", userID, requestData.Name)
+	character, err := generateCharacterLLM(userID, requestData.Name)
+	if err != nil {
+		fmt.Printf("❌ Error generating character: %v\n", err)
+		http.Error(w, "Failed to create character", http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("✅ Character generated successfully: %+v\n", character)
+
 	// Generate the story introduction using the adventure description.
+	fmt.Printf("ℹ️ Generating intro for character ID: %d, Adventure Description: %s\n", character.CharacterID, requestData.AdventureDescription)
 	intro, err := getIntroForCharacter(character.CharacterID, requestData.AdventureDescription)
 	if err != nil {
-		log.Printf("Error generating intro: %v", err)
+		fmt.Printf("❌ Error generating intro: %v\n", err)
 		intro = "Welcome to your adventure!"
+	} else {
+		fmt.Printf("✅ Intro generated successfully: %s\n", intro)
 	}
 
 	responseData := struct {
@@ -229,8 +245,12 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseData)
-	fmt.Printf("Generated character description: %s\n", character.Description)
+	if err := json.NewEncoder(w).Encode(responseData); err != nil {
+		fmt.Printf("❌ Error encoding response: %v\n", err)
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("✅ Response sent successfully for character ID: %d\n", character.CharacterID)
 }
 
 func GetCharacter(w http.ResponseWriter, r *http.Request) {

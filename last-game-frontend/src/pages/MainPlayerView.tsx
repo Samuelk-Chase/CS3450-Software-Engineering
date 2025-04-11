@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/MainPlayerView.css";
 import backgroundImage from "../images/Login background.jpg";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
 import { Card, Boss } from "../context/GameContext";
@@ -33,26 +33,24 @@ const MainPlayerView: React.FC = () => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
   const [deck, setDeck] = useState<Card[]>([]);
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
+  const [showPDF, setShowPDF] = useState(false); // <-- Added state
+
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
 
-  // Ref flag to ensure the intro is added only once.
   const didAddIntroRef = useRef(false);
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
     setIsGeneratingDeck(true);
     try {
       for (let i = 0; i < 3; i++) {
-        const response = await axios.post(`${baseUrl}/v1/card`, {
+        const response = await axiosInstance.post("/card", {
           prompt: character.description,
           character_id: Number(characterId),
         });
-        
+
         const generatedCard = response.data;
         const mappedCard: Card = {
           id: generatedCard.card_id,
@@ -64,8 +62,8 @@ const MainPlayerView: React.FC = () => {
           image: generatedCard.image_url,
           soundEffect: generatedCard.sound_effect,
         };
-        
-        setDeck(prevDeck => [...prevDeck, mappedCard]);
+
+        setDeck((prevDeck) => [...prevDeck, mappedCard]);
       }
     } catch (error) {
       console.error("Error generating deck:", error);
@@ -86,9 +84,7 @@ const MainPlayerView: React.FC = () => {
   const fetchDeck = async () => {
     if (!characterId) return;
     try {
-      const response = await axios.get(`http://localhost:8080/v1/cards/${characterId}`); // Add logging to debug
-      
-      // Extract cards from the response
+      const response = await axiosInstance.get(`/cards/${characterId}`);
       const cardsData = response.data.cards || [];
       const cards = cardsData.map((card: any) => ({
         id: card.card_id,
@@ -107,7 +103,6 @@ const MainPlayerView: React.FC = () => {
     }
   };
 
-  // On mount, add the stored story intro to chat history as an AI message.
   useEffect(() => {
     if (!didAddIntroRef.current) {
       const storedIntro = localStorage.getItem("storyIntro");
@@ -145,41 +140,44 @@ const MainPlayerView: React.FC = () => {
       return;
     }
 
-    const apiUrl = `${baseUrl}/v1/character/${characterId}`;
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP status ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
+    const fetchCharacter = async () => {
+      try {
+        const response = await axiosInstance.get(`/character/${characterId}`);
+        const data = response.data;
+
         if (data.user_id !== Number(userId)) {
           alert("This character does not belong to you. Redirecting...");
           navigate("/character-account");
           return;
         }
+
         setCharacter(data);
         fetchDeck();
-      })
-      .catch((error) => console.error("Error fetching character:", error));
+      } catch (error) {
+        console.error("Error fetching character:", error);
+      }
+    };
+
+    fetchCharacter();
   }, [navigate, userId, characterId]);
 
   const handleSubmitResponse = async () => {
     if (userResponse.trim() === "") return;
 
     const timestamp = new Date().toLocaleTimeString();
-    setChatHistory(prevHistory => [
+    setChatHistory((prevHistory) => [
       ...prevHistory,
       { text: `You chose to: ${userResponse}`, timestamp, sender: "user" },
     ]);
 
     setGameText("AI is generating content...");
-    
+
     try {
-      const response = await axios.post(`${baseUrl}/v1/story`, { prompt: userResponse });
+      const response = await axiosInstance.post("/story", { prompt: userResponse });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
-        const cardResponse = await axios.post(`${baseUrl}/v1/card`, {
+        const cardResponse = await axiosInstance.post("/card", {
           prompt: aiMessage.replace(/\*/g, ""),
           character_id: Number(characterId),
         });
@@ -198,9 +196,11 @@ const MainPlayerView: React.FC = () => {
         setShowCardPopup(true);
         setDeck([...deck, mappedCard]);
       }
+      console.log("message ia",aiMessage.toLowerCase());
 
-      if (aiMessage.toLowerCase().includes("*boss combat begins.*")) {
-        const response = await axios.post("http://localhost:8080/v1/boss", { prompt: aiMessage });
+      if (aiMessage.toLowerCase().includes("*combat begins*") || aiMessage.toLowerCase().includes("*combat begins.*") ) {
+        console.log("Combat begins");
+        const response = await axiosInstance.post("/boss", { prompt: aiMessage });
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
@@ -208,7 +208,7 @@ const MainPlayerView: React.FC = () => {
       setUserResponse("");
       setGameText("");
       const aiTimestamp = new Date().toLocaleTimeString();
-      setChatHistory(prevHistory => [
+      setChatHistory((prevHistory) => [
         ...prevHistory,
         { text: `AI: ${aiMessage}`, timestamp: aiTimestamp, sender: "AI" },
       ]);
@@ -226,6 +226,59 @@ const MainPlayerView: React.FC = () => {
 
   return (
     <>
+      {/* PDF Modal */}
+      {showPDF && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0,
+          width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{
+            width: "80%",
+            height: "80%",
+            backgroundColor: "#fff",
+            borderRadius: "10px",
+            overflow: "hidden",
+            position: "relative",
+            boxShadow: "0 0 20px rgba(0,0,0,0.5)"
+          }}>
+            <button
+              onClick={() => setShowPDF(false)}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "15px",
+                zIndex: 10000,
+                background: "rgba(255, 255, 255, 0.8)",
+                border: "none",
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#333",
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)"
+              }}
+            >
+              &times;
+            </button>
+            <iframe
+              src="/gameManual.pdf"
+              title="PDF Viewer"
+              width="100%"
+              height="100%"
+              style={{ border: "none" }}
+            />
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           backgroundImage: `url(${backgroundImage})`,
@@ -259,31 +312,21 @@ const MainPlayerView: React.FC = () => {
         {isDeckOpen && <CardView onClose={() => setIsDeckOpen(false)} cards={deck} />}
 
         {isGeneratingDeck && (
-          <div
-            className="loading-container"
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-            }}
-          >
+          <div className="loading-container" style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}>
             <ProgressSpinner style={{ width: "100px", height: "100px" }} strokeWidth="5" />
-            <div
-              style={{
-                color: "#fff",
-                fontSize: "24px",
-                marginTop: "20px",
-                textAlign: "center",
-              }}
-            >
+            <div style={{ color: "#fff", fontSize: "24px", marginTop: "20px", textAlign: "center" }}>
               Generating your deck...
             </div>
           </div>
@@ -308,44 +351,30 @@ const MainPlayerView: React.FC = () => {
               <strong>{character.character_name}</strong>
               <div className="health-mana-bars">
                 <div className="bar-container">
-                  <div
-                    className="bar-fill health-bar-fill"
-                    style={{
-                      width: `${(character.current_hp / character.max_hp) * 100}%`,
-                    }}
-                  ></div>
-                  <span className="bar-text">
-                    {character.current_hp} / {character.max_hp}
-                  </span>
+                  <div className="bar-fill health-bar-fill" style={{ width: `${(character.current_hp / character.max_hp) * 100}%` }} />
+                  <span className="bar-text">{character.current_hp} / {character.max_hp}</span>
                 </div>
                 <div className="bar-container">
-                  <div
-                    className="bar-fill mana-bar-fill"
-                    style={{
-                      width: `${(character.current_mana / character.max_mana) * 100}%`,
-                    }}
-                  ></div>
-                  <span className="bar-text">
-                    {character.current_mana} / {character.max_mana}
-                  </span>
+                  <div className="bar-fill mana-bar-fill" style={{ width: `${(character.current_mana / character.max_mana) * 100}%` }} />
+                  <span className="bar-text">{character.current_mana} / {character.max_mana}</span>
                 </div>
               </div>
             </div>
 
-            <button
-              className="button"
-              onClick={handleDeckButtonClick}
-              disabled={isGeneratingDeck}
-            >
+            <button className="button" onClick={handleDeckButtonClick} disabled={isGeneratingDeck}>
               {isGeneratingDeck
                 ? "Generating Deck..."
                 : deck.length === 0
-                ? "Generate Deck"
-                : "View Deck"}
+                  ? "Generate Deck"
+                  : "View Deck"}
             </button>
 
             <button className="button" onClick={() => navigate("/boss")}>
               Enter Boss Fight
+            </button>
+
+            <button className="button" onClick={() => setShowPDF(true)}>
+              View Game Manual (PDF)
             </button>
           </div>
 

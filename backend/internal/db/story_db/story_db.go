@@ -1,4 +1,4 @@
-package db
+package storydb
 
 import (
 	"bytes"
@@ -18,6 +18,14 @@ type Story struct {
 }
 
 func InsertStory(story Story) error {
+	// Input validation
+	if story.Prompt == "" {
+		return fmt.Errorf("failed to insert story: prompt cannot be empty")
+	}
+	if story.CharacterID <= 0 {
+		return fmt.Errorf("failed to insert story: invalid character ID")
+	}
+
 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/storyEntry"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
