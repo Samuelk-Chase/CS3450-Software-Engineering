@@ -67,6 +67,11 @@ interface JSONCard {
   sound_effect: string;
 }
 
+// Extend the imported Card interface
+interface ExtendedCard extends Card {
+  lastUsed?: number;
+}
+
 const BossFightPage: React.FC = () => {
   const { updateStats } = useContext(GameContext);
   const navigate = useNavigate();
@@ -80,8 +85,8 @@ const BossFightPage: React.FC = () => {
   const [bossNameInput, setBossNameInput] = useState<string>(boss?.name || "");
   const [loading, setLoading] = useState<boolean>(false);
   const [isDeckOpen, setIsDeckOpen] = useState<boolean>(false);
-  const [deck, setDeck] = useState<Card[]>([]);
-  const [hand, setHand] = useState<Card[]>([]);
+  const [deck, setDeck] = useState<ExtendedCard[]>([]);
+  const [hand, setHand] = useState<ExtendedCard[]>([]);
   const [bossEffects, setBossEffects] = useState<string[]>([]);
   const [playerEffects, setPlayerEffects] = useState<string[]>([]);
   const [isBossAttacking, setIsBossAttacking] = useState<boolean>(false);
@@ -95,9 +100,10 @@ const BossFightPage: React.FC = () => {
 
 //const baseUrl = 'http://localhost:8080';
   const [showAttackPopup, setShowAttackPopup] = useState<boolean>(false);
-  const [currentAttack, setCurrentAttack] = useState<{name: string, damage: number, effect: string} | null>(null);
+  const [currentAttack, setCurrentAttack] = useState<{name: string, damage: number, effect: string, isWeakened: boolean, isExposed: boolean} | null>(null);
   const [showPlayerAttackPopup, setShowPlayerAttackPopup] = useState<boolean>(false);
-  const [playerAttack, setPlayerAttack] = useState<{name: string, damage: number, effect: string} | null>(null);
+  const [playerAttack, setPlayerAttack] = useState<{name: string, damage: number, effect: string, isWeakened: boolean, isExposed: boolean, isConfused: boolean} | null>(null);
+  const [cooldownTimers, setCooldownTimers] = useState<{[key: number]: number}>({});
 
   const playSoundEffect = async (soundTrack: string | null) => {
     if (!soundTrack) return;
@@ -123,7 +129,7 @@ const BossFightPage: React.FC = () => {
     try {
       const response = await fetch(
         `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
-          validSoundTrack
+          soundTrack
         )}`,
         {
           method: "GET",
@@ -176,7 +182,7 @@ const BossFightPage: React.FC = () => {
         const cards = cardsData.map((card: JSONCard) => ({
           id: card.card_id,
           name: card.title,
-          type: card.type_id,
+          type: card.type_id.toString(),
           level: card.power_level,
           mana: card.mana_cost,
           effect: card.card_description,
@@ -229,7 +235,7 @@ const BossFightPage: React.FC = () => {
     }
   }, [bossHealth, navigate]);
 
-  const shuffle = (array: Card[]): Card[] => {
+  const shuffle = (array: ExtendedCard[]): ExtendedCard[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -264,11 +270,27 @@ const BossFightPage: React.FC = () => {
   const performBossAttack = () => {
     setIsBossAttacking(true);
     const randomAttack = BOSS_ATTACKS[Math.floor(Math.random() * BOSS_ATTACKS.length)];
-    const damage = Math.floor(Math.random() * (randomAttack.damage.max - randomAttack.damage.min + 1)) + randomAttack.damage.min;
+    let damage = Math.floor(Math.random() * (randomAttack.damage.max - randomAttack.damage.min + 1)) + randomAttack.damage.min;
+    
+    // Apply weakened effect if boss is weakened
+    if (bossEffects.includes("Weakened")) {
+      damage = Math.floor(damage * 0.75); // 25% less damage
+    }
+    
+    // Apply exposed effect if player is exposed
+    if (playerEffects.includes("Exposed")) {
+      damage = Math.floor(damage * 1.25); // 25% more damage
+    }
     
     setAttackAnimation(randomAttack.animation);
     setAttackMessage(randomAttack.description);
-    setCurrentAttack({ name: randomAttack.name, damage, effect: randomAttack.effect });
+    setCurrentAttack({ 
+      name: randomAttack.name, 
+      damage, 
+      effect: randomAttack.effect,
+      isWeakened: bossEffects.includes("Weakened"),
+      isExposed: playerEffects.includes("Exposed")
+    });
     setShowAttackPopup(true);
 
     // Apply damage to player
@@ -277,10 +299,8 @@ const BossFightPage: React.FC = () => {
       setLocalCharacter(prev => prev ? { ...prev, current_hp: newHealth } : null);
       updateStats(newHealth, localCharacter.current_mana);
       
-      // Apply effect to player
-      if (!playerEffects.includes(randomAttack.effect)) {
-        setPlayerEffects(prev => [...prev, randomAttack.effect]);
-      }
+      // Apply effect to player (replace any existing effect)
+      setPlayerEffects([randomAttack.effect]);
     }
 
     // Reset attack animation after 2 seconds
@@ -293,7 +313,53 @@ const BossFightPage: React.FC = () => {
     }, 2000);
   };
 
-  const playCard = (card: Card) => {
+  // Function to check if a card is on cooldown
+  const isCardOnCooldown = (card: ExtendedCard): boolean => {
+    if (!card.lastUsed) return false;
+    const now = Date.now();
+    const cooldownTime = 60 * 1000; // 1 minute in milliseconds
+    return now - card.lastUsed < cooldownTime;
+  };
+
+  // Function to get remaining cooldown time
+  const getRemainingCooldown = (card: ExtendedCard): number => {
+    if (!card.lastUsed) return 0;
+    const now = Date.now();
+    const cooldownTime = 60 * 1000; // 1 minute in milliseconds
+    const remaining = Math.max(0, cooldownTime - (now - card.lastUsed));
+    return Math.ceil(remaining / 1000); // Convert to seconds
+  };
+
+  // Function to get cooldown percentage
+  const getCooldownPercentage = (card: ExtendedCard): number => {
+    if (!card.lastUsed) return 0;
+    const now = Date.now();
+    const cooldownTime = 60 * 1000; // 1 minute in milliseconds
+    const remaining = Math.max(0, cooldownTime - (now - card.lastUsed));
+    return (remaining / cooldownTime) * 100;
+  };
+
+  // Update cooldown timers every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const updatedTimers: {[key: number]: number} = {};
+      
+      deck.forEach(card => {
+        if (card.lastUsed) {
+          const remaining = getRemainingCooldown(card);
+          if (remaining > 0) {
+            updatedTimers[card.id] = remaining;
+          }
+        }
+      });
+      
+      setCooldownTimers(updatedTimers);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [deck]);
+
+  const playCard = (card: ExtendedCard) => {
     console.log("Attempting to play card:", card);
     if (!localCharacter) {
       console.log("No character found");
@@ -302,6 +368,20 @@ const BossFightPage: React.FC = () => {
     if (localCharacter.current_mana < card.mana) {
       console.log("Not enough mana. Current:", localCharacter.current_mana, "Required:", card.mana);
       return;
+    }
+    if (isCardOnCooldown(card)) {
+      console.log("Card is on cooldown");
+      return;
+    }
+
+    // Handle confused effect
+    if (playerEffects.includes("Confused")) {
+      const availableCards = deck.filter(c => c.id !== card.id && !isCardOnCooldown(c));
+      if (availableCards.length > 0) {
+        const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+        console.log("Confused! Playing random card instead:", randomCard);
+        card = randomCard;
+      }
     }
 
     // Close deck popup and show card played popup
@@ -312,58 +392,65 @@ const BossFightPage: React.FC = () => {
     playSoundEffect(card.soundEffect);
 
     const damageMatch = card.effect.match(/Deal (\d+) damage/);
-    const damage = damageMatch ? parseInt(damageMatch[1], 10) : card.level;
+    let damage = damageMatch ? parseInt(damageMatch[1], 10) : card.level;
+    
+    // Apply weakened effect if player is weakened
+    if (playerEffects.includes("Weakened")) {
+      damage = Math.floor(damage * 0.75); // 25% less damage
+    }
+    
+    // Apply exposed effect if boss is exposed
+    if (bossEffects.includes("Exposed")) {
+      damage = Math.floor(damage * 1.25); // 25% more damage
+    }
+    
     console.log("Calculated damage:", damage);
 
     // Show player attack popup
     setPlayerAttack({
       name: card.name,
       damage: damage,
-      effect: card.effect
+      effect: card.effect,
+      isWeakened: playerEffects.includes("Weakened"),
+      isExposed: bossEffects.includes("Exposed"),
+      isConfused: playerEffects.includes("Confused")
     });
 
-    // Apply card effect based on type
+    // Apply card effect based on type (replace any existing effect)
+    let newBossEffect = "";
     switch (card.type.toString()) {
       case "1": // Stunned
-        if (!bossEffects.includes("Stunned")) {
-          setBossEffects(prev => [...prev, "Stunned"]);
-        }
+        newBossEffect = "Stunned";
         break;
       case "2": // Confused
-        if (!bossEffects.includes("Confused")) {
-          setBossEffects(prev => [...prev, "Confused"]);
-        }
+        newBossEffect = "Confused";
         break;
       case "3": // Exposed
-        if (!bossEffects.includes("Exposed")) {
-          setBossEffects(prev => [...prev, "Exposed"]);
-        }
+        newBossEffect = "Exposed";
         break;
       case "4": // Weakened
-        if (!bossEffects.includes("Weakened")) {
-          setBossEffects(prev => [...prev, "Weakened"]);
-        }
+        newBossEffect = "Weakened";
         break;
       case "5": // Slowed
-        if (!bossEffects.includes("Slowed")) {
-          setBossEffects(prev => [...prev, "Slowed"]);
-        }
+        newBossEffect = "Slowed";
         break;
     }
+    setBossEffects([newBossEffect]);
 
     // Update boss health
     setBossHealth(prev => Math.max(prev - damage, 0));
 
-     //Update player mana
-    //const newMana = localCharacter.current_mana - card.mana;
-    //setLocalCharacter(prev => prev ? { ...prev, current_mana: newMana } : null);
+    // Update player mana
+    const newMana = localCharacter.current_mana - card.mana;
+    setLocalCharacter(prev => prev ? { ...prev, current_mana: newMana } : null);
     updateStats(localCharacter.current_hp, localCharacter.current_mana);
 
-    // Remove the played card from deck
- 
-    const updatedDeck = deck.filter(c => c.id !== card.id);
-    console.log("Deck after removal:", updatedDeck);
-    setDeck(updatedDeck);
+    // Set card cooldown
+    setDeck(prevDeck => 
+      prevDeck.map(c => 
+        c.id === card.id ? { ...c, lastUsed: Date.now() } : c
+      )
+    );
 
     // Close player attack popup and trigger boss attack after delay
     setTimeout(() => {
@@ -517,6 +604,8 @@ const BossFightPage: React.FC = () => {
           <div className="attack-popup-content">
             <h3>{boss?.name} used {currentAttack.name}!</h3>
             <p>Dealt {currentAttack.damage} damage</p>
+            {currentAttack.isWeakened && <p>The attack was weakened by 25%!</p>}
+            {currentAttack.isExposed && <p>The attack was amplified by 25% due to being exposed!</p>}
             {currentAttack.effect && <p>Applied {currentAttack.effect} effect</p>}
           </div>
         </div>
@@ -527,6 +616,9 @@ const BossFightPage: React.FC = () => {
           <div className="attack-popup-content">
             <h3>You used {playerAttack.name}!</h3>
             <p>Dealt {playerAttack.damage} damage</p>
+            {playerAttack.isWeakened && <p>Your attack was weakened by 25%!</p>}
+            {playerAttack.isExposed && <p>Your attack was amplified by 25% due to the boss being exposed!</p>}
+            {playerAttack.isConfused && <p>You were confused and played a random card!</p>}
             <p>{playerAttack.effect}</p>
           </div>
         </div>
@@ -545,26 +637,40 @@ const BossFightPage: React.FC = () => {
       </div>
 
       {isDeckOpen && (
-        <div className="deck-popup">
+        <div className={`deck-popup ${playerEffects.includes("Slowed") ? "slowed" : ""}`}>
           <div className="deck-popup-content">
             <h3>Your Cards</h3>
             <p>Click on a card to play it</p>
             <div className="cards-grid">
               {deck.map((card) => {
                 const hasEnoughMana = localCharacter?.current_mana && localCharacter.current_mana >= card.mana;
-                console.log(`Card ${card.id} - Mana Required: ${card.mana}, Has enough: ${hasEnoughMana}`);
+                const isOnCooldown = isCardOnCooldown(card);
+                const cooldownPercentage = getCooldownPercentage(card);
+                const remainingTime = cooldownTimers[card.id] || 0;
+                
                 return (
                   <div
                     key={card.id}
-                    className={`card ${!hasEnoughMana ? 'disabled' : ''}`}
+                    className={`card ${!hasEnoughMana || isOnCooldown ? 'disabled' : ''} ${isOnCooldown ? 'cooldown' : ''}`}
                     style={{ backgroundImage: `url(${card.image})` }}
                     onClick={() => {
                       console.log(`Clicked on card ${card.id}`);
-                      if (hasEnoughMana) {
+                      if (hasEnoughMana && !isOnCooldown) {
                         playCard(card);
                       }
                     }}
                   >
+                    {isOnCooldown && (
+                      <>
+                        <div 
+                          className="card-cooldown-overlay"
+                          style={{ '--cooldown-percentage': `${cooldownPercentage}%` } as React.CSSProperties}
+                        />
+                        <div className="card-cooldown-timer">
+                          {remainingTime}s
+                        </div>
+                      </>
+                    )}
                     <div className="card-header">
                       <div className="card-mana">{card.mana}</div>
                       <div className="card-level">Lvl {card.level}</div>

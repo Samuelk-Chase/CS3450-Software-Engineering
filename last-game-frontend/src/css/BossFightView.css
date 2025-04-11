@@ -122,6 +122,18 @@ body {
   color: #e3c9ce;
 }
 
+/* Slowed effect styles */
+.stats-box.slowed {
+  animation: slowed-pulse 2s infinite;
+  border: 2px solid #4a90e2;
+}
+
+@keyframes slowed-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
 /* Bottom Action Buttons */
 .bottom-actions {
   position: absolute;
@@ -302,8 +314,6 @@ body {
   z-index: 10;
 }
 
-
-
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -313,15 +323,12 @@ body {
   border-radius: 5px;
 }
 
-
 .card-body {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 10px;
   border-radius: 5px;
   margin-top: auto;
 }
-
-
 
 .hand-container {
   display: none; /* Hide the hand container since cards are now in popup */
@@ -370,17 +377,6 @@ body {
   font-size: 1.2rem;
 }
 
-@keyframes popup {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-}
-
 .close-popup {
   margin-top: 20px;
   padding: 10px 20px;
@@ -395,4 +391,76 @@ body {
 
 .close-popup:hover {
   background-color: #c0392b;
+}
+
+/* Slowed effect styles */
+.deck-popup.slowed {
+  animation: slowed-popup 1.5s ease-out;
+}
+
+@keyframes slowed-popup {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Card cooldown styles */
+.card {
+  position: relative;
+  width: 180px;
+  height: 250px;
+  margin: 10px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s, filter 0.3s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.card.cooldown {
+  cursor: not-allowed;
+}
+
+.card-cooldown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(128, 128, 128, 0.8) 0%,
+    rgba(128, 128, 128, 0.8) var(--cooldown-percentage, 100%),
+    rgba(128, 128, 128, 0) var(--cooldown-percentage, 100%)
+  );
+  pointer-events: none;
+  transition: background 0.1s linear;
+}
+
+.card-cooldown-timer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
