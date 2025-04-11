@@ -20,10 +20,10 @@ const LoginPage: React.FC = () => {
   // State for printing errors on screen
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
-
+  //const baseUrl = window.location.hostname.includes('localhost')
+  //  ? 'https://lastgame-api.chirality.app' // Production URL
+   // : 'http://localhost:8080'; // Development URL
+const baseUrl = 'http://localhost:8080';
   /**
    * Insert or fetch the OAuth user in your "users" table.
    * Only run this after the user has completed the OAuth flow.

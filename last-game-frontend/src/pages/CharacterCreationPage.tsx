@@ -13,10 +13,10 @@ const CharacterCreationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"hard" | "soft">("soft");
   const navigate = useNavigate();
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // production url
-    : 'http://localhost:8080'; // development url
-
+  //const baseUrl = window.location.hostname.includes('localhost')
+    //? 'https://lastgame-api.chirality.app' // production url
+    //: 'http://localhost:8080'; // development url
+const baseUrl = 'http://localhost:8080';
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     if (!storedUserId || isNaN(Number(storedUserId))) {

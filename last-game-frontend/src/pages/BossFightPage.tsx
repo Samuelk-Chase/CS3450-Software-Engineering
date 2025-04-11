@@ -89,11 +89,11 @@ const BossFightPage: React.FC = () => {
   const [attackMessage, setAttackMessage] = useState<string>("");
   const characterId = localStorage.getItem("characterId");
   
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
+  //`const baseUrl = window.location.hostname.includes('localhost')
+  //  ? 'https://lastgame-api.chirality.app' // Production URL
+   // : 'http://localhost:8080'; // Development URL
 
-//const baseUrl = 'http://localhost:8080';
+const baseUrl = 'http://localhost:8080';
   const [showAttackPopup, setShowAttackPopup] = useState<boolean>(false);
   const [currentAttack, setCurrentAttack] = useState<{name: string, damage: number, effect: string} | null>(null);
   const [showPlayerAttackPopup, setShowPlayerAttackPopup] = useState<boolean>(false);

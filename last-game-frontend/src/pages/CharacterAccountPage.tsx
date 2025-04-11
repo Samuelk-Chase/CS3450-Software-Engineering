@@ -29,9 +29,10 @@ const CharacterAccountPage: React.FC = () => {
       return;
     }
 
-    const baseUrl = window.location.hostname.includes('localhost')
-      ? 'https://lastgame-api.chirality.app' // Production URL
-      : 'http://localhost:8080'; // Development URL
+    //const baseUrl = window.location.hostname.includes('localhost')
+    //  ? 'https://lastgame-api.chirality.app' // Production URL
+    //  : 'http://localhost:8080'; // Development URL
+const baseUrl = 'http://localhost:8080';
     const apiUrl = `${baseUrl}/v1/characters?user_id=${userId}`;
     console.log("Fetching characters from:", apiUrl);
 
