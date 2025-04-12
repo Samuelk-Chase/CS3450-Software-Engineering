@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import '../css/GameManual.css';
 
@@ -7,8 +7,67 @@ interface GameManualProps {
 }
 
 const GameManual: React.FC<GameManualProps> = ({ onClose }) => {
+  const manualRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (manualRef.current && !manualRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    // Use mousedown instead of click for better responsiveness
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
+  const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const targetId = event.currentTarget.getAttribute('href')?.substring(1);
+    const contentElement = manualRef.current;
+    
+    if (contentElement && targetId) {
+      // Define scroll positions for each section
+      const scrollPositions: { [key: string]: number } = {
+        'overview': 0,
+        'getting-started': 950,
+        'gameplay-guide': 1900,
+        'combat-system': 2600,
+        'game-modes': 3050,
+        'advanced-strategies': 3850,
+        'troubleshooting': 4500,
+        'faq': 5000
+      };
+
+      const targetPosition = scrollPositions[targetId] || 0;
+      contentElement.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleOverlayClick = (event: React.MouseEvent) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   const manualContent = `
 # Last Game - Player Manual
+
+## Quick Links
+### Jump to Section
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+- [Gameplay Guide](#gameplay-guide)
+- [Combat System](#combat-system)
+- [Game Modes](#game-modes)
+- [Advanced Strategies](#advanced-strategies)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
 
 ## Overview
 Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choices shape the world around you. Every playthrough is unique, with procedurally generated content that adapts to your playstyle and decisions.
@@ -165,14 +224,29 @@ A: Each run can have a different theme, but you'll need to create a new characte
 Q: Is there a way to save my favorite cards?
 A: Yes, you can save cards to your collection for use in future runs.
 
+## Contact Information
+For additional support or feedback:
+- Email: support@lastgame.com
+- Community Forums: forum.lastgame.com
+- Discord: discord.gg/lastgame
 `;
 
   return (
-    <div className="game-manual-overlay">
-      <div className="game-manual-content">
+    <div className="game-manual-overlay" onClick={handleOverlayClick}>
+      <div className="game-manual-content" ref={manualRef}>
         <button className="close-manual" onClick={onClose}>×</button>
         <div className="manual-text">
-          <ReactMarkdown>{manualContent}</ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              a: ({ href, children }) => (
+                <a href={href} onClick={handleLinkClick}>
+                  {children}
+                </a>
+              ),
+            }}
+          >
+            {manualContent}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
