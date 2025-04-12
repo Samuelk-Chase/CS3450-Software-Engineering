@@ -155,7 +155,7 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - Great for learning the game mechanics
    - Focus on story and exploration
 
-### Multiplayer Features
+### Multiplayer Features(coming soon)
 1. **Co-op Mode**
    - Team up with friends
    - Share decks and strategies
