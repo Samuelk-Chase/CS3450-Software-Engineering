@@ -1,0 +1,80 @@
+.game-manual-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.game-manual-content {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.close-manual {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.manual-text {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+}
+
+.manual-text h1 {
+  color: #ffd700;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.manual-text h2 {
+  color: #ffd700;
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.manual-text h3 {
+  color: #ffd700;
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.manual-text p {
+  margin-bottom: 1rem;
+}
+
+.manual-text ul, .manual-text ol {
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.manual-text li {
+  margin-bottom: 0.5rem;
+}
+
+.manual-text strong {
+  color: #ffd700;
+} 

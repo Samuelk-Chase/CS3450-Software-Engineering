@@ -688,17 +688,8 @@ const BossFightPage: React.FC = () => {
         </div>
       )}
 
-      <div className="bottom-actions">
-        <button 
-          className="view-deck-button" 
-          onClick={() => {
-            console.log("Opening deck popup");
-            setIsDeckOpen(true);
-          }}
-        >
-          Play Card
-        </button>
-        <button className="action-button" onClick={handleBackToMain}>
+      <div className="action-buttons">
+        <button className="button" onClick={handleBackToMain}>
           Back to Main
         </button>
       </div>

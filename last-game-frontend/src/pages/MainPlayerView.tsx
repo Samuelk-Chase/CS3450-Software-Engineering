@@ -5,6 +5,7 @@ import backgroundImage from "../images/Login background.jpg";
 import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 import NewCardComponent from "../components/NewCardComponent";
 import BossPopupComponent from "../components/BossPopupComponent";
+import GameManual from "../components/GameManual";
 import { Card, Boss } from "../context/GameContext";
 import CardView from "./DeckOverlayPage";
 import { ProgressSpinner } from "primereact/progressspinner";
@@ -33,7 +34,7 @@ const MainPlayerView: React.FC = () => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
   const [deck, setDeck] = useState<Card[]>([]);
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
-  const [showPDF, setShowPDF] = useState(false); // <-- Added state
+  const [showManual, setShowManual] = useState(false);
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
@@ -226,58 +227,7 @@ const MainPlayerView: React.FC = () => {
 
   return (
     <>
-      {/* PDF Modal */}
-      {showPDF && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "100vw", height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
-        }}>
-          <div style={{
-            width: "80%",
-            height: "80%",
-            backgroundColor: "#fff",
-            borderRadius: "10px",
-            overflow: "hidden",
-            position: "relative",
-            boxShadow: "0 0 20px rgba(0,0,0,0.5)"
-          }}>
-            <button
-              onClick={() => setShowPDF(false)}
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "15px",
-                zIndex: 10000,
-                background: "rgba(255, 255, 255, 0.8)",
-                border: "none",
-                fontSize: "2rem",
-                fontWeight: "bold",
-                color: "#333",
-                borderRadius: "50%",
-                width: "40px",
-                height: "40px",
-                cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)"
-              }}
-            >
-              &times;
-            </button>
-            <iframe
-              src="/gameManual.pdf"
-              title="PDF Viewer"
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-            />
-          </div>
-        </div>
-      )}
+      {showManual && <GameManual onClose={() => setShowManual(false)} />}
 
       <div
         style={{
@@ -373,8 +323,8 @@ const MainPlayerView: React.FC = () => {
               Enter Boss Fight
             </button>
 
-            <button className="button" onClick={() => setShowPDF(true)}>
-              View Game Manual (PDF)
+            <button className="button" onClick={() => setShowManual(true)}>
+              View Game Manual
             </button>
           </div>
 

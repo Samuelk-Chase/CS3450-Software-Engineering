@@ -6,6 +6,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import backgroundImage from '../images/Login background.jpg';
+import GameManual from '../components/GameManual';
 
 import type { Provider } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
@@ -17,7 +18,7 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [showPDF, setShowPDF] = useState(false); // <-- Added state
+  const [showManual, setShowManual] = useState(false); // Changed from showPDF to showManual
 
   const navigate = useNavigate();
   
@@ -146,59 +147,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      {/* Modal PDF Viewer */}
-      {showPDF && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "100vw", height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
-        }}>
-          <div style={{
-            width: "80%",
-            height: "80%",
-            backgroundColor: "#fff",
-            borderRadius: "10px",
-            overflow: "hidden",
-            position: "relative",
-            boxShadow: "0 0 20px rgba(0,0,0,0.5)"
-          }}>
-            <button
-  onClick={() => setShowPDF(false)}
-  style={{
-    position: "absolute",
-    top: "10px",
-    right: "15px",
-    zIndex: 10000, // <== Ensures it’s above the iframe
-    background: "rgba(255, 255, 255, 0.8)",
-    border: "none",
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#333",
-    borderRadius: "50%",
-    width: "40px",
-    height: "40px",
-    cursor: "pointer",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)"
-  }}
->
-  &times;
-</button>
-
-            <iframe
-              src="/gameManual.pdf"
-              title="PDF Viewer"
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-            />
-          </div>
-        </div>
-      )}
+      {showManual && <GameManual onClose={() => setShowManual(false)} />}
 
       <div 
         style={{
@@ -296,10 +245,10 @@ const LoginPage: React.FC = () => {
             />
           </form>
 
-          {/* PDF Button */}
+          {/* Replace PDF Button with Game Manual Button */}
           <Button
-            label="View Game Manual (PDF)"
-            onClick={() => setShowPDF(true)}
+            label="View Game Manual"
+            onClick={() => setShowManual(true)}
             style={{
               marginTop: "2rem",
               backgroundColor: "#20683F",
