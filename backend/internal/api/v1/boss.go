@@ -84,9 +84,8 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 		Name:      jsonBoss.Name,
 		Health:    jsonBoss.Health,
 		BossLevel: 10,
-
-		Mana:     jsonBoss.Mana,
-		ImageURL: "http://example.com/sample-boss.jpg",
+		Mana:      jsonBoss.Mana,
+		ImageURL:  "http://example.com/sample-boss.jpg",
 	}
 
 	// Set the response header to indicate JSON content.

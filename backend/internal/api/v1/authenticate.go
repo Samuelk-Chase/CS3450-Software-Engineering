@@ -70,13 +70,19 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send success response with user_id and JWT token
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	// Prepare the response
+	response := map[string]interface{}{
 		"user_id": userID,
 		"token":   token,
 		"message": "Login successful!",
-	})
+	}
+
+	// Print the response to the console
+	fmt.Printf("loginUser response: %+v\n", response)
+
+	// Send success response with user_id and JWT token
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 // hashAndSalt hashes and salts the given password.
