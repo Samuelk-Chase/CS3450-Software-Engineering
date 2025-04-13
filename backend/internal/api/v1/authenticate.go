@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -70,13 +71,19 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send success response with user_id and JWT token
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	// Prepare the response
+	response := map[string]interface{}{
 		"user_id": userID,
 		"token":   token,
 		"message": "Login successful!",
-	})
+	}
+
+	// Print the response to the console
+	fmt.Printf("loginUser response: %+v\n", response)
+
+	// Send success response with user_id and JWT token
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 // hashAndSalt hashes and salts the given password.
@@ -104,6 +111,16 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate email and password
+	if strings.TrimSpace(requestData.Email) == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+	if strings.TrimSpace(requestData.Password) == "" {
+		http.Error(w, "Password is required", http.StatusBadRequest)
 		return
 	}
 

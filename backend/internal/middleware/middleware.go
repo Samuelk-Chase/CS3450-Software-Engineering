@@ -15,6 +15,10 @@ var jwtSecret = []byte("VmwI4ReJNJQNQoUwrv9yx5sgil1z4cfHl4U9u5DuRpc8R804kQjJoQNY
 
 func KeyAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// next.ServeHTTP(w, r)
+		// return
+
 		fmt.Println("KeyAuth middleware called!")
 		authHeader := r.Header.Get("Authorization")
 		fmt.Println("Authorization header:", authHeader)

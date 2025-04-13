@@ -41,8 +41,15 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 		Prompt string `json:"prompt"`
 	}
 
+	// Decode the request body
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Check if the Prompt field is empty
+	if strings.TrimSpace(requestData.Prompt) == "" {
+		http.Error(w, "Prompt is required", http.StatusBadRequest)
 		return
 	}
 
@@ -79,14 +86,13 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error parsing JSON Boss Atk:", err)
 	}
 
-	// Create a the boss object to pass back.
+	// Create the boss object to pass back.
 	boss := Boss{
 		Name:      jsonBoss.Name,
 		Health:    jsonBoss.Health,
 		BossLevel: 10,
-
-		Mana:     jsonBoss.Mana,
-		ImageURL: "http://example.com/sample-boss.jpg",
+		Mana:      jsonBoss.Mana,
+		ImageURL:  "http://example.com/sample-boss.jpg",
 	}
 
 	// Set the response header to indicate JSON content.
