@@ -101,7 +101,7 @@ Interestingly, the frontend testing provided the most valuable insights, as it h
 - **Clone Repositories:** Clone both the backend and `last-game-frontend` repositories.
 - **Install Dependencies:** Navigate to the `last-game-frontend` directory and run `npm install`.
 - **Install Go:** Ensure Go is installed before running the backend server and tests.
-- **Database Configuration:** The database and S3 bucket are already configured as outlined in our documentation. For future testing, we plan to populate the database with additional test data.
+- **Database Configuration:** The database and S3 bucket are already configured in our project, but may need to be added to the env file. For future testing, we plan to populate the database with additional test data. **Important:** Unit tests may not work for clones of the project since the project relies on sensitive details, such as database, AI, and AWS keys in our env file(which is not publicly available). example.env in backend and frontend outlines which data is needed, but authorized testers may need to request important data to successfully run the tests.
 
 ### 2. Run Unit and Integration Tests
 
@@ -110,6 +110,7 @@ Interestingly, the frontend testing provided the most valuable insights, as it h
   ```bash
   go test -v
   ```
+  Note: Console output for tests may be extensive as our endpoints log alot, so you may need to scroll up to view the summaries for each test. Server does not need to be running for the tests to work, go test -v should be fine.
 
 - **Frontend Tests:**  
   Currently, frontend tests are not implemented. We plan to add them so they can be executed with:  
@@ -118,7 +119,7 @@ Interestingly, the frontend testing provided the most valuable insights, as it h
   ```
 
 - **Test Functions in `v1_test.go`:**
-  - **`TestRoutes`:** Verifies major endpoints using valid request data. A summary of passed and failed tests is printed at the end. Note: Console output may be extensive, so scroll up to view the summary.
+  - **`TestRoutes`:** Verifies major endpoints using valid request data. A summary of passed and failed tests is printed at the end. 
   - **`TestMiddlewareWithoutValidToken`:** Checks that the middleware correctly blocks requests lacking a valid authentication token.
   - **`TestBadRequests`:** Sends malformed or incomplete request data to endpoints to ensure proper error handling.
 
@@ -176,5 +177,15 @@ Interestingly, the frontend testing provided the most valuable insights, as it h
 - **Iteration:** Use these findings to further refine and improve the application.
 
 ---
-We still have a lot more that could be tested. In the future we will add more testing coverage to validate all functions are performing as expected. We will also implement frontend tests. Also we will improve the testing environment itself to include more testing data in the database and use new tools like Istanbul or Jest to report testing coverage to ensure we meet our coverage targets. We will also clean up our tests, so that they are more readable and ignore the server logging, so that only the test output is seen.
+## Future Testing Improvements
+
+There is still significant room to expand our test coverage. In future iterations, we plan to:
+
+- **Increase Backend Test Coverage:** Add more unit and integration tests to validate that all backend functions behave as expected.
+- **Implement Frontend Testing:** Introduce frontend tests using tools like Jest and React Testing Library to ensure UI components and user flows work correctly.
+- **Improve the Testing Environment:** Enhance our testing setup by adding more test data to the database and incorporating tools like Istanbul or Jest for detailed code coverage reporting.
+- **Clean Up Test Output:** Refactor existing tests to improve readability and suppress unnecessary server logs during test runs so that the test results are easier to review.
+
+These improvements will help us maintain high code quality, detect issues earlier, and ensure our app remains stable as it scales.
+
 This comprehensive testing strategy is designed to give us confidence in our application's stability, performance, and overall user experience.
