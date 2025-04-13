@@ -87,11 +87,10 @@ Our test coverage still has room for improvement. There are several edge cases a
 
 Overall, the endpoints performed well during testing. The biggest challenge was setting up the tests in Go, as we were relatively new to the language. We had to make several adjustments to the endpoints during the process. Most issues we encountered were related to handling bad requests—for example, missing or incorrectly formatted fields in the request body. In response, we added additional validation and improved error handling.
 
-In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection.
+In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection. Dealing with AI responses is something we still worry about, because AI isn't always perfect at responding how you would wish, like in the case for initiating the battle. So we are still worried about that not working.
 
-During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn’t sending the tokens in the expected header format, and the middleware wasn’t properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly.
+During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn’t sending the tokens in the expected header format, and the middleware wasn’t properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature and we were having a lot of trouble with it.
 
-Interestingly, the frontend testing provided the most valuable insights, as it highlighted real-world issues that players might experience.
 
 
 ## Steps to Reproduce Test Results
