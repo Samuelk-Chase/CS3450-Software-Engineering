@@ -1,6 +1,6 @@
 # Our Testing Plan
 
-In this document, we outline our approach and strategy for thoroughly testing our application. Our goal is to ensure that every critical aspect of the system works as expected, providing a reliable and bug-free experience for our users.
+In this document, we outline our approach and strategy for thoroughly testing our application. Our goal is to ensure that every critical aspect of the system works as expected, providing a reliable and bug-free experience for our users. Note: ChatGpt assisted us in writing this document.
 
 ## Testing Approach and Philosophy
 
@@ -97,31 +97,69 @@ Interestingly, the frontend testing provided the most valuable insights, as it h
 ## Steps to Reproduce Test Results
 
 ### 1. Set Up the Environment
-- **Clone Repositories:** Clone the project and open the backend directory and the last-game-frontend directory.
-- **Install Dependencies:** Run `npm install` (or the equivalent command) in last-game-frontend directory.
-- **Install Go:** If Go is not installed, install go before starting the server and tests in the backend directory. 
-- **DB Configuration:** We already have databases and S3 bucket configured according to our documentation. For future testing we will create more testing data in the database.
+
+- **Clone Repositories:** Clone both the backend and `last-game-frontend` repositories.
+- **Install Dependencies:** Navigate to the `last-game-frontend` directory and run `npm install`.
+- **Install Go:** Ensure Go is installed before running the backend server and tests.
+- **Database Configuration:** The database and S3 bucket are already configured as outlined in our documentation. For future testing, we plan to populate the database with additional test data.
 
 ### 2. Run Unit and Integration Tests
-- **Backend:** Run the test by moving into "backend/internal/api/v1" and running "go test -v".
-- **Frontend:** We currently do not have front-end tests, but in the future will set them up such that "npm test" can be used to run front-end tests.
-- **Review:** Currently, there are 3 different Test functions in v1_test.go that test a variety of cases and endpoints.
-  - **TestRoutes:** This tests important endpoints using valid request data. A summary is printed at the end of which tests failed and passed. Note: The server's endpoints may print a lot of data to the console so you may have to scroll up to find the test summary.
-  - **TestMiddlewareWithoutValidToken:** This test simply tests sending a request to a protected endpoint without a valid token in the header.
-  - **TestBadRequests:** This function tests sending requests with bad request data to endpoints. 
 
-### 3. Perform System-Level/Ad-hoc Tests
-- **Launch Services:** Start the backend server and the frontend application.
-    -  ***Front End:*** In the last-game-frontend run "npm run dev" to start the client and go to the localhost link in your browser(http://localhost:5173/).
-    -   ***Backend:*** In the backend run "go run cmd/api/main.go --port 8080" to start the server.
-- **User Flow Simulation:** Follow a typical user flow.
-  - **Signing up:** Sign up using multiple accounts
-  - **Logging in:** Log in using both email and oauth.
-  - **Character data:** Ensure that when signed in characters belonging to account are displayed on the character account page. Test on multiple accounts
-  - **Character Creation:** Clicking create new character should bring user to new character page. Test entering in name, character description, and world description. Clicking create character should present a loading circle and eventaully return a character object with a generated image. Verify Character exists by going back to CharacterAccount page. Verify Character is linked to account by either checking the database for the correct userid associated with the character or by signing out and back in.
-  - **Test Signing out:** Signing out should send user back to login page. User should not beable to naviate to protected pages so test trying to navigate to other pages.
-  - **Test Main Game View:** In CharacterAccount Page, click on character should take you to the main game view for that character. Test clicking on other characters to make sure story, picture, and character details are for that character. If the character is new a custom beginner story should appear to start the journey. Test sending responses to AI chat. Ensure that responses display on screen in order. After chatting with AI ensure that if AI response has *combat begins* that a popup appears asking user to enter the battle. Test that character can generate 3 cards by clicking generate deck.
-  - **Test combat:** In combat test that when cards are clicked they make a sound effect. In combat test that when cards are used they damage the boss.
+- **Backend Tests:**  
+  Navigate to `backend/internal/api/v1` and run the tests using:  
+  ```bash
+  go test -v
+  ```
+
+- **Frontend Tests:**  
+  Currently, frontend tests are not implemented. We plan to add them so they can be executed with:  
+  ```bash
+  npm test
+  ```
+
+- **Test Functions in `v1_test.go`:**
+  - **`TestRoutes`:** Verifies major endpoints using valid request data. A summary of passed and failed tests is printed at the end. Note: Console output may be extensive, so scroll up to view the summary.
+  - **`TestMiddlewareWithoutValidToken`:** Checks that the middleware correctly blocks requests lacking a valid authentication token.
+  - **`TestBadRequests`:** Sends malformed or incomplete request data to endpoints to ensure proper error handling.
+
+### 3. Perform System-Level and Manual Testing
+
+- **Launch Services:**
+  - **Frontend:**  
+    In the `last-game-frontend` directory, run:  
+    ```bash
+    npm run dev
+    ```  
+    Then open [http://localhost:5173](http://localhost:5173) in your browser.
+  - **Backend:**  
+    In the `backend` directory, run:  
+    ```bash
+    go run cmd/api/main.go --port 8080
+    ```
+
+- **Simulate User Flows:**
+  - **Sign-Up:** Register multiple accounts to test sign-up functionality.
+  - **Login:** Log in using both email/password and OAuth methods.
+  - **Character Data:** After logging in, ensure the correct characters appear on the Character Account page for each account.
+  - **Character Creation:** Test the full flow:
+    - Click "Create New Character"
+    - Enter a name, character description, and world description
+    - Confirm a loading spinner appears and is followed by a generated character with an image
+    - Navigate back to the Character Account page to confirm the character was saved
+    - Verify the character is linked to the correct user via the database or by signing out and logging in again
+  - **Sign Out:** Signing out should redirect the user to the login page. Ensure that protected routes are no longer accessible.
+  - **Main Game View:**
+    - From the Character Account page, click on a character to enter the main game view
+    - Ensure that character details, images, and stories are accurate
+    - For new characters, a beginner story should be shown
+    - Test sending inputs to the AI and confirm responses appear in order
+    - If the AI response contains *combat begins*, verify that a popup appears to initiate the battle
+    - Click "Generate Deck" and confirm that 3 cards are created
+  - **Combat Testing:**
+    - Ensure that clicking on cards plays the correct sound effects
+    - Verify that playing cards reduces the boss's health appropriately
+
+
   
  
 - **Capture Evidence:** Take screenshots at key steps:
