@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -110,6 +111,16 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate email and password
+	if strings.TrimSpace(requestData.Email) == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+	if strings.TrimSpace(requestData.Password) == "" {
+		http.Error(w, "Password is required", http.StatusBadRequest)
 		return
 	}
 

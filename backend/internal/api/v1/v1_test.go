@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-// Removed duplicate Character struct declaration to avoid redeclaration error.
-
 func loadEnv() error {
 	file, err := os.Open("../../config/.env")
 	if err != nil {
@@ -59,7 +57,7 @@ func TestRoutes(t *testing.T) {
 		{"POST", "/card", http.StatusOK, `{"prompt":"Test card", "character_id":1, "user_id": 1}`},
 		{"POST", "/getNewCharacter", http.StatusOK, `{"name":"Hero", "user_id": "1", "adventure_description": "A hero's journey"}`},
 		{"POST", "/signup", http.StatusOK, fmt.Sprintf(`{"email":"test%d@example.com", "password":"password123"}`, timestamp)},
-		{"POST", "/boss", http.StatusOK, `{"level":1, "user_id": 1}`},
+		{"POST", "/boss", http.StatusOK, `{"level":1, "user_id": 1, "prompt": "A fierce dragon"}`},
 		{"GET", "/invalid", http.StatusNotFound, ""},
 	}
 
@@ -81,6 +79,11 @@ func TestRoutes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create request: %v", err)
 		}
+		token, err := GenerateJWT(1) // Use a test user ID (e.g., 1)
+		if err != nil {
+			t.Fatalf("could not generate test token: %v", err)
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
 
 		rr := httptest.NewRecorder()
 		handler.ServeHTTP(rr, req)
@@ -253,4 +256,128 @@ func TestRoutes(t *testing.T) {
 			t.Logf("- %s", test)
 		}
 	}
+
+	t.Log("\n\n=== End of TestRoutes ===\n\n")
+}
+
+func TestMiddlewareWithoutValidToken(t *testing.T) {
+	// Load environment variables
+	if err := loadEnv(); err != nil {
+		t.Fatalf("Failed to load environment variables: %v", err)
+	}
+
+	handler := Routes()
+
+	// Create a test request without the Authorization header
+	req, err := http.NewRequest("GET", "/character/1", nil)
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer invalid_token")
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Check that the middleware rejects the request with a 401 Unauthorized status
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("❌ Middleware failed: got %v, want %v", status, http.StatusUnauthorized)
+	} else {
+		t.Logf("✅ Middleware correctly rejected request without Authorization header: got %v", status)
+	}
+
+	// Optionally, check the response body for the error message
+	expectedError := `{"error":"Invalid or expired token"}`
+	actualBody := strings.TrimSpace(rr.Body.String()) // Trim whitespace and newlines
+	if actualBody != expectedError {
+		t.Errorf("❌ Middleware response body mismatch: got %v, want %v", actualBody, expectedError)
+	} else {
+		t.Logf("✅ Middleware response body is correct: %v", actualBody)
+	}
+
+	t.Log("\n\n=== End of TestMiddlewareWithoutValidToken ===\n\n")
+}
+
+func TestBadRequests(t *testing.T) {
+	// Load environment variables
+	if err := loadEnv(); err != nil {
+		t.Fatalf("Failed to load environment variables: %v", err)
+	}
+
+	handler := Routes()
+
+	tests := []struct {
+		method         string
+		url            string
+		expectedStatus int
+		body           string
+		description    string
+	}{
+		{"POST", "/signup", http.StatusBadRequest, `{"email":""}`, "Missing password in signup request"},
+		{"POST", "/signup", http.StatusBadRequest, `{"password":"password123"}`, "Missing email in signup request"},
+		{"GET", "/characters?user_id=invalid", http.StatusBadRequest, "", "Invalid user_id in query parameter"},
+		{"POST", "/card", http.StatusBadRequest, `{"prompt":"Test card", "character_id":"invalid", "user_id":1}`, "Invalid character_id in card creation request"},
+		{"POST", "/getNewCharacter", http.StatusBadRequest, `{"name":""}`, "Missing user_id and adventure_description in new character request"},
+		{"POST", "/boss", http.StatusBadRequest, `{"level":"invalid", "user_id":1}`, "Invalid level in boss creation request"},
+		{"GET", "/nonexistent", http.StatusNotFound, "", "Nonexistent endpoint"},
+	}
+
+	var passedTests []string
+	var failedTests []string
+
+	for _, test := range tests {
+		var req *http.Request
+		var err error
+
+		if test.body != "" {
+			req, err = http.NewRequest(test.method, test.url, strings.NewReader(test.body))
+			req.Header.Set("Content-Type", "application/json")
+		} else {
+			req, err = http.NewRequest(test.method, test.url, nil)
+		}
+
+		if err != nil {
+			t.Fatalf("could not create request: %v", err)
+		}
+
+		// Add a valid token for protected routes
+		token, err := GenerateJWT(1) // Use a test user ID (e.g., 1)
+		if err != nil {
+			t.Fatalf("could not generate test token: %v", err)
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
+
+		// Check HTTP status code
+		if status := rr.Code; status != test.expectedStatus {
+			t.Errorf("❌ Test failed for %s %s (%s): got %v, want %v", test.method, test.url, test.description, status, test.expectedStatus)
+			failedTests = append(failedTests, fmt.Sprintf("%s %s (%s)", test.method, test.url, test.description))
+		} else {
+			t.Logf("✅ Test passed for %s %s (%s): got %v", test.method, test.url, test.description, status)
+			passedTests = append(passedTests, fmt.Sprintf("%s %s (%s)", test.method, test.url, test.description))
+		}
+	}
+
+	// Print summary
+	t.Logf("\n--- Test Summary ---")
+	t.Logf("✅ Passed: %d", len(passedTests))
+	t.Logf("❌ Failed: %d", len(failedTests))
+
+	if len(failedTests) > 0 {
+		t.Logf("\n❌ Failed Tests:")
+		for _, test := range failedTests {
+			t.Logf("- %s", test)
+		}
+	}
+
+	if len(passedTests) > 0 {
+		t.Logf("\n✅ Passed Tests:")
+		for _, test := range passedTests {
+			t.Logf("- %s", test)
+		}
+	}
+
+	t.Log("\n\n=== End of TestBadRequests ===\n\n")
 }
