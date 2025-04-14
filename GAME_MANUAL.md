@@ -33,7 +33,7 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - Click on "Sign Up" on the login page
    - Enter your email and password
    - Click "Create Account" to register
-   - Alternatively, use OAuth to log in with your Google account
+   - Alternatively, use OAuth to log in with your Github account. Note: While visible, other oauth options are not yet implemented.
 
 2. **Logging In**
    - Enter your email and password
@@ -48,6 +48,10 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - Choose your preferred theme (fantasy, cyberpunk, horror, etc.)
    - Click "Create Character" and wait for your character image to generate
    - The AI will use your description to create a unique character image
+2. **Use Existing Character**:
+  - Upon logging in, if user has characters they will appear.
+  - Clicking a character will open the character, and present a play button to continue that characters journey.
+  - Upon pressing play the user will be taken to the main game view where they can chat with the story ai
 
 ## Gameplay Guide
 
@@ -57,14 +61,35 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - Click the "Generate Deck" button to create your starting deck
    - Wait for all three cards to generate (this may take a few moments)
    - Your deck will be based on your character's description
-
-2. **Understanding Card Types**
+2. **Begin Chating with AI**:
+   - For new characters, a intro story will be presented in text chat
+   - Read the AI intro and following text responses
+   - After AI has posted a story response, in the textbox below the story type your response for what action you want to take.
+   - Press send to submit your response, do not send a new response before ai has given a response back
+3. **Story Interactions**:
+   - As you progress through the story, if the story warrants the ai may initiate a battle.
+   - When a battle is initiated a box will popup on screen asking you to enter the battle.
+   - Clicking start boss battle will take you to the boss battle page
+4. **Boss Battle Flow:**
+   - In the boss battle, wait for AI to generate an image of a boss.
+   - Then you may click deck button to view your deck.
+   - Press a card to play the card
+   - Upon pressing a card, the card will go on cooldown making it unplayable until time refreashes
+   - The boss will attack you after you play cards
+   - see Combat System section for more details
+   Defeating Boss:
+      - Once a boss hits zero hp, a box on screen will appear offering a reward
+      - A new card will be generated based on the boss you defeated wait for the card to generate before accepting
+      - Upon accepting a card, the user will be brought back to main game page to continue interacting with ai
+    
+Game Attributes:
+1. **Understanding Card Types**
    - **Attack Cards**: Deal damage to enemies
-   - **Ability Cards**: Perform special one-time actions
+   - **Ability Cards**: Perform special actions
    - **Power Cards**: Apply lasting effects
    - Each card has a mana cost and unique effects
 
-3. **Game Interface**
+2. **Game Interface**
    - Health and mana bars at the top of the screen
    - Card hand display at the bottom
    - Text input box for story interactions
@@ -73,7 +98,7 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
 ### Combat System
 1. **Turn-Based Combat**
    - Player always goes first
-   - Play cards by dragging them to the play area
+   - Play cards by pressing them in the deck
    - Each card has a mana cost
    - Monitor your health and mana bars
    - End your turn when ready
@@ -85,15 +110,16 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - **Keywords**: Special effects with consistent rules
 
 ### Game Modes
-1. **Hard Beans (Roguelike)**
+1. **Hard Beans (Roguelike, Coming Soon)**
    - One life per run
    - Permanent death upon defeat
    - More challenging gameplay
    - Realistic health and stamina
+   - Note: Hard Beans is not yet implemented, but will be implemented in future versions.
 
 2. **Soft Beans (Adventure)**
    - More forgiving gameplay
-   - Return to last save point upon death
+   - You are immortal, battle enemy until
    - Great for learning the game mechanics
    - Focus on story and exploration
 
@@ -109,6 +135,8 @@ Last Game is an AI-driven, dynamic roguelike deckbuilding game where your choice
    - Climb the leaderboards
 
 ## Advanced Strategies
+
+Note: Not all strategies will work with current implementation, future updates will add more combat and card features.
 
 ### Deck Building Tips
 - Balance your deck with different card types
@@ -164,7 +192,7 @@ Q: Can I change my character's theme?
 A: Each run can have a different theme, but you'll need to create a new character for a new theme.
 
 Q: Is there a way to save my favorite cards?
-A: Yes, you can save cards to your collection for use in future runs.
+A: Cards are automatically saved when earned. In the future, we may implement creating decks from cards to make card management easier but this is currently not implemented.
 
 ## Contact Information
 For additional support or feedback:
