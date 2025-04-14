@@ -5,6 +5,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import "../css/BossFightView.css";
 import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 import { Card } from "../context/GameContext";
+import CardComponent from "../components/CardComponent"; // Import the CardComponent
 
 // Boss attack types and their effects
 const BOSS_ATTACKS = [
@@ -93,6 +94,7 @@ const BossFightPage: React.FC = () => {
   const [attackAnimation, setAttackAnimation] = useState<string>("");
   const [attackMessage, setAttackMessage] = useState<string>("");
   const characterId = localStorage.getItem("characterId");
+  const [loadingNewCard, setLoadingNewCard] = useState<boolean>(false);
   
   const baseUrl = window.location.hostname.includes('localhost')
     ? 'https://lastgame-api.chirality.app' // Production URL
@@ -104,6 +106,7 @@ const BossFightPage: React.FC = () => {
   const [showPlayerAttackPopup, setShowPlayerAttackPopup] = useState<boolean>(false);
   const [playerAttack, setPlayerAttack] = useState<{name: string, damage: number, effect: string, isWeakened: boolean, isExposed: boolean, isConfused: boolean} | null>(null);
   const [cooldownTimers, setCooldownTimers] = useState<{[key: number]: number}>({});
+  const [newCard, setNewCard] = useState<JSONCard | null>(null); // State to store the new card
 
   const playSoundEffect = async (soundTrack: string | null) => {
     if (!soundTrack) return;
@@ -127,21 +130,11 @@ const BossFightPage: React.FC = () => {
 
   const fetchAndCacheSound = async (soundTrack: string) => {
     try {
-      const response = await fetch(
-        `${baseUrl}/v1/soundeffect?name=${encodeURIComponent(
-          soundTrack
-        )}`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await axiosInstance.get(`/soundeffect?name=${encodeURIComponent(soundTrack)}`, {
+        responseType: "blob", // Ensure the response is treated as a binary blob
+      });
 
-      if (!response.ok) {
-        console.error("Failed to fetch sound effect:", await response.text());
-        return;
-      }
-
-      const blob = await response.blob();
+      const blob = response.data;
       const soundUrl = URL.createObjectURL(blob);
       localStorage.setItem(`sound_${soundTrack}`, soundUrl);
 
@@ -228,12 +221,34 @@ const BossFightPage: React.FC = () => {
     }
   }, [boss]);
 
-  // New effect: Navigate back to main view when boss health reaches 0
   useEffect(() => {
+    const createCardFromBoss = async () => {
+      if (!boss || !boss.description) return;
+
+      // Close the deck if it's open
+      setIsDeckOpen(false);
+
+      // Show a "Generating..." state
+      setNewCard(null); // Clear any existing card
+      setLoadingNewCard(true); // Show loading state
+
+      try {
+        const response = await axiosInstance.post("/card", {
+          prompt: boss.description,
+          character_id: Number(characterId),
+        });
+        setNewCard(response.data); // Store the new card in state
+      } catch (error) {
+        console.error("Error creating card:", error);
+      } finally {
+        setLoadingNewCard(false); // Stop the loading state
+      }
+    };
+
     if (bossHealth === 0) {
-      navigate("/main");
+      createCardFromBoss();
     }
-  }, [bossHealth, navigate]);
+  }, [bossHealth, boss, characterId]);
 
   const shuffle = (array: ExtendedCard[]): ExtendedCard[] => {
     const shuffled = [...array];
@@ -464,6 +479,10 @@ const BossFightPage: React.FC = () => {
 
   const handleBackToMain = () => navigate("/main");
 
+  const handleAcceptCard = () => {
+    navigate("/main"); // Navigate back to the main page
+  };
+
   useEffect(() => {
     const preloadSoundEffects = async () => {
       const uniqueSoundTracks = new Set<string>();
@@ -620,6 +639,39 @@ const BossFightPage: React.FC = () => {
             {playerAttack.isExposed && <p>Your attack was amplified by 25% due to the boss being exposed!</p>}
             {playerAttack.isConfused && <p>You were confused and played a random card!</p>}
             <p>{playerAttack.effect}</p>
+          </div>
+        </div>
+      )}
+
+      {newCard === null && bossHealth === 0 && (
+        <div className="new-card-popup">
+          <div className="new-card-content">
+            <h3>Generating your reward...</h3>
+            <ProgressSpinner style={{ width: "50px", height: "50px" }} strokeWidth="5" />
+          </div>
+        </div>
+      )}
+
+      {newCard && (
+        <div className="new-card-popup">
+          <div className="new-card-content">
+            <h3>Congratulations! You earned a new card:</h3>
+            <div className="card-preview">
+              <CardComponent
+                card={{
+                  id: newCard.card_id,
+                  name: newCard.title,
+                  type: newCard.type_id.toString(),
+                  level: newCard.power_level,
+                  mana: newCard.mana_cost,
+                  effect: newCard.card_description,
+                  image: newCard.image_url,
+                }}
+              />
+            </div>
+            <button className="accept-button" onClick={handleAcceptCard}>
+              Accept
+            </button>
           </div>
         </div>
       )}
