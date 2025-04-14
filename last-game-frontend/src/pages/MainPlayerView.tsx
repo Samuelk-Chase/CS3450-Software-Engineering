@@ -202,6 +202,7 @@ const MainPlayerView: React.FC = () => {
       if (aiMessage.toLowerCase().includes("*combat begins*") || aiMessage.toLowerCase().includes("*combat begins.*") ) {
         console.log("Combat begins");
         const response = await axiosInstance.post("/boss", { prompt: aiMessage });
+        console.log("boss response", response.data);
         setNewBoss(response.data);
         setShowBossPopup(true);
       }
