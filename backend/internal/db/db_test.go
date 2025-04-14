@@ -782,7 +782,7 @@ func TestInsertStory(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := storydb.InsertStory(tt.story)
+			_, err := storydb.InsertStory(tt.story)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("InsertStory() error = %v, wantErr %v", err, tt.wantErr)
@@ -863,7 +863,7 @@ func TestGetStoriesByCharacterID(t *testing.T) {
 	}
 
 	for _, story := range stories {
-		err := storydb.InsertStory(story)
+		_, err := storydb.InsertStory(story)
 		if err != nil {
 			t.Fatalf("Failed to create test story: %v", err)
 		}

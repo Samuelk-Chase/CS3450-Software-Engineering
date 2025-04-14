@@ -15,24 +15,29 @@ type Story struct {
 	CharacterID int    `json:"character_id"`       // Add character ID field
 	Prompt      string `json:"prompt_text"`
 	Response    string `json:"response_text"`
+	CreatedAt   string `json:"created_at"` // Timestamp of story creation
 }
 
-func InsertStory(story Story) error {
+func InsertStory(story Story) (*Story, error) {
 	// Input validation
 	if story.Prompt == "" {
-		return fmt.Errorf("failed to insert story: prompt cannot be empty")
+		return nil, fmt.Errorf("failed to insert story: prompt cannot be empty")
 	}
 	if story.CharacterID <= 0 {
-		return fmt.Errorf("failed to insert story: invalid character ID")
+		return nil, fmt.Errorf("failed to insert story: invalid character ID")
 	}
 
 	supabaseURL := os.Getenv("SUPABASE_URL") + "/rest/v1/storyEntry"
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-	// Create request body matching the database schema
-	body, err := json.Marshal(story)
+	// Create request body excluding `created_at`
+	body, err := json.Marshal(map[string]interface{}{
+		"prompt_text":   story.Prompt,
+		"response_text": story.Response,
+		"character_id":  story.CharacterID,
+	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	fmt.Println("📤 Inserting story:", story)
@@ -41,18 +46,18 @@ func InsertStory(story Story) error {
 	// Make request to Supabase
 	req, err := http.NewRequest("POST", supabaseURL, bytes.NewBuffer(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("apikey", supabaseKey)
 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
-	req.Header.Set("Prefer", "return=representation") // Ensure response contains `card_id`
+	req.Header.Set("Prefer", "return=representation") // Ensure response contains the inserted story
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -61,19 +66,22 @@ func InsertStory(story Story) error {
 	fmt.Println("Supabase Response:", string(respBody))
 
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to insert story, status: %d", resp.StatusCode)
+		return nil, fmt.Errorf("failed to insert story, status: %d", resp.StatusCode)
 	}
 
-	// Parse response to get card_id
+	// Parse response to get the inserted story
 	var insertedStories []Story
 	if err := json.NewDecoder(bytes.NewReader(respBody)).Decode(&insertedStories); err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(insertedStories) == 0 {
-		return errors.New("story insertion failed")
+		return nil, errors.New("story insertion failed")
 	}
-	return nil // Successfully inserted story, no need to return the ID
+
+	// Log the inserted story
+	fmt.Println("Inserted story:", insertedStories[0])
+	return &insertedStories[0], nil // Return the inserted story
 }
 
 func GetStoriesByCharacterID(characterID int) ([]Story, error) {

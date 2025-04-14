@@ -39,6 +39,7 @@ func Routes() http.Handler {
 		protected.Post("/intro", generateIntro)             // Returns an introduction story as JSON
 		protected.Post("/image", generateImage)             // Returns a generated image as JSON
 		protected.Post("/uploadCharacterImage", uploadCharacterImage)
+		protected.Get("/stories", getStoriesByCharacterID) // Fetch stories by character ID
 
 		// Serve character images
 		protected.Get("/character_image/{name}", func(w http.ResponseWriter, r *http.Request) {

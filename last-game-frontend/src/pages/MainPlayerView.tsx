@@ -41,6 +41,9 @@ const MainPlayerView: React.FC = () => {
   const characterId = localStorage.getItem("characterId");
 
   const didAddIntroRef = useRef(false);
+  console.log("userId", userId);
+  console.log("characterId", characterId);
+  console.log("chathistory",chatHistory)
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
@@ -105,27 +108,45 @@ const MainPlayerView: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!didAddIntroRef.current) {
-      const storedIntro = localStorage.getItem("storyIntro");
-      if (storedIntro) {
-        let introText = storedIntro;
-        try {
-          const parsed = JSON.parse(storedIntro);
-          if (parsed.intro) {
-            introText = parsed.intro;
-          }
-        } catch (e) {
-          console.warn("Could not parse stored intro as JSON:", e);
+    const fetchStories = async () => {
+      if (!characterId) return;
+
+      try {
+        const response = await axiosInstance.get(`/stories?character_id=${characterId}`);
+        const stories = response.data;
+        console.log("Fetched stories:", stories);
+
+        if (stories.length > 0) {
+          // Map the stories to the chat history format
+          const mappedChatHistory = stories.flatMap((story: { response_text: string; created_at: string; prompt_text: string }) => [
+            {
+              text: story.prompt_text, // Add the user prompt first
+              timestamp: story.created_at, // Use created_at directly
+              sender: "user",
+            },
+            {
+              text: story.response_text, // Add the AI response next
+              timestamp: story.created_at, // Use created_at directly
+              sender: "AI",
+            },
+          ]);
+
+          // Sort the chat history by timestamp
+          const sortedChatHistory = mappedChatHistory.sort(
+            (a: { timestamp: string | number | Date; }, b: { timestamp: string | number | Date; }) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
+
+          setChatHistory(sortedChatHistory);
+        } else {
+          console.warn("No stories found for this character.");
         }
-        const timestamp = new Date().toLocaleTimeString();
-        setChatHistory(prevHistory => [
-          ...prevHistory,
-          { text: introText, timestamp, sender: "AI" }
-        ]);
+      } catch (error) {
+        console.error("Error fetching stories:", error);
       }
-      didAddIntroRef.current = true;
-    }
-  }, []);
+    };
+
+    fetchStories();
+  }, [characterId]);
 
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) {
@@ -174,7 +195,8 @@ const MainPlayerView: React.FC = () => {
     setGameText("AI is generating content...");
 
     try {
-      const response = await axiosInstance.post("/story", { prompt: userResponse });
+      
+      const response = await axiosInstance.post("/story", { prompt: userResponse, character_id: characterId });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
