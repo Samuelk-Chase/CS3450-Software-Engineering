@@ -83,6 +83,69 @@ Our testing primarily focused on backend unit tests to verify the functionality 
 
 We also implemented tests to ensure that invalid tokens were correctly rejected by our authentication middleware. In addition, we tested how these endpoints handled malformed or incomplete requests to verify that proper error responses were returned.
 
+We also tested to make sure database endpoints were working correctly in db_test.go This test file validates the functionality of various database operations, including user, character, card, and story management. It ensures that the database operations handle both valid and invalid inputs correctly, covering edge cases and error scenarios. Here are the things we tested for database.
+
+- 1. **Environment Loading**
+    - **Function Tested**: `loadEnv`
+    - **Purpose**: Ensures that environment variables are correctly loaded from a `.env` file.
+    - **Key Scenarios**:
+      - Valid `.env` file with proper key-value pairs.
+      - Handling of comments and empty lines in the `.env` file.
+
+- 2. **User Management**
+    - **Function Tested**: `InsertUser`, `GetUserPasswordHash`
+    - **Purpose**: Validates user creation and password hash retrieval.
+    - **Key Scenarios**:
+      - **`TestInsertUser`**:
+        - Valid user creation.
+        - Duplicate email detection.
+        - Invalid email format handling.
+      - **`TestGetUserPasswordHash`**:
+        - Retrieval of password hash for valid users.
+        - Handling of non-existent users.
+
+- 3. **Character Management**
+    - **Functions Tested**: `InsertCharacter`, `GetCharacterByID`, `GetUserCharacters`
+    - **Purpose**: Validates character creation and retrieval.
+    - **Key Scenarios**:
+      - **`TestInsertCharacter`**:
+        - Valid character creation.
+        - Handling invalid user IDs.
+      - **`TestGetCharacterByID`**:
+        - Retrieval of characters by valid IDs.
+        - Error handling for invalid character IDs.
+      - **`TestGetUserCharacters`**:
+        - Retrieval of all characters associated with a user.
+        - Handling of non-existent users.
+
+- 4. **Card Management**
+    - **Functions Tested**: `InsertCard`, `GetCardsByCharacterID`
+    - **Purpose**: Validates card creation and retrieval.
+    - **Key Scenarios**:
+      - **`TestInsertCard`**:
+        - Valid card creation.
+        - Handling invalid character IDs.
+      - **`TestGetCardsByCharacterID`**:
+        - Retrieval of all cards associated with a character.
+        - Handling of invalid character IDs.
+
+
+
+- 5. **Story Management**
+    - **Functions Tested**: `InsertStory`, `GetStoriesByCharacterID`
+    - **Purpose**: Validates story creation and retrieval.
+    - **Key Scenarios**:
+      - **`TestInsertStory`**:
+        - Valid story creation.
+        - Handling invalid character IDs.
+        - Validation of empty prompts.
+      - **`TestGetStoriesByCharacterID`**:
+        - Retrieval of the most recent stories for a character (limited to 5).
+        - Handling of invalid character IDs.
+        - Ensuring stories are ordered by most recent first.
+
+---
+
 Our test coverage still has room for improvement. There are several edge cases and additional helper functions that we haven't tested yet. Testing AI-related endpoints was more limited, mainly due to cost concerns.
 
 Overall, the endpoints performed well during testing. The biggest challenge was setting up the tests in Go, as we were relatively new to the language. We had to make several adjustments to the endpoints during the process. Most issues we encountered were related to handling bad requests—for example, missing or incorrectly formatted fields in the request body. In response, we added additional validation and improved error handling.
@@ -105,12 +168,17 @@ During middleware testing, we also identified an issue with how Supabase tokens 
 ### 2. Run Unit and Integration Tests
 
 - **Backend Tests:**  
-  Navigate to `backend/internal/api/v1` and run the tests using:  
+  Endpoint Test: Navigate to `backend/internal/api/v1` and run the tests using:  
   ```bash
   go test -v
   ```
-  Note: Console output for tests may be extensive as our endpoints log alot, so you may need to scroll up to view the summaries for each test. Server does not need to be running for the tests to work, go test -v should be fine.
+  Note: Console output for tests may be extensive as our endpoints log a lot, so you may need to scroll up to view the summaries for each test. Server does not need to be running for the tests to work, go test -v should be fine.
 
+  Database Test: Navigate to `backend/internal/db` and run the db tests using:
+  ```bash
+  go test
+  ```
+  
 - **Frontend Tests:**  
   Currently, frontend tests are not implemented. We plan to add them so they can be executed with:  
   ```bash
