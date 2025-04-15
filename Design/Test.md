@@ -146,7 +146,7 @@ We also tested to make sure database endpoints were working correctly in db_test
 
 ---
 
-Our test coverage still has room for improvement. There are several edge cases and additional helper functions that we haven't tested yet. Testing AI-related endpoints was more limited, mainly due to cost concerns.
+Our test coverage still has room for a lot of room for improvement. Our endpoints showed 45% statement coverage, and our database code showed 79% coverage. There are several edge cases and additional helper functions that we haven't tested yet. Testing AI-related endpoints was more limited, mainly due to cost concerns.
 
 Overall, the endpoints performed well during testing. The biggest challenge was setting up the tests in Go, as we were relatively new to the language. We had to make several adjustments to the endpoints during the process. Most issues we encountered were related to handling bad requests—for example, missing or incorrectly formatted fields in the request body. In response, we added additional validation and improved error handling.
 
