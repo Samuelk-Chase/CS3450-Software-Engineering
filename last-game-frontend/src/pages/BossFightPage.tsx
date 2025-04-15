@@ -55,6 +55,7 @@ interface Character {
   max_mana: number;
   image_url: string;
   description: string;
+  game_mode: number;
 }
 
 interface JSONCard {
@@ -316,17 +317,24 @@ const BossFightPage: React.FC = () => {
     
     // Check if player is defeated
     if (newHealth === 0) {
-      // Delete character from database
-      try {
-        await axiosInstance.post("/deleteCharacter", {
-          character_id: localCharacter.character_id
-        });
-        // Show defeat message and navigate to character account page
-        alert("Your character has been defeated and deleted!");
-        navigate("/character-account");
-      } catch (error) {
-        console.error("Failed to delete character:", error);
-        alert("Failed to delete character. Please try again.");
+      // Check game mode - only delete character in hard mode (1)
+      if (localCharacter.game_mode === 1) {
+        // Delete character from database
+        try {
+          await axiosInstance.post("/deleteCharacter", {
+            character_id: localCharacter.character_id
+          });
+          // Show defeat message and navigate to character account page
+          alert("Your character has been defeated and deleted!");
+          navigate("/character-account");
+        } catch (error) {
+          console.error("Failed to delete character:", error);
+          alert("Failed to delete character. Please try again.");
+        }
+      } else {
+        // In easy mode, just go back to main page
+        alert("Your character has been defeated! Try again!");
+        navigate("/main");
       }
       return;
     }
@@ -534,7 +542,7 @@ const BossFightPage: React.FC = () => {
   return (
     <div className="boss-fight-container">
       <div className="stats-section">
-        <div className="stats-box player-stats">
+        <div className="stats-box">
           <h3>{localCharacter?.character_name ?? "Warmonger"} Stats</h3>
           <p><strong>Health:</strong> {localCharacter?.current_hp ?? 100}</p>
           <p><strong>Mana:</strong> {localCharacter?.current_mana ?? 100}</p>
@@ -553,7 +561,7 @@ const BossFightPage: React.FC = () => {
           )}
         </div>
 
-        <div className="stats-box boss-stats">
+        <div className="stats-box">
           <h3>{boss?.name} Stats</h3>
           <p><strong>Health:</strong> {bossHealth}/{maxBossHealth}</p>
           <p><strong>Mana:</strong> {boss?.mana ?? "???"}</p>
@@ -638,10 +646,10 @@ const BossFightPage: React.FC = () => {
         <div className="attack-popup">
           <div className="attack-popup-content">
             <h3>{boss?.name} used {currentAttack.name}!</h3>
-            <p>Dealt {currentAttack.damage} damage</p>
-            {currentAttack.isWeakened && <p>The attack was weakened by 25%!</p>}
-            {currentAttack.isExposed && <p>The attack was amplified by 25% due to being exposed!</p>}
-            {currentAttack.effect && <p>Applied {currentAttack.effect} effect</p>}
+            <p className="damage">Dealt {currentAttack.damage} damage</p>
+            {currentAttack.isWeakened && <p className="weakened">The attack was weakened by 25%!</p>}
+            {currentAttack.isExposed && <p className="exposed">The attack was amplified by 25% due to being exposed!</p>}
+            {currentAttack.effect && <p className="effect">Applied {currentAttack.effect} effect</p>}
           </div>
         </div>
       )}
@@ -650,11 +658,11 @@ const BossFightPage: React.FC = () => {
         <div className="attack-popup">
           <div className="attack-popup-content">
             <h3>You used {playerAttack.name}!</h3>
-            <p>Dealt {playerAttack.damage} damage</p>
-            {playerAttack.isWeakened && <p>Your attack was weakened by 25%!</p>}
-            {playerAttack.isExposed && <p>Your attack was amplified by 25% due to the boss being exposed!</p>}
-            {playerAttack.isConfused && <p>You were confused and played a random card!</p>}
-            <p>{playerAttack.effect}</p>
+            <p className="damage">Dealt {playerAttack.damage} damage</p>
+            {playerAttack.isWeakened && <p className="weakened">Your attack was weakened by 25%!</p>}
+            {playerAttack.isExposed && <p className="exposed">Your attack was amplified by 25% due to the boss being exposed!</p>}
+            {playerAttack.isConfused && <p className="confused">You were confused and played a random card!</p>}
+            <p className="effect">{playerAttack.effect}</p>
           </div>
         </div>
       )}
