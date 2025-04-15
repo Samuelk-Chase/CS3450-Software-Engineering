@@ -151,6 +151,9 @@ const MainPlayerView: React.FC = () => {
         }
       }
       
+      // Reverse the order so the most recent is at the bottom
+      formattedHistory.reverse();
+      
       console.log("Formatted history:", formattedHistory);
       setChatHistory(formattedHistory);
     } catch (error) {
