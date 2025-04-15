@@ -35,12 +35,11 @@ const MainPlayerView: React.FC = () => {
   const [deck, setDeck] = useState<Card[]>([]);
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const characterId = localStorage.getItem("characterId");
-
-  const didAddIntroRef = useRef(false);
 
   const generateDeck = async () => {
     if (!characterId || !character) return;
@@ -104,28 +103,62 @@ const MainPlayerView: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (!didAddIntroRef.current) {
-      const storedIntro = localStorage.getItem("storyIntro");
-      if (storedIntro) {
-        let introText = storedIntro;
-        try {
-          const parsed = JSON.parse(storedIntro);
-          if (parsed.intro) {
-            introText = parsed.intro;
-          }
-        } catch (e) {
-          console.warn("Could not parse stored intro as JSON:", e);
+  const fetchStoryHistory = async () => {
+    if (!characterId) return;
+    setIsLoadingHistory(true);
+    try {
+      const response = await axiosInstance.post("/storyHistory", {
+        character_id: Number(characterId)
+      });
+      const stories = response.data;
+      console.log("Fetched stories:", stories);
+      
+      const cleanText = (text: string) => {
+        return text
+          .replace(/[{}"]/g, '') // Remove {, }, and "
+          .replace(/intro/gi, '') // Remove 'intro' (case insensitive)
+          .trim(); // Remove extra whitespace
+      };
+      
+      const formattedHistory = [];
+      if (Array.isArray(stories)) {
+        // Start with just the first response (skip first prompt)
+        if (stories.length >= 2) {
+          formattedHistory.push({
+            text: cleanText(stories[1]),
+            timestamp: new Date().toLocaleTimeString(),
+            sender: "AI"
+          });
         }
-        const timestamp = new Date().toLocaleTimeString();
-        setChatHistory(prevHistory => [
-          ...prevHistory,
-          { text: introText, timestamp, sender: "AI" }
-        ]);
+        
+        // Process the rest of the entries
+        for (let i = 2; i < stories.length; i += 2) {
+          if (stories[i]) {
+            formattedHistory.push({
+              text: cleanText(stories[i]),
+              timestamp: new Date().toLocaleTimeString(),
+              sender: "user"
+            });
+          }
+          
+          if (stories[i + 1]) {
+            formattedHistory.push({
+              text: cleanText(stories[i + 1]),
+              timestamp: new Date().toLocaleTimeString(),
+              sender: "AI"
+            });
+          }
+        }
       }
-      didAddIntroRef.current = true;
+      
+      console.log("Formatted history:", formattedHistory);
+      setChatHistory(formattedHistory.reverse());
+    } catch (error) {
+      console.error("Error fetching story history:", error);
+    } finally {
+      setIsLoadingHistory(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) {
@@ -154,6 +187,7 @@ const MainPlayerView: React.FC = () => {
 
         setCharacter(data);
         fetchDeck();
+        fetchStoryHistory(); // Fetch story history when character is loaded
       } catch (error) {
         console.error("Error fetching character:", error);
       }
@@ -167,14 +201,17 @@ const MainPlayerView: React.FC = () => {
 
     const timestamp = new Date().toLocaleTimeString();
     setChatHistory((prevHistory) => [
+      { text: userResponse, timestamp, sender: "user" },
       ...prevHistory,
-      { text: `You chose to: ${userResponse}`, timestamp, sender: "user" },
     ]);
 
     setGameText("AI is generating content...");
 
     try {
-      const response = await axiosInstance.post("/story", { prompt: userResponse });
+      const response = await axiosInstance.post("/story", { 
+        prompt: userResponse,
+        character_id: Number(characterId)
+      });
       const aiMessage = response.data.response;
 
       if (aiMessage.includes("*Receive card reward*")) {
@@ -197,7 +234,6 @@ const MainPlayerView: React.FC = () => {
         setShowCardPopup(true);
         setDeck([...deck, mappedCard]);
       }
-      console.log("message ia",aiMessage.toLowerCase());
 
       if (aiMessage.toLowerCase().includes("*combat begins*") || aiMessage.toLowerCase().includes("*combat begins.*") ) {
         console.log("Combat begins");
@@ -211,8 +247,8 @@ const MainPlayerView: React.FC = () => {
       setGameText("");
       const aiTimestamp = new Date().toLocaleTimeString();
       setChatHistory((prevHistory) => [
+        { text: aiMessage, timestamp: aiTimestamp, sender: "AI" },
         ...prevHistory,
-        { text: `AI: ${aiMessage}`, timestamp: aiTimestamp, sender: "AI" },
       ]);
     } catch (error) {
       console.error("Error fetching AI response", error);
@@ -331,14 +367,26 @@ const MainPlayerView: React.FC = () => {
 
           <div className="text-container">
             <div className="chat-history">
-              {chatHistory.map((entry, index) => (
-                <div key={index} className={`chat-entry ${entry.sender}`}>
-                  <span className="timestamp">[{entry.timestamp}]</span>
-                  <span className="chat-text">
-                    {entry.text.replace("*Receive card reward*", "").replace("*Boss combat begins.*", "")}
-                  </span>
+              {isLoadingHistory ? (
+                <div className="loading-indicator">
+                  <ProgressSpinner />
+                  <p>Loading story history...</p>
                 </div>
-              ))}
+              ) : (
+                chatHistory.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`chat-message ${message.sender.toLowerCase()}`}
+                  >
+                    <span className="timestamp">{message.timestamp}</span>
+                    <p>
+                      {message.sender === "user" 
+                        ? message.text.startsWith("You chose to:") ? message.text : `You: ${message.text}`
+                        : message.text.startsWith("AI:") ? message.text : message.text.replace("*Receive card reward*", "").replace("*combat begins*", "").replace("*Combat begins.*", "")}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="text-content">
@@ -351,6 +399,11 @@ const MainPlayerView: React.FC = () => {
                 placeholder="Type your response..."
                 value={userResponse}
                 onChange={(e) => setUserResponse(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSubmitResponse();
+                  }
+                }}
               />
               <button onClick={handleSubmitResponse}>Submit</button>
             </div>
