@@ -892,7 +892,7 @@ func TestGetStoriesByCharacterID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stories, err := storydb.GetStoriesByCharacterID(tt.characterID)
+			stories, err := storydb.GetStoriesByCharacterID(tt.characterID, 5)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetStoriesByCharacterID() error = %v, wantErr %v", err, tt.wantErr)
