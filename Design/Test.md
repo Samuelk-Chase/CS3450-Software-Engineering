@@ -69,7 +69,7 @@ In this document, we outline our approach and strategy for thoroughly testing ou
   - No user can access or modify data belonging to another account.
 
 
-### What We Actually Tested
+## What We Actually Tested
 
 Our testing primarily focused on backend unit tests to verify the functionality of key server endpoints. We tested the following:
 
@@ -145,14 +145,15 @@ We also tested to make sure database endpoints were working correctly in db_test
         - Ensuring stories are ordered by most recent first.
 
 ---
-
+**Test Coverage:**
 Our test coverage still has room for a lot of room for improvement. Our endpoints showed 45% statement coverage, and our database code showed 79% coverage. There are several edge cases and additional helper functions that we haven't tested yet. Testing AI-related endpoints was more limited, mainly due to cost concerns.
 
 Overall, the endpoints performed well during testing. The biggest challenge was setting up the tests in Go, as we were relatively new to the language. We had to make several adjustments to the endpoints during the process. Most issues we encountered were related to handling bad requests—for example, missing or incorrectly formatted fields in the request body. In response, we added additional validation and improved error handling.
 
+**Manual Testing:**
 In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection. Dealing with AI responses is something we still worry about, because AI isn't always perfect at responding how you would wish, like in the case for initiating the battle. So we are still worried about that not working.
 
-During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn’t sending the tokens in the expected header format, and the middleware wasn’t properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature and we were having a lot of trouble with it.
+During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn’t sending the tokens in the expected header format, and the middleware wasn’t properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature and we were having a lot of trouble with it. Every once and a while supabase key doesn't appear to play nice with our middleware. There are a variety of reason we speculate why, such as inconsitent server time, but haven't yet been able to pinpoint a solution yet. So we are worried about Oauth working.
 
 
 
@@ -160,7 +161,7 @@ During middleware testing, we also identified an issue with how Supabase tokens 
 
 ### 1. Set Up the Environment
 
-- **Clone Repositories:** Clone both the backend and `last-game-frontend` repositories.
+- **Clone Repositories:** Clone the repository at https://github.com/Samuelk-Chase/CS3450-Software-Engineering/tree/main.
 - **Install Dependencies:** Navigate to the `last-game-frontend` directory and run `npm install`.
 - **Install Go:** Ensure Go is installed before running the backend server and tests.
 - **Database Configuration:** The database and S3 bucket are already configured in our project, but may need to be added to the env file. For future testing, we plan to populate the database with additional test data. **Important:** Unit tests may not work for clones of the project since the project relies on sensitive details, such as database, AI, and AWS keys in our env file(which is not publicly available). example.env in backend and frontend outlines which data is needed, but authorized testers may need to request important data to successfully run the tests.
@@ -172,6 +173,11 @@ During middleware testing, we also identified an issue with how Supabase tokens 
   ```bash
   go test -v
   ```
+
+  - **Test Functions in `v1_test.go`:**
+  - **`TestRoutes`:** Verifies major endpoints using valid request data. A summary of passed and failed tests is printed at the end. 
+  - **`TestMiddlewareWithoutValidToken`:** Checks that the middleware correctly blocks requests lacking a valid authentication token.
+  - **`TestBadRequests`:** Sends malformed or incomplete request data to endpoints to ensure proper error handling.
   Note: Console output for tests may be extensive as our endpoints log a lot, so you may need to scroll up to view the summaries for each test. Server does not need to be running for the tests to work, go test -v should be fine.
 
   Database Test: Navigate to `backend/internal/db` and run the db tests using:
@@ -185,10 +191,7 @@ During middleware testing, we also identified an issue with how Supabase tokens 
   npm test
   ```
 
-- **Test Functions in `v1_test.go`:**
-  - **`TestRoutes`:** Verifies major endpoints using valid request data. A summary of passed and failed tests is printed at the end. 
-  - **`TestMiddlewareWithoutValidToken`:** Checks that the middleware correctly blocks requests lacking a valid authentication token.
-  - **`TestBadRequests`:** Sends malformed or incomplete request data to endpoints to ensure proper error handling.
+
 
 ### 3. Perform System-Level and Manual Testing
 
@@ -213,7 +216,7 @@ During middleware testing, we also identified an issue with how Supabase tokens 
     - Click "Create New Character"
     - Enter a name, character description, and world description
     - Confirm a loading spinner appears and is followed by a generated character with an image
-    - Navigate back to the Character Account page to confirm the character was saved
+    - Confirm the character was saved in the character selection screen
     - Verify the character is linked to the correct user via the database or by signing out and logging in again
   - **Sign Out:** Signing out should redirect the user to the login page. Ensure that protected routes are no longer accessible.
   - **Main Game View:**
@@ -226,16 +229,76 @@ During middleware testing, we also identified an issue with how Supabase tokens 
   - **Combat Testing:**
     - Ensure that clicking on cards plays the correct sound effects
     - Verify that playing cards reduces the boss's health appropriately
+    - Verify that once a boss health reaches zero a card is rewarded to player and added to deck
 
 
-  
- 
-- **Capture Evidence:** Take screenshots at key steps:
-  - **Screenshot 1:** Code coverage summary (approximately 85% for the backend and around 75% for the frontend).
-  - **Screenshot 2:** The main game screen during a live session.
-  - **Screenshot 3:** Logs from a stress test run, highlighting the successful handling of concurrent operations.
-  - **Screenshot 4:** Test results confirming database integrity and accurate S3 image URL generation.
-  -  **Other Screenshots:** Take screen shots of unexpected behavior and document steps to reproduce them. 
+#### Game Flow Walkthrough with Screenshots
+
+Below is a walkthrough of the game flow, showcasing key steps and features using screenshots. Each image demonstrates how the application should behave during manual testing. Note: Some UI features may be slightly changed in the final project for some screenshots, but should largely be consistent with the final product.
+
+### 1. Sign-Up and Login
+- **Sign-Up:** Users can create an account by filling out the required fields.
+  ![Sign-Up Screen](/images/GameViewScreenshots/signupscreenshot.png)
+- **Login:** After signing up, users can log in to access their account. Users can also use oauth to log in. Note: Currently only github is set up.
+  ![Login Screen](/images/GameViewScreenshots/LoginScreenshot.png)
+- **Successful Login:** Upon successful login, users are redirected to the Character Account page. An alert popup frest appears and when ok is pressed the user goes to character screen to view there characters if they exist.
+  ![Successful Login](/images/GameViewScreenshots/successfullogin.png)
+
+---
+### 2. Selecting a Character
+- **Character View:** After logging in users are presented with all their characters.
+  ![Clicking on a Character](/images/GameViewScreenshots/characterscreenshot.png)
+- **Character Selection:** When a user clicks on a character, a component with that characters attributes appears and a play button which when clicked will take user to the main game view.
+![Clicking on a Character](/images/GameViewScreenshots/clickingcharacter.png)
+
+---
+
+### 3. Character Creation
+- **Creating a New Character:** When users press Create Character Button on the selection screen they are brought to character creation screen. Users can create a new character by entering details like name, character description, and a word description.
+  ![Character Creation Step 1](/images/GameViewScreenshots/charactercreation2.png)
+- **Spinning Wheel:** When Create Character is pressed a loading spinner appears while the character is being generated.
+  ![Character Creation Step 2](/images/GameViewScreenshots/spinningcharacterwheel.png)
+- **New Character Added:** Once character is created, user is automatically returned to character account page with all their characters including the new one they just created.
+  ![Character Screen with New Character](/images/GameViewScreenshots/characterscreenwithnewcharacter.png)
+
+---
+
+
+
+### 4. Main Game View(character clicks play after selecting character)
+- **First-Time Game View and AI chats:** The main game screen displays the character's details and the initial story prompt written for that character and world. Users can interact with the AI to progress the story by typing in the text box and clicking submit. Sometimes after chatting with AI, the AI will initiate a battle. When this happens a popup should appear asking the user to enter the battle. When the user accepts they are taken to the battle screen.
+  ![Game View First Time](/images/GameViewScreenshots/gameviewscreenfirsttime.png)
+
+- **Generate Deck Button**: New characters with no cards can press the Generate Deck button to generate a deck of cards. Upon pressing a spinning ring is displayed while the cards are generated.
+![Generating Deck](/images/GameViewScreenshots/generatingdeck.png)
+
+- **View Deck**: After initial deck is generated the Generate Deck button is replaced with View Deck button. Clicking button displays the character's deck of cards. To close the deck press close button.
+![Open Deck Main](/images/GameViewScreenshots/opendeckmain.png)
+
+
+### 5. Battle Screen
+  - **Entering battle**: When user first goes to battle screen a spinning loading wheel should appear while a boss is generated. Once the boss is generated an image of the boss should appear.
+  ![Open Deck Main](/images/GameViewScreenshots/bosspage.png)
+  - **Combat**: User should be able to press play card button which will display the characters set of cards. Pressing an available card should close the deck and trigger an attack against the boss and lower its health. Pressing a card should also play a sound effect. After a card is used it will display a cooldown timer until in can be played again. Boss will also attack the user and lower their health.
+  ![battle deck](/images/GameViewScreenshots/openingdecktoplay.png)
+  Card Played 
+  ![card used display attack](/images/GameViewScreenshots/playingcard.png)
+  - **Boss Defeat**: Once the boss health reaches zero, a spinning wheel should appear while a card based off the boss just defeated is generated. Once it is generated the card should appear with an accept button. Pressing Accept brings user back to main game view.
+  ![reward generating](/images/GameViewScreenshots/generatingrewardatbossdeath.png)
+
+  Reward Generated:
+  ![reward generated](/images/GameViewScreenshots/cardreward.png)
+
+
+### 6. Micellaneous Actions:
+  - **Logging Out**: Pressing log out should return user to sign in page. Users who are not signed in should be redirected to sign in page when trying to access other pages besides login.
+
+  - **Viewing Game Manual**: On certain pages users may press game manual button to open a user manual for the game. 
+  ![user manual](/images/GameViewScreenshots/gamemanualingame.png)
+
+
+---
+
     
 
 ### 4. Document Outcomes
