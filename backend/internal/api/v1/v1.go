@@ -34,9 +34,10 @@ func Routes() http.Handler {
 		protected.Get("/cards/{id}", getCards)              // Returns cards for a character as JSON
 		protected.Post("/card", getCard)                    // Returns a newly created card object as JSON
 		protected.Post("/getNewCharacter", getNewCharacter) // Returns a newly created character as JSON
+		r.Post("/deleteCharacter", deleteCharacter)         // Deletes a character and returns a success message
 		protected.Post("/boss", getBoss)                    // Returns a boss object as JSON
 		protected.Post("/story", generateStory)             // Returns a story object as JSON
-    protected.Post("/storyHistory", getStoryHistory)    // Returns a story history object as JSON")
+		protected.Post("/storyHistory", getStoryHistory)    // Returns a story history object as JSON")
 		protected.Post("/intro", generateIntro)             // Returns an introduction story as JSON
 		protected.Post("/image", generateImage)             // Returns a generated image as JSON
 		protected.Post("/uploadCharacterImage", uploadCharacterImage)

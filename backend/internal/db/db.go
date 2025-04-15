@@ -285,3 +285,31 @@ func InsertUser(email, hashedPassword string) (int, error) {
 
 	return insertedUsers[0].UserID, nil // ✅ Now correctly returns user_id
 }
+
+// DeleteCharacter removes a character from the database by its ID.
+func DeleteCharacter(characterID int) error {
+	supabaseURL := fmt.Sprintf("%s/rest/v1/character?character_id=eq.%d", os.Getenv("SUPABASE_URL"), characterID)
+	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+	req, err := http.NewRequest("DELETE", supabaseURL, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+
+	req.Header.Set("apikey", supabaseKey)
+	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error executing request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("failed to delete character (status %d)", resp.StatusCode)
+	}
+
+	return nil
+}
