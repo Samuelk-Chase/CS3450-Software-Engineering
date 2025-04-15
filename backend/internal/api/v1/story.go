@@ -35,7 +35,7 @@ func generateStory(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Generating story for prompt:", requestData.Prompt)
 
 	// Get the 5 most recent stories for the character to use as context
-	storyContext, err := db.GetStoriesByCharacterID(requestData.CharacterID)
+	storyContext, err := db.GetStoriesByCharacterID(requestData.CharacterID, 5)
 	if err != nil {
 		http.Error(w, "Failed to retrieve story context", http.StatusInternalServerError)
 		return
@@ -162,6 +162,38 @@ func generateIntro(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(map[string]string{"intro": introResponse}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func getStoryHistory(w http.ResponseWriter, r *http.Request) {
+	var requestData struct {
+		CharacterID int `json:"character_id"` // Ensure this is included to link story to character
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("Retrieving story history for character ID:", requestData.CharacterID)
+
+	stories, err := db.GetStoriesByCharacterID(requestData.CharacterID, 10)
+	if err != nil {
+		http.Error(w, "Failed to retrieve story history", http.StatusInternalServerError)
+		return
+	}
+
+	// Compile the story history into a single-dimensional list of strings
+	var compiledHistory []string
+	for _, story := range stories {
+		compiledHistory = append(compiledHistory, story.Prompt, story.Response)
+	}
+
+	fmt.Println("Story history compiled successfully")
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(compiledHistory); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

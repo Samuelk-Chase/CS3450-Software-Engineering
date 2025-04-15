@@ -76,10 +76,10 @@ func InsertStory(story Story) error {
 	return nil // Successfully inserted story, no need to return the ID
 }
 
-func GetStoriesByCharacterID(characterID int) ([]Story, error) {
+func GetStoriesByCharacterID(characterID int, numEntries int) ([]Story, error) {
 	supabaseURL := fmt.Sprintf(
-		"%s/rest/v1/storyEntry?character_id=eq.%d&order=created_at.desc&limit=5", // Limited to 5 most recent stories, ordered by created_at
-		os.Getenv("SUPABASE_URL"), characterID,
+		"%s/rest/v1/storyEntry?character_id=eq.%d&order=created_at.desc&limit=%d", // Limited to 5 most recent stories, ordered by created_at
+		os.Getenv("SUPABASE_URL"), characterID, numEntries,
 	)
 	supabaseKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
