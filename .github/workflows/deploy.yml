@@ -52,7 +52,7 @@ jobs:
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
 
           # Remove old frontend code
-          ssh -o StrictHostKeyChecking=no -i github-ec2.pem $SERVER_USER@$SERVER_IP 'rm -r /var/www/html/*'
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem $SERVER_USER@$SERVER_IP 'rm -rf /var/www/html/*'
 
           # Copy React build to the server
           scp -o StrictHostKeyChecking=no -i github-ec2.pem -r last-game-frontend/dist $SERVER_USER@$SERVER_IP:/var/www/html
