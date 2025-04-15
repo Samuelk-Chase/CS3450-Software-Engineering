@@ -13,11 +13,12 @@ import (
 
 // Boss defines the structure of our boss object.
 type Boss struct {
-	Name      string `json:"name"`
-	Health    int    `json:"health"`
-	BossLevel int    `json:"bossLevel"`
-	Mana      int    `json:"mana"`
-	ImageURL  string `json:"image_url"`
+	Name        string `json:"name"`
+	Health      int    `json:"health"`
+	BossLevel   int    `json:"bossLevel"`
+	Mana        int    `json:"mana"`
+	ImageURL    string `json:"image_url"`
+	Description string `json:"description"`
 }
 
 type JSONBoss struct {
@@ -41,8 +42,15 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 		Prompt string `json:"prompt"`
 	}
 
+	// Decode the request body
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Check if the Prompt field is empty
+	if strings.TrimSpace(requestData.Prompt) == "" {
+		http.Error(w, "Prompt is required", http.StatusBadRequest)
 		return
 	}
 
@@ -79,14 +87,19 @@ func getBoss(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error parsing JSON Boss Atk:", err)
 	}
 
-	// Create a the boss object to pass back.
-	boss := Boss{
-		Name:      jsonBoss.Name,
-		Health:    jsonBoss.Health,
-		BossLevel: 10,
+	// Ensure the boss has a description
+	if strings.TrimSpace(jsonBoss.Description) == "" {
+		jsonBoss.Description = "A mysterious and powerful boss with unknown origins."
+	}
 
-		Mana:     jsonBoss.Mana,
-		ImageURL: "http://example.com/sample-boss.jpg",
+	// Create the boss object to pass back.
+	boss := Boss{
+		Name:        jsonBoss.Name,
+		Health:      jsonBoss.Health,
+		BossLevel:   10,
+		Mana:        jsonBoss.Mana,
+		ImageURL:    "http://example.com/sample-boss.jpg",
+		Description: jsonBoss.Description,
 	}
 
 	// Set the response header to indicate JSON content.

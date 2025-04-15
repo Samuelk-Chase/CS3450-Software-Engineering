@@ -1,0 +1,131 @@
+.game-manual-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.game-manual-content {
+  position: relative;
+  background-color: #2d2d2d;
+  color: #E3C9CE;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(32, 104, 63, 0.3);
+  border: 2px solid #20683F;
+  cursor: default;
+}
+
+.close-manual {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #E3C9CE;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.manual-text {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+}
+
+.manual-text h1 {
+  color: #20683F;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.manual-text h2 {
+  color: #20683F;
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.manual-text h3 {
+  color: #20683F;
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.manual-text p {
+  margin-bottom: 1rem;
+  color: #E3C9CE;
+}
+
+.manual-text ul, .manual-text ol {
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+  color: #E3C9CE;
+}
+
+.manual-text li {
+  margin-bottom: 0.5rem;
+  color: #E3C9CE;
+}
+
+.manual-text strong {
+  color: #E3C9CE;
+}
+
+.quick-links {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: rgba(32, 104, 63, 0.1);
+  border-radius: 8px;
+  border: 1px solid #20683F;
+}
+
+.quick-links h3 {
+  color: #20683F;
+  margin-bottom: 1rem;
+}
+
+.quick-links ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quick-links li {
+  margin-bottom: 0.5rem;
+}
+
+.quick-links a {
+  color: #E3C9CE;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.quick-links a:hover {
+  color: #20683F;
+}
+
+.game-manual-content a {
+  color: #4CAF50;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.game-manual-content a:hover {
+  color: #81C784;
+  text-decoration: underline;
+} 

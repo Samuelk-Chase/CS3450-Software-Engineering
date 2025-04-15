@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	db "beanboys-lastgame-backend/internal/db/cards_db"
+	db "beanboys-lastgame-backend/internal/db/cardsdb"
 	"encoding/base64"
 	"os"
 	"strings"
@@ -70,13 +70,29 @@ func generateCard(prompt string, characterID int) (db.Card, error) {
 		fmt.Println("Error parsing JSON:", err)
 	}
 
+	// Determine card type based on keywords in the response
+	var cardType int
+	if strings.Contains(jsonCard.Description, "Stunned") {
+		cardType = 1
+	} else if strings.Contains(jsonCard.Description, "Confused") {
+		cardType = 2
+	} else if strings.Contains(jsonCard.Description, "Exposed") {
+		cardType = 3
+	} else if strings.Contains(jsonCard.Description, "Weakened") {
+		cardType = 4
+	} else if strings.Contains(jsonCard.Description, "Slowed") {
+		cardType = 5
+	} else {
+		cardType = 0 // Default ID for Normal or unknown types
+	}
+
 	// Create the db.Card using the parsed data
 	card := db.Card{
 		Title:           jsonCard.Name,
 		CardDescription: jsonCard.Description,
-		ImageURL:        "", // Placeholder, will be set after image upload
-		PowerLevel:      1,  // Default level
-		TypeID:          1,  // Default type
+		ImageURL:        "",       // Placeholder, will be set after image upload
+		PowerLevel:      1,        // Default level
+		TypeID:          cardType, // Set type based on cardType
 		ManaCost:        jsonCard.Cost,
 		CharacterID:     characterID, // Add character ID to the card
 	}
@@ -93,9 +109,11 @@ func generateCard(prompt string, characterID int) (db.Card, error) {
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Image upload error: %v", err)
 	}
+
 	fmt.Println("Image generated and stored")
 	card.ImageURL = imageURL
 
+	//card.ImageURL = "../../character_images/bean_boy.png"
 	cardID, err := db.InsertCard(card)
 	if err != nil {
 		return db.Card{}, fmt.Errorf("Database insert error: %v", err)
@@ -215,10 +233,11 @@ func getCards(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCard(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("get card called!")
+	fmt.Println("getCard endpoint called!")
 
 	// Ensure the request method is POST.
 	if r.Method != http.MethodPost {
+		fmt.Println("❌ Invalid request method. Expected POST.")
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -228,23 +247,33 @@ func getCard(w http.ResponseWriter, r *http.Request) {
 		Prompt      string `json:"prompt"`
 		CharacterID int    `json:"character_id"`
 	}
+	fmt.Println("ℹ️ Decoding request body...")
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		fmt.Printf("❌ Error decoding request body: %v\n", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("✅ Request body decoded successfully: %+v\n", requestData)
 
 	// Generate the card using the provided prompt
+	fmt.Printf("ℹ️ Generating card for CharacterID: %d with Prompt: %s\n", requestData.CharacterID, requestData.Prompt)
 	card, err := generateCard(requestData.Prompt, requestData.CharacterID)
 	if err != nil {
+		fmt.Printf("❌ Card generation error: %v\n", err)
 		http.Error(w, fmt.Sprintf("Card generation error: %v", err), http.StatusInternalServerError)
 		return
 	}
+	fmt.Printf("✅ Card generated successfully: %+v\n", card)
 
 	// Set the response header to indicate JSON content
 	w.Header().Set("Content-Type", "application/json")
 
 	// Encode the db.Card object to JSON and write it to the response
+	fmt.Println("ℹ️ Encoding card to JSON...")
 	if err := json.NewEncoder(w).Encode(card); err != nil {
+		fmt.Printf("❌ JSON encoding error: %v\n", err)
 		http.Error(w, fmt.Sprintf("JSON encoding error: %v", err), http.StatusInternalServerError)
+		return
 	}
+	fmt.Println("✅ Card response sent successfully!")
 }
