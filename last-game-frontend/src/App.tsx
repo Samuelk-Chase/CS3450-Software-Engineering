@@ -91,15 +91,18 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => 
         onClick={handleLogout}
         style={{
           position: "absolute",
-          top: "10px",
-          right: "10px",
-          padding: "10px 20px",
-          backgroundColor: "#ff4d4d",
+          bottom: "50px",
+          left: "20px",
+          padding: "15px 30px",
+          backgroundColor: "#cc0000",
           color: "#fff",
           border: "none",
           borderRadius: "5px",
           cursor: "pointer",
-          zIndex: 1000, // Ensure the button is above other elements
+          zIndex: 1000,
+          fontSize: "16px",
+          fontWeight: "bold",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
         }}
       >
         Logout
