@@ -310,3 +310,47 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(characters)
 }
+
+// deleteCharacter deletes a character by ID.
+func deleteCharacter(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var requestData struct {
+		CharacterID int `json:"character_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+		fmt.Printf("❌ Error decoding request body: %v\n", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if requestData.CharacterID <= 0 {
+		fmt.Println("❌ Invalid character_id provided")
+		http.Error(w, "Invalid character ID", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("ℹ️ Attempting to delete character with ID: %d\n", requestData.CharacterID)
+
+	err := db.DeleteCharacter(requestData.CharacterID)
+	if err != nil {
+		fmt.Printf("❌ Error deleting character: %v\n", err)
+		http.Error(w, "Failed to delete character", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("✅ Successfully deleted character with ID: %d\n", requestData.CharacterID)
+
+	response := struct {
+		Message string `json:"message"`
+	}{
+		Message: fmt.Sprintf("Character %d successfully deleted", requestData.CharacterID),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
