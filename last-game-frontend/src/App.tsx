@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => 
   const navigate = useNavigate();
   const baseUrl = window.location.hostname.includes('localhost')
     ? 'http://localhost:8080/api/v1' // Development URL
-    : 'https://lastgame-api.chirality.app'; // Production URL
+    : ''; // Production URL (hosting frontend from backend)
 
   const handleLogout = () => {
     localStorage.removeItem("token");
