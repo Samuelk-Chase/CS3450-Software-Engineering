@@ -152,7 +152,7 @@ const MainPlayerView: React.FC = () => {
       }
       
       console.log("Formatted history:", formattedHistory);
-      setChatHistory(formattedHistory.reverse());
+      setChatHistory(formattedHistory);
     } catch (error) {
       console.error("Error fetching story history:", error);
     } finally {
@@ -201,8 +201,8 @@ const MainPlayerView: React.FC = () => {
 
     const timestamp = new Date().toLocaleTimeString();
     setChatHistory((prevHistory) => [
-      { text: userResponse, timestamp, sender: "user" },
       ...prevHistory,
+      { text: userResponse, timestamp, sender: "user" }
     ]);
 
     setGameText("AI is generating content...");
@@ -247,8 +247,8 @@ const MainPlayerView: React.FC = () => {
       setGameText("");
       const aiTimestamp = new Date().toLocaleTimeString();
       setChatHistory((prevHistory) => [
-        { text: aiMessage, timestamp: aiTimestamp, sender: "AI" },
         ...prevHistory,
+        { text: aiMessage, timestamp: aiTimestamp, sender: "AI" }
       ]);
     } catch (error) {
       console.error("Error fetching AI response", error);
