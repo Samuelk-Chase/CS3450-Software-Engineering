@@ -10,7 +10,7 @@ import axiosInstance from "../utils/axiosInstance"; // Import the axios instance
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPDF, setShowPDF] = useState(false); // <-- Added
+  const [showManual, setshowManual] = useState(false); // <-- Added
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -58,7 +58,7 @@ const SignupPage: React.FC = () => {
   return (
     <>
       {/* Modal-style PDF viewer */}
-      {showPDF && (
+      {showManual && (
         <div style={{
           position: "fixed",
           top: 0, left: 0,
@@ -79,7 +79,7 @@ const SignupPage: React.FC = () => {
             boxShadow: "0 0 20px rgba(0,0,0,0.5)"
           }}>
             <button
-              onClick={() => setShowPDF(false)}
+              onClick={() => setshowManual(false)}
               style={{
                 position: "absolute",
                 top: "10px",
@@ -215,7 +215,7 @@ const SignupPage: React.FC = () => {
           {/* PDF viewer button */}
           <Button
             label="View Game Manual (PDF)"
-            onClick={() => setShowPDF(true)}
+            onClick={() => setshowManual(true)}
             style={{
               marginTop: "2rem",
               backgroundColor: "#20683F",
