@@ -82,7 +82,7 @@ func generateCharacterImageAndUploadToS3(characterName string, prompt string) (s
 	return imageURL, nil
 }
 
-func generateCharacterLLM(userID int, name string) (Character, error) {
+func generateCharacterLLM(userID int, name string, gameMode int) (Character, error) {
 	fmt.Println("Generating character for user:", userID)
 	client := openai.NewClient()
 	messages := openai.F([]openai.ChatCompletionMessageParamUnion{
@@ -119,6 +119,7 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		MaxMana:       jsonCharacter.MaxMana, // Set to at least 80
 		CurrentHealth: jsonCharacter.MaxHealth,
 		MaxHealth:     jsonCharacter.MaxHealth,
+		GameMode:      gameMode,
 	}
 
 	imagePrompt := fmt.Sprintf("Generate a character portrait for %s: %s", name, jsonCharacter.Description)
@@ -136,6 +137,7 @@ func generateCharacterLLM(userID int, name string) (Character, error) {
 		MaxHealth:     newCharacter.MaxHealth,
 		ImageURL:      imageURL,
 		Description:   newCharacter.Description,
+		GameMode:      newCharacter.GameMode,
 	})
 	if err != nil {
 		fmt.Println("Error inserting character:", err)
@@ -220,13 +222,12 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 
 	// Use userID as an integer in the rest of the function
 	fmt.Printf("ℹ️ Generating character for user ID: %d, Name: %s, Game Mode: %d\n", userID, requestData.Name, requestData.GameMode)
-	character, err := generateCharacterLLM(userID, requestData.Name)
+	character, err := generateCharacterLLM(userID, requestData.Name, requestData.GameMode)
 	if err != nil {
 		fmt.Printf("❌ Error generating character: %v\n", err)
 		http.Error(w, "Failed to create character", http.StatusInternalServerError)
 		return
 	}
-	character.GameMode = requestData.GameMode // Set the game mode
 	fmt.Printf("✅ Character generated successfully: %+v\n", character)
 
 	// Generate the story introduction using the adventure description.

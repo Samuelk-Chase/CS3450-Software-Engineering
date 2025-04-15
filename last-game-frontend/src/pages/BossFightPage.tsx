@@ -282,7 +282,8 @@ const BossFightPage: React.FC = () => {
     }
   };
 
-  const performBossAttack = () => {
+  const performBossAttack = async () => {
+    if (!localCharacter || !boss) return;
     setIsBossAttacking(true);
     const randomAttack = BOSS_ATTACKS[Math.floor(Math.random() * BOSS_ATTACKS.length)];
     let damage = Math.floor(Math.random() * (randomAttack.damage.max - randomAttack.damage.min + 1)) + randomAttack.damage.min;
@@ -309,14 +310,29 @@ const BossFightPage: React.FC = () => {
     setShowAttackPopup(true);
 
     // Apply damage to player
-    if (localCharacter) {
-      const newHealth = Math.max(localCharacter.current_hp - damage, 0);
-      setLocalCharacter(prev => prev ? { ...prev, current_hp: newHealth } : null);
-      updateStats(newHealth, localCharacter.current_mana);
-      
-      // Apply effect to player (replace any existing effect)
-      setPlayerEffects([randomAttack.effect]);
+    const newHealth = Math.max(localCharacter.current_hp - damage, 0);
+    setLocalCharacter(prev => prev ? { ...prev, current_hp: newHealth } : null);
+    updateStats(newHealth, localCharacter.current_mana);
+    
+    // Check if player is defeated
+    if (newHealth === 0) {
+      // Delete character from database
+      try {
+        await axiosInstance.post("/deleteCharacter", {
+          character_id: localCharacter.character_id
+        });
+        // Show defeat message and navigate to character account page
+        alert("Your character has been defeated and deleted!");
+        navigate("/character-account");
+      } catch (error) {
+        console.error("Failed to delete character:", error);
+        alert("Failed to delete character. Please try again.");
+      }
+      return;
     }
+    
+    // Apply effect to player (replace any existing effect)
+    setPlayerEffects([randomAttack.effect]);
 
     // Reset attack animation after 2 seconds
     setTimeout(() => {

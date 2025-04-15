@@ -22,6 +22,7 @@ type Character struct {
 	CurrentHealth int    `json:"current_hp"` // updated tag
 	MaxHealth     int    `json:"max_hp"`     // updated tag
 	ImageURL      string `json:"image_url"`
+	GameMode      int    `json:"game_mode"` // 0 for easy, 1 for hard
 }
 
 // InsertCharacter adds a new character to the database.
@@ -38,6 +39,7 @@ func InsertCharacter(character Character) (int, error) {
 		"max_mana":       character.MaxMana,
 		"image_url":      character.ImageURL,
 		"description":    character.Description,
+		"game_mode":      character.GameMode,
 	})
 	if err != nil {
 		return 0, err
