@@ -48,6 +48,8 @@ jobs:
           SERVER_USER: ubuntu
           SERVER_IP: 13.58.239.54
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          VITE_SUPABASE_URL: https://wkgkofzrwogenfxjrfbq.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZ2tvZnpyd29nZW5meGpyZmJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA1ODcyOTksImV4cCI6MjA1NjE2MzI5OX0.b7jWXku8zJEW4gockR5Lk4yXDxqjsVq8vj6kTROcDes
         run: |
           echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
 
