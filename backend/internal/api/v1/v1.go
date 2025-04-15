@@ -34,6 +34,7 @@ func Routes() http.Handler {
 	r.Post("/getNewCharacter", getNewCharacter) // Returns a newly created character as JSON
 	r.Post("/boss", getBoss)                    // Returns a boss object as JSON
 	r.Post("/story", generateStory)             // Returns a story object as JSON
+	r.Post("/storyHistory", getStoryHistory)    // Returns a story history object as JSON")
 	r.Post("/intro", generateIntro)             // Returns an introduction story as JSON
 	r.Post("/image", generateImage)             // Returns a generated image as JSON
 	r.Post("/uploadCharacterImage", uploadCharacterImage)
