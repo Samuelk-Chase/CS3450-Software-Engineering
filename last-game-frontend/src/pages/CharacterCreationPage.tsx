@@ -36,6 +36,7 @@ const CharacterCreationPage: React.FC = () => {
         name: characterName,
         description: characterDescription,
         adventure_description: adventureDescription,
+        game_mode: mode === "hard" ? 1 : 0
       };
 
       const createResponse = await axiosInstance.post("/getNewCharacter", requestBody);
@@ -48,7 +49,7 @@ const CharacterCreationPage: React.FC = () => {
         localStorage.setItem("characterId", String(data.character.character_id));
         localStorage.setItem("storyIntro", data.intro);
 
-        // Automatically redirect to the main player view.
+        // Automatically redirect to the character account page.
         navigate("/character-account");
       } else {
         console.error("Failed to create character:", createResponse.statusText);

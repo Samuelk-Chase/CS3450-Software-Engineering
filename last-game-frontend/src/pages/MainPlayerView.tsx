@@ -410,9 +410,11 @@ const MainPlayerView: React.FC = () => {
                   : "View Deck"}
             </button>
 
-            <button className="button" onClick={() => navigate("/boss")}>
-              Enter Boss Fight
-            </button>
+            {showBossPopup && newBoss && (
+              <button className="button" onClick={() => navigate("/boss")}>
+                Enter Boss Fight
+              </button>
+            )}
 
             <button className="button" onClick={() => setShowManual(true)}>
               View Game Manual

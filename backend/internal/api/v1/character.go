@@ -31,6 +31,7 @@ type Character struct {
 	CurrentHealth int    `json:"current_hp"` // updated tag
 	MaxHealth     int    `json:"max_hp"`     // updated tag
 	ImageURL      string `json:"image_url"`
+	GameMode      int    `json:"game_mode"`
 }
 
 // JSONCharacter is used when parsing the LLM response.
@@ -200,6 +201,7 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 		Name                 string `json:"name"`
 		Description          string `json:"description"`
 		AdventureDescription string `json:"adventure_description"`
+		GameMode             int    `json:"game_mode"` // 0 for easy, 1 for hard
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -217,13 +219,14 @@ func getNewCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use userID as an integer in the rest of the function
-	fmt.Printf("ℹ️ Generating character for user ID: %d, Name: %s\n", userID, requestData.Name)
+	fmt.Printf("ℹ️ Generating character for user ID: %d, Name: %s, Game Mode: %d\n", userID, requestData.Name, requestData.GameMode)
 	character, err := generateCharacterLLM(userID, requestData.Name)
 	if err != nil {
 		fmt.Printf("❌ Error generating character: %v\n", err)
 		http.Error(w, "Failed to create character", http.StatusInternalServerError)
 		return
 	}
+	character.GameMode = requestData.GameMode // Set the game mode
 	fmt.Printf("✅ Character generated successfully: %+v\n", character)
 
 	// Generate the story introduction using the adventure description.
