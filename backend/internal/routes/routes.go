@@ -24,7 +24,7 @@ func NewRouter() http.Handler {
 
 	var frontendDir string  
 	if os.Getenv("PRODUCTION") == "TRUE" {
-		frontendDir = "./dist/" 
+		frontendDir = "/var/www/html/" 
 	} else {
 		frontendDir = "../last-game-frontend/dist/"
 	}
