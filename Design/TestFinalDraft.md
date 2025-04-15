@@ -322,4 +322,4 @@ There is still significant room to expand our test coverage. In future iteration
 
 These improvements will help us maintain high code quality, detect issues earlier, and ensure our app remains stable as it scales.
 
-This testing strategy is designed to give us confidence in our application's stability, performance, and overall user experience.
+This comprehensive testing strategy is designed to give us confidence in our application's stability, performance, and overall user experience.
