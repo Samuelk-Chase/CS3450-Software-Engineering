@@ -133,7 +133,6 @@ const LoginPage: React.FC = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("isLoggedIn", "true");
 
-        alert("Login successful!");
         navigate("/character-account");
       } else {
         throw new Error("Invalid credentials");
@@ -147,7 +146,61 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      {showManual && <GameManual onClose={() => setShowManual(false)} />}
+      {/* Modal PDF Viewer */}
+{showManual && (
+  <div style={{
+    position: "fixed",
+    top: 0, 
+    left: 0,
+    width: "100vw", 
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    zIndex: 9999,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }}>
+    <div style={{
+      width: "80%",
+      height: "80%",
+      backgroundColor: "#fff",
+      borderRadius: "10px",
+      overflow: "hidden",
+      position: "relative",
+      boxShadow: "0 0 20px rgba(0,0,0,0.5)"
+    }}>
+      <button
+        onClick={() => setShowManual(false)}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "15px",
+          zIndex: 10000, // <== Ensures it's above the iframe
+          background: "rgba(255, 255, 255, 0.8)",
+          border: "none",
+          fontSize: "2rem",
+          fontWeight: "bold",
+          color: "#333",
+          borderRadius: "50%",
+          width: "40px",
+          height: "40px",
+          cursor: "pointer",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)"
+        }}
+      >
+        &times;
+      </button>
+
+      <iframe
+        src="/gameManual.pdf"
+        title="PDF Viewer"
+        width="100%"
+        height="100%"
+        style={{ border: "none" }}
+      />
+    </div>
+  </div>
+)}
 
       <div 
         style={{
@@ -234,26 +287,46 @@ const LoginPage: React.FC = () => {
                 width: '500px',
                 height: '60px',
                 fontSize: '1.8rem',
-                background: 'linear-gradient(180deg, #27ae60 0%, #1e8449 100%)',
+                background: 'linear-gradient(45deg, #1b5e20, #388e3c)',
+                color: '#fff',
                 border: 'none',
                 borderRadius: '10px',
                 fontWeight: 'bold',
                 padding: '10px',
                 textTransform: 'uppercase',
-                letterSpacing: '1px'
+                letterSpacing: '1px',
+                transition: 'all 0.3s ease-in-out',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
               }}
             />
           </form>
 
-          {/* Replace PDF Button with Game Manual Button */}
+          {/* Game Manual Button */}
           <Button
             label="View Game Manual"
             onClick={() => setShowManual(true)}
+            className="p-button p-button-rounded p-button-success p-shadow-3"
             style={{
-              marginTop: "2rem",
-              backgroundColor: "#20683F",
-              borderRadius: "10px",
-              fontWeight: "bold",
+              width: '500px',
+              height: '60px',
+              fontSize: '1.8rem',
+              background: 'linear-gradient(45deg, #1b5e20, #388e3c)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              marginTop: '1rem',
+              transition: 'all 0.3s ease-in-out',
+              fontWeight: 'bold',
+              padding: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #388e3c, #1b5e20)',
+                transform: 'scale(1.05)'
+              }
             }}
           />
 
@@ -270,14 +343,19 @@ const LoginPage: React.FC = () => {
                   width: '250px',
                   height: '60px',
                   padding: '0.5rem',
-                  border: '2px solid #28a745',
+                  background: 'linear-gradient(45deg, #1b5e20, #388e3c)',
                   borderRadius: '8px',
-                  backgroundColor: '#333',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease-in-out',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #388e3c, #1b5e20)',
+                    transform: 'scale(1.05)'
+                  }
                 }}
               >
-                <FontAwesomeIcon icon={item.icon} style={{ height: '24px', color: '#28a745' }} />
-                <span style={{ fontSize: '1.8rem', color: '#28a745', marginLeft: '10px' }}>{item.label}</span>
+                <FontAwesomeIcon icon={item.icon} style={{ height: '24px', color: '#fff' }} />
+                <span style={{ fontSize: '1.8rem', color: '#fff', marginLeft: '10px' }}>{item.label}</span>
               </div>
             ))}
           </div>
