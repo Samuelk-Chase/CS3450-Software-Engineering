@@ -97,11 +97,6 @@ const BossFightPage: React.FC = () => {
   const characterId = localStorage.getItem("characterId");
   const [loadingNewCard, setLoadingNewCard] = useState<boolean>(false);
   
-  const baseUrl = window.location.hostname.includes('localhost')
-    ? 'https://lastgame-api.chirality.app' // Production URL
-    : 'http://localhost:8080'; // Development URL
-
-//const baseUrl = 'http://localhost:8080';
   const [showAttackPopup, setShowAttackPopup] = useState<boolean>(false);
   const [currentAttack, setCurrentAttack] = useState<{name: string, damage: number, effect: string, isWeakened: boolean, isExposed: boolean} | null>(null);
   const [showPlayerAttackPopup, setShowPlayerAttackPopup] = useState<boolean>(false);

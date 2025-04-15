@@ -2,8 +2,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: window.location.hostname.includes("localhost")
-    ? "http://localhost:8080/v1" 
-    : "https://lastgame-api.chirality.app/v1",
+    ? "http://localhost:8080/api/v1" 
+    : "/api/v1",
 });
 
 // Add a request interceptor
