@@ -58,11 +58,6 @@
 ### Which Tasks Were Completed?
 - All tasks were completed.
 
-## Personal Reflection
-
-I was super worried when we met as a group at first because they all were terrifying me with their excitement. It sounds bad, but they were just so excited to make a video game that they were going crazy with these super complex ideas that I swear wouldn't get done in a year, much less a semester. Meanwhile, I had literally just dropped game development because it sounds terrible to me. I also didn't want my group to think I was in for an easy buck (I need to pass this time around), but I also am swamped with work (like, I can handle the normal course load, but if we're each coding like 30 hours a week, I'mma drown).
-
-So I was like, "Oh no, we're gonna bite off way more than we can chew." But as the ideas came around and the requirements became more clear, I was actually getting excited, and I think our concept is really cool and actually achievable. I think that we're all pretty excited, and it's evident in our requirements doc because we got ahead of ourselves and a bit of high-level design slipped into the requirements. But there has to be a database, and I think I get to do it, which will be so fun.
 
 # Sprint 1 summary (Jayden) Design Phase
 
