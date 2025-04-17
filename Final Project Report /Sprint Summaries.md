@@ -1,5 +1,5 @@
 # Sprint Summaries:
-Here is a summary of the tasks/activities each person completed during each sprint
+Here is a summary of the tasks/activities each person completed during each sprint.
 
 ## Sprint 0: Requirement Gathering
 **Tasks:**
@@ -92,7 +92,7 @@ Here is a summary of the tasks/activities each person completed during each spri
   * SQL Instantiation and revision
 
 ## Sprint 3: Development Phase
-
+**Tasks:**
 - **Samuel**:
   * Front-end image generation support
   * Front/back end linking to Supabase
@@ -128,6 +128,7 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 
 ## Sprint 4: Development Phase
+**Tasks:**
 - **Kade**
    * Team Lead
 
@@ -146,6 +147,7 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 
 ## Sprint 5: Testing Phase
+**Tasks:**
 - **Samuel:**
    * testing and debugging
    * writing the backup manual
@@ -174,7 +176,7 @@ Here is a summary of the tasks/activities each person completed during each spri
   * Looking at how to implement tests
 
 ## Sprint 6: Maintencance phase
-
+**Tasks:**
 - **Samuel**:
   * Team Lead
   * 
