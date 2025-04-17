@@ -161,7 +161,7 @@ Overall, the endpoints performed well during testing. The biggest challenge was 
 ### Manual Testing:
 In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection. Dealing with AI responses is something we still worry about, because AI isn't always perfect at responding how you would wish, like in the case for initiating the battle. So we are still worried about that not working.
 
-During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn't sending the tokens in the expected header format, and the middleware wasn't properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature and we were having a lot of trouble with it. Every once and a while supabase key doesn't appear to play nice with our middleware. There are a variety of reason we speculate why, such as inconsitent server time, but haven't yet been able to pinpoint a solution yet. So we are still worried about Oauth working.
+During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn't sending the tokens in the expected header format, and the middleware wasn't properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature, and we were having a lot of trouble with it. Every once and a while Supabase key doesn't appear to play nice with our middleware. There are a variety of reason we speculate why, such as inconsistent server time, but we haven't yet been able to pinpoint a solution yet. So we are still worried about OAuth working. Also, during our manual testing for the deployed version, we found that the audio was not working, so we still have to fix that, but it does work when running locally.
 
 To view our general manual testing view Steps to Reproduce Test Results to see how to the system should function.
 
@@ -206,11 +206,12 @@ Our test coverage still has room for a lot of room for improvement. Our endpoint
 
 - **Launch Services:**
   - **Frontend:**  
-    In the `last-game-frontend` directory, run:  
+    In the `last-game-frontend` directory, run if running locally:  
     ```bash
     npm run dev
     ```  
     Then open [http://localhost:5173](http://localhost:5173) in your browser.
+    If you want to test the deployed version, you only need to go to [https://lastgame.chirality.app/](https://lastgame.chirality.app/) 
   - **Backend:**  
     In the `backend` directory, run:  
     ```bash
@@ -239,6 +240,7 @@ Our test coverage still has room for a lot of room for improvement. Our endpoint
     - Ensure that clicking on cards plays the correct sound effects
     - Verify that playing cards reduces the boss's health appropriately
     - Verify that once a boss health reaches zero a card is rewarded to player and added to deck
+    - Verify that if the game mode for character was set to hard beans, if a players health reaches zero a message appears informing them there character has been deleted.
 
 
 #### Game Flow Walkthrough with Screenshots
