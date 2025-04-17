@@ -64,7 +64,7 @@ I was super worried when we met as a group at first because they all were terrif
 
 So I was like, "Oh no, we're gonna bite off way more than we can chew." But as the ideas came around and the requirements became more clear, I was actually getting excited, and I think our concept is really cool and actually achievable. I think that we're all pretty excited, and it's evident in our requirements doc because we got ahead of ourselves and a bit of high-level design slipped into the requirements. But there has to be a database, and I think I get to do it, which will be so fun.
 
-# Sprint 1 summary (jJayden) Design Phase
+# Sprint 1 summary (Jayden) Design Phase
 
 * Back-end internal/external interface design(high-level)
 * Stakeholder Expectations
