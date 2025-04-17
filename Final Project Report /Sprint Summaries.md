@@ -127,7 +127,7 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 
 
-## Sprint 4: Development Phase
+## Sprint 4: Development/Testing Phase
 **Tasks:**
 - **Kade**
    * Team Lead
@@ -175,7 +175,7 @@ Here is a summary of the tasks/activities each person completed during each spri
   * Working on artsy version of the game manual
   * Looking at how to implement tests
 
-## Sprint 6: Maintencance phase
+## Sprint 6: Maintenance Phase
 **Tasks:**
 - **Samuel**:
   * Team Lead
