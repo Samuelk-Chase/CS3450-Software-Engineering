@@ -159,7 +159,7 @@ We implemented two main test files:
 Overall, the endpoints performed well during testing. The biggest challenge was setting up the tests in Go, as we were unfamilar with testing in Go and Chi. We had to make several adjustments to the endpoints during the process. Most issues we encountered were related to handling bad requests—for example, missing or incorrectly formatted fields in the request body. In response, we added additional validation and improved error handling.
 
 ### Manual Testing:
-In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection. Dealing with AI responses is something we still worry about, because AI isn't always perfect at responding how you would wish, like in the case for initiating the battle. So we are still worried about that not working.
+In addition to backend unit tests, we performed manual testing on the frontend by playing through the game. We testing both in our deployed enviroment and running it locally. This helped us discover issues such as story prompts failing to initiate a boss fight, even when the required keyword was present. We traced this issue to the AI not always sending an exact keyword match, so we added more flexible keyword detection. Dealing with AI responses is something we still worry about, because AI isn't always perfect at responding how you would wish, like in the case for initiating the battle. So we are still worried about that not working.
 
 During middleware testing, we also identified an issue with how Supabase tokens were handled. The frontend wasn't sending the tokens in the expected header format, and the middleware wasn't properly decoding them. We resolved this by updating both the frontend and middleware to handle Supabase authentication correctly. We are still worried about the token-based middleware working, especially with Supabase, since it is a newer feature, and we were having a lot of trouble with it. Every once and a while Supabase key doesn't appear to play nice with our middleware. There are a variety of reason we speculate why, such as inconsistent server time, but we haven't yet been able to pinpoint a solution yet. So we are still worried about OAuth working. Also, during our manual testing for the deployed version, we found that the audio was not working, so we still have to fix that, but it does work when running locally.
 
@@ -213,7 +213,7 @@ Our test coverage still has room for a lot of room for improvement. Our endpoint
     Then open [http://localhost:5173](http://localhost:5173) in your browser.
     If you want to test the deployed version, you only need to go to [https://lastgame.chirality.app/](https://lastgame.chirality.app/) 
   - **Backend:**  
-    In the `backend` directory, run:  
+    In the `backend` directory, if running locally, run:  
     ```bash
     go run cmd/api/main.go --port 8080
     ```
@@ -245,13 +245,13 @@ Our test coverage still has room for a lot of room for improvement. Our endpoint
 
 #### Game Flow Walkthrough with Screenshots
 
-Below is a walkthrough of the game flow, showcasing key steps and features using screenshots. Each image demonstrates how the application should behave during manual testing. Note: Some UI features may be slightly changed in the final project for some screenshots, but should largely be consistent with the final product.
+Below is a walkthrough of the game flow, showcasing key steps and features using screenshots. Each image demonstrates how the application should behave during manual testing. Note: Some UI features may be slightly changed in the final project for some screenshots, but should largely be consistent with the final product. The enter Boss battle button on the main game view is no longer in the game for example and every page except signin/signup has a red log out button on the bottom left. Some buttons have also been restyled, but are still in the same location and serve the same purpose.
 
 ### 1. Sign-Up and Login
 - **Sign-Up:** Users can create an account by filling out the required fields.
   ![Sign-Up Screen](/images/GameViewScreenshots/signupscreenshot.png)
 - **Login:** After signing up, users can log in to access their account. Users can also use oauth to log in. Note: Currently only github is set up.
-  ![Login Screen](/images/GameViewScreenshots/LoginScreenshot.png)
+  ![Login Screen](/images/updatedui/LoginScreen.png)
 - **Successful Login:** Upon successful login, users are redirected to the Character Account page. An alert popup frest appears and when ok is pressed the user goes to character screen to view there characters if they exist.
   ![Successful Login](/images/GameViewScreenshots/successfullogin.png)
 
@@ -278,7 +278,13 @@ Below is a walkthrough of the game flow, showcasing key steps and features using
 
 ### 4. Main Game View(character clicks play after selecting character)
 - **First-Time Game View and AI chats:** The main game screen displays the character's details and the initial story prompt written for that character and world. Users can interact with the AI to progress the story by typing in the text box and clicking submit. Sometimes after chatting with AI, the AI will initiate a battle. When this happens a popup should appear asking the user to enter the battle. When the user accepts they are taken to the battle screen.
-  ![Game View First Time](/images/GameViewScreenshots/gameviewscreenfirsttime.png)
+  ![Game View First Time](/images/updatedui/newgameviewfresh.png)
+
+- **Chatting With AI**: When a response is entered and submited in the textbox the AI returns a response. Responses are stored and are loaded and displayed when a character is selected. 
+![AI chatting](/images/updatedui/aichatnewlook.png)
+
+- **Battle Initialization**: While chatting with the AI the ai may decide to initalize a battle in which case a popup will appear asking the user to enter the battle. If they accept they are taken to the Battle page. To test this you can act hostile or tell the AI that somebody is attacking you which should trigger the battle event.
+![Battle popup](/images/updatedui/battleinitiatedpopup.png)
 
 - **Generate Deck Button**: New characters with no cards can press the Generate Deck button to generate a deck of cards. Upon pressing a spinning ring is displayed while the cards are generated.
 ![Generating Deck](/images/GameViewScreenshots/generatingdeck.png)
@@ -289,23 +295,23 @@ Below is a walkthrough of the game flow, showcasing key steps and features using
 
 ### 5. Battle Screen
   - **Entering battle**: When user first goes to battle screen a spinning loading wheel should appear while a boss is generated. Once the boss is generated an image of the boss should appear.
-  ![Open Deck Main](/images/GameViewScreenshots/bosspage.png)
+  ![Open Deck Main](/images/updatedui/newbosspage.png)
   - **Combat**: User should be able to press play card button which will display the characters set of cards. Pressing an available card should close the deck and trigger an attack against the boss and lower its health. Pressing a card should also play a sound effect. After a card is used it will display a cooldown timer until in can be played again. Boss will also attack the user and lower their health.
-  ![battle deck](/images/GameViewScreenshots/openingdecktoplay.png)
+  ![battle deck](/images/updatedui/cardview.png)
   Card Played 
-  ![card used display attack](/images/GameViewScreenshots/playingcard.png)
+  ![card used display attack](/images/updatedui/Cardplayed.png)
   - **Boss Defeat**: Once the boss health reaches zero, a spinning wheel should appear while a card based off the boss just defeated is generated. Once it is generated the card should appear with an accept button. Pressing Accept brings user back to main game view.
-  ![reward generating](/images/GameViewScreenshots/generatingrewardatbossdeath.png)
+  ![reward generating](/images/updatedui/cardrwardgenerating.png)
 
   Reward Generated:
-  ![reward generated](/images/GameViewScreenshots/cardreward.png)
+  ![reward generated](/images/updatedui/Cardgeneratedreward.png)
 
 
 ### 6. Micellaneous Actions:
   - **Logging Out**: Pressing log out should return user to sign in page. Users who are not signed in should be redirected to sign in page when trying to access other pages besides login.
 
   - **Viewing Game Manual**: On certain pages users may press game manual button to open a user manual for the game. 
-  ![user manual](/images/GameViewScreenshots/gamemanualingame.png)
+  ![user manual](/images/updatedui/Gamemanual.png)
 
 
 ---
