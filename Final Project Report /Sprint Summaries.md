@@ -24,6 +24,40 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 ## Sprint 1: Design Phase
 **Tasks:** 
+- **Jaden:**
+  * Team Lead: Organized meetings/tasks
+  * Back end internal/external interface design(highlevel)
+  * Stakeholder Expectations
+  * Compiling highlevel document(fixing/adding content)
+  * Backend Lowlevel design
+  * Performance Mitigation
+  * Compiling lowlevel document(fixing/adding content)
+        
+
+
+- **Kade:**
+  * Input/Output highlevel Design
+  * Deployment Lowlevel Plan
+       
+
+- **Samuel:**
+  * Highlevel and lowlevel security design
+  * Figma Design
+  * Front-end protype
+
+- **Andy:** 
+   * Database Research
+   * Database design Highlevel
+   * Database design Lowlevel
+
+- **Justin:**
+   * Highlevel game Design
+   * External AI integration for lowlevel design
+
+- **Carson:**
+   * Highlevel Frontend Design
+   * Lowlevel Frontend Design and UML digrams
+
 
 
 ## Sprint 2: Development Phase
@@ -143,6 +177,7 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 - **Samuel**:
   * Team Lead
+  * 
     
 - **Jaden:**
 
