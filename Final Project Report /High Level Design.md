@@ -269,4 +269,53 @@ Manages all persistent game data, integrating with Supabase for user authenticat
 ### Disaster Recovery
 - **Automated Backups**
 - **Incident Detection & Alerts**
-- **Post-Incident Audits** 
+- **Post-Incident Audits**
+
+## Implementation Status Update
+
+
+### Completed Tasks
+
+- **Account Creation & Authentication**  
+  - Email/password sign‑up and login via JWT (backend Go + React frontend)  
+  - OAuth login
+- **Character Selection & Creation**  
+  - Character listing, expansion, and “Play” flow implemented in React (Character Selection screen)  
+  - Character Creation form with mode, name, description, and world choices functional  
+- **Deck Generation & Management**  
+  - “Generate Deck” and “View Deck” buttons in Main Game View generating cards via `/card` endpoint  
+  - CardComponent, DeckOverlayPage, and InventoryPage fully implemented  
+- **Story & Battle Integration**  
+  - RESTful `/story` AI story generation endpoint hooked to StoryDisplay and text‑entry UI  
+  - `/boss` endpoint and BossBattlePage turn‑based combat working, including generated boss images  
+- **Core API Endpoints**  
+  - Go backend endpoints: `/story`, `/boss`, `/card`, `/character`, progress–save endpoint  
+- **Basic Security & Data Protection**  
+  - JWT issuance and middleware validation in place  
+  - Input validation, parameterized queries, XSS mitigation implemented  
+- **Persistent Storage**  
+  - Supabase tables for users, runs, cards, deck entries, and combat logs  
+
+### Implementation Changed
+- **Player Context**
+  - The way we handle player and theme context is primarly stored in the backend and accessed through API calls, instead of context interfaces on the frontend
+- **Difficulty**
+  - We have 2 modes in our game, hard beans and soft beans. Users select one and the battle mechanics change based on user selection.
+    
+### Not Yet Implemented
+
+- **Card Upgrades**
+  - No card upgrade functionality exists curretnly 
+- **Payment & Monetization**  
+  - Stripe integration for one‑time purchase and in‑game transactions deferred, and database transaction logs have not been implemented
+- **Advanced Security**  
+  - Full OAuth support (refresh/rotation), 2FA (TOTP), secure vault (KMS) integration  
+  - Comprehensive DDoS protection, CSRF tokens, advanced rate‑limiting, prompt‑injection guards  
+- **Multiplayer & Anti‑Cheat**  
+  - Websockets have not been implemented, and no anti-cheat measures have been written
+- **Disaster Recovery**  
+  - Automated backups, incident‑alerting pipelines need to be implemented
+- **Theme Switching**
+  - Our game has one universal theme, with no color scheme/image selection implemented
+- **Adaptive Difficulty**
+  - We only have 2 modes, hard and soft.
