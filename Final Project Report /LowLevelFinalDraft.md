@@ -2154,7 +2154,7 @@ server {
 
 The backend for "The Last Game" is implemented in Go and uses the `chi` router for routing. It provides RESTful endpoints for managing game features such as user authentication, character management, story generation, and more. Middleware is used to handle authentication and other cross-cutting concerns. The backend interacts with a database (e.g., Supabase) for persistent storage and external services like open-ai api for AI-driven features.
 
-We first will go over the main design then explain some of the differences between our original design and this design.
+We will first go over the main design, then explain some of the differences between our original design and this design.
 
 ---
 
@@ -2238,11 +2238,12 @@ Protected routes are secured using the `KeyAuth` middleware, which checks that a
    - **Purpose**: Generates an introduction story.
    - **Handler**: `generateIntro`
 
-#### Boss and Image Generation
+#### Boss Management
 1. **`POST /boss`**
    - **Purpose**: Generates a boss for the game.
    - **Handler**: `getBoss`
 
+#### Images(some are technically part of character mangagement)
 2. **`POST /image`**
    - **Purpose**: Generates an image for a character or card.
    - **Handler**: `generateImage`
@@ -2282,16 +2283,15 @@ The backend interacts with a database to store and retrieve persistent data. Key
    - Stores user credentials and profile information.
 
 2. **Characters**
-   - Stores character data, including stats and progress.
+   - Stores character data, including stats and progress, and retrieves characters
 
 3. **Cards**
-   - Stores card data, including attributes and effects.
+   - Stores card data, including attributes and effects, and retrieves cards.
 
 4. **Story History**
-   - Logs story progress and user decisions.
+   - Stores story progress and user decisions and retrieves stories.
 
-5. **Bosses**
-   - Stores boss data for encounters.
+
 
 ---
 
@@ -2353,7 +2353,7 @@ This document highlights the differences between the original design document an
 
 #### **Current Implementation**
 - Functions:
-  - `GenerateJWT(userID int)`: Generates a JWT token for authentication. We use middleware to validate token.
+  - `GenerateJWT(userID int)`: Generates a JWT token for authentication. We use middleware to validate the token.
   - `loginUser(w http.ResponseWriter, r *http.Request)`: Authenticates a user and returns a JWT token.
   - `createUser(w http.ResponseWriter, r *http.Request)`: Creates a new user and returns a JWT token.
 - **Differences**:
@@ -2389,8 +2389,8 @@ This document highlights the differences between the original design document an
   - **Boss Management**:
     - `getBoss(w http.ResponseWriter, r *http.Request)`: Generates a boss object.
 - **Differences**:
-  - The current implementation splits the game engine into smaller, modular components (e.g., character, card, story, boss management). The v1.go still serves as entry point for the game and can be seen as the game manager, but we have largely moved the functionality to more specific modules. So the purpose of the game engine basically is just a router to direct requests. Most of the game logic we decided to move to the front end as we thought that would be better than making requests for the backend to manage game state. The backend now is responsible for creating things including ai content and storing it and sending back information from the database. It doesn't manage the game state as our previous design did, it manages content creation, authentication, and database.
-  - Functions like `finalize_battle` and `save_game_state` are not explicitly implemented, instead when new cards, images, characters, story are created we decided to just save it to the database so the user never has to worry about saving.
+  - The current implementation splits the game engine into smaller, modular components (e.g., character, card, story, and boss management). The v1.go still serves as an entry point for the game and can be seen as the game manager, but we have largely moved the functionality to more specific modules. So the purpose of the game engine is basically just a router to direct requests. Most of the game logic we decided to move to the front end, as we thought that would be better than making requests for the backend to manage game state. The backend is now responsible for creating things, including AI content and storing it, and sending back information from the database. It doesn't manage the game state as our previous design did; it manages content creation, authentication, and the database.
+  - Functions like `finalize_battle` and `save_game_state` are not explicitly implemented; instead, when new cards, images, characters, and story are created, we decided to just save it to the database so the user never has to worry about saving.
   - Interactions with the database are handled directly within endpoint handlers.
 
 ---
@@ -2407,9 +2407,9 @@ This document highlights the differences between the original design document an
 - Functions:
   - `generateCard(prompt string, characterID int)`: Generates a card using AI.
   - `getCards(w http.ResponseWriter, r *http.Request)`: Retrieves cards for a character.
-  - `getCard(w http.ResponseWriter, r *http.Request)`: Creates and returns a new card uses generateCard to get the ai generated card.
+  - `getCard(w http.ResponseWriter, r *http.Request)`: Creates and returns a new card, uses generateCard to get the AI-generated card.
 - **Differences**:
-  - The current implementation focuses on card generation and retrieval. Features like `use_card` and `upgrade_card` are not implemented as we decided to not allow upgrades and moved card gameplay logic to the front end.
+  - The current implementation focuses on card generation and retrieval. Features like `use_card` and `upgrade_card` are not implemented as we decided not to allow upgrades and moved the card gameplay logic to the front end.
   - Card generation uses OpenAI's API for dynamic content creation which was not explicitly stated in our original design.
 
 ---
@@ -2447,8 +2447,8 @@ This document highlights the differences between the original design document an
   - `generateIntro(w http.ResponseWriter, r *http.Request)`: Generates an introductory story.
   - `getBoss(w http.ResponseWriter, r *http.Request)`: Generates a boss object.
 - **Differences**:
-  - The current implementation focuses on generating stories and bosses. Item generation and parsing are not implemented. Instead, the card management(cards.go) will create cards based on a boss or character description. We did this to simplify what we needed to pass to the backend, so instead of generating possible items that a user could win/earn, then passing it to the front end, and when the user wins a battle pass an item description back. Now, when a user wins a battle we pass boss description to card endpoint to create an item based off the boss. This makes the number of requests and the flow of information a little simpler.
-  - We don't explicitly have separate modules for llm entity generation for boss and character. Instead, we have a boss module(boss.go) that generates a boss with ai, and our character manager that also handles character images(character.go) also handles generating a character. We found it was easier to organize all the character functionality under a character manager instead of splitting it into other managment systems.
+  - The current implementation focuses on generating stories and bosses. Item generation and parsing are not implemented. Instead, the card management(cards.go) will create cards based on a boss or character description. We did this to simplify what we needed to pass to the backend, so instead of generating possible items that a user could win/earn, then passing it to the front end, and when the user wins a battle pass, an item description is returned. Now, when a user wins a battle, we pass the  boss description to the card endpoint to create an item based on the boss. This makes the number of requests and the flow of information a little simpler.
+  - We don't explicitly have separate modules for llm entity generation for the boss and the character. Instead, we have a boss module(boss.go) that generates a boss with AI, and our character manager that also handles character images(character.go) also handles generating a character. We found it was easier to organize all the character functionality under a character manager instead of splitting it into other management systems.
   - Story generation uses OpenAI's API with custom prompts, which wasn't explicitly decided upon in our original design.
 
 ---
@@ -2470,6 +2470,18 @@ This document highlights the differences between the original design document an
 - **Current Implementation**: Interactions occur through RESTful API endpoints. Middleware (`KeyAuth`) ensures authentication, and handlers directly interact with the database and external services.
 
 ---
+
+---
+
+### **Other Changes**
+### Audio
+#### **Original Design**
+- **Not included**: Our original design didn't include game and sound effect audio.
+  
+
+#### **Current Implementation**
+- **Implemented**: We implemented both background audio and sound effect audio in Audio.go. It has 2 functions, one for game audio(ServeWav) and another that serves sound effect audio(ServeSoundEffects). The card manager is responsible for assigning a sound effect name to a card. The ServeSoundEffect endpoint serves back an audio file if the name of the sound effect matches the name of an audio file. We included this because we thought it added to the user experience by providing background music and made card battles more engaging by playing card sounds.
+----
 
 ## **Conclusion**
 The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
