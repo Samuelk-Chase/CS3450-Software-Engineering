@@ -2688,9 +2688,11 @@ This document highlights the differences between the original design document an
 **Database:** We implemented modules to manage making requests to Supabase for retrieving and saving data. Every endpoint that saves data uses these modules/functions to save and retrieve data from Supabase. See more details in Database section below
 
 ----
+![User Flow](/images/designimages/Updatedchart.png "design overview/interaction")
+
 
 #### **Conclusion**
-The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
+The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components. There are aspects of our current design that could be much improved on, though, for example, we probably should create a module solely devoted to image generation and text generation like we originally planned to. We didn't do this development cycle because we were still learning how to set everything up, but for version 2.0, we believe that would be a good change to make our code more modular and extensible.
 
 
 --- 
@@ -2698,6 +2700,8 @@ The current implementation simplifies the original design by focusing on modular
 **AI:** Our original design and current implementation are pretty much the same as far as external interfaces go. We decided to use OpenAI's api with chatgpt04-mini for story generation and for generating descriptions for bosses and characters, and DALL-E for image generation. We didn't, however, get to fine-tune the models for our purposes, which we mentioned in our original design. Instead, we just relied on the base models to generate content.
 
 **Supabase**: We used Supabase for the database, as we did in our original design. 
+
+**Oauth**: We still used Supabase for OAuth, but instead of using Google, Microsoft, and Apple as our OAuth providers, we chose GitHub, Bitbucket, and Gitlab because Google, Microsoft, and Apple were more expensive.
 
 **Stripe**: We did not use Stripe since we were focused on gameplay and it wasn't a priority. Stripe implementation could be for version 2.0 after the game is better polished and has more features.
 
