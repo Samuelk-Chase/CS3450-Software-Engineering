@@ -1,7 +1,9 @@
 # Low Level Design
 Note: This document was generated with the assistance of ChatGPT
 
-This document details our low-level design. With stakeholder expectations set up in the high-level design, this low-level design shows how we will implement features to satisfy players, game developers, and business operators. We cover the backend and front-end implementation to show how our program will be designed and how we will create an interactive and smooth experience for users and for future game developers of the game to look back on and consider our implementation when creating new content. We cover performance considerations that will improve playability for players and create more efficiency for business owners. We also cover security design to keep players safe and reduce liability for business owners. We also outline our deployment strategy so business owners know how the game will be deployed to an audience. As we enter the development phase aspects of this document may change to reflect new ideas and fix problems we run into.
+This document details our low-level design. With stakeholder expectations set up in the high-level design, this low-level design shows how we will implement features to satisfy players, game developers, and business operators. We cover the backend and front-end implementation to show how our program will be designed and how we will create an interactive and smooth experience for users and for future game developers of the game to look back on and consider our implementation when creating new content. We cover performance considerations that will improve playability for players and create more efficiency for business owners. We also cover security design to keep players safe and reduce liability for business owners. We also outline our deployment strategy so business owners know how the game will be deployed to an audience. As we enter the development phase, aspects of this document may change to reflect new ideas and fix problems we run into.
+
+This was our initial plan, at the bottom are some notes about what changed or wasn't implemented during development.
 
 **Table of Contents for Low-Level Design:**
 
@@ -14,6 +16,7 @@ This document details our low-level design. With stakeholder expectations set up
 7. Security Design
 8. Performance
 9. Deployment Strategy
+10. Updated Design Notes after development
 
 
 
@@ -2141,3 +2144,21 @@ server {
     }
 }
 ```
+
+##  10. What Changed after Development
+
+### Backend
+
+
+
+### External Interfaces
+
+
+
+### Database
+
+
+### Security
+
+
+### Frontend
