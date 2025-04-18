@@ -403,11 +403,11 @@ Our backend primarily handles requests (API calls) from clients, processes data,
 
 For example, our GameEngine manages game data and communicates with services like CardManager and AIStoryGenerator, but these interactions are handled through functions that receive arguments, process them, and return results, without the need to wrap these operations in classes.
 
-![Example UI](low-level-sections/backend_diagramSubcomponents.png)
+![Example UI](/images/designimages/backend_diagramSubcomponents.png)
 
 ---
 
-![Function Flow](low-level-sections/function_flow_diagram.png)
+![Function Flow](/images/designimages/function_flow_diagram.png)
 
 Note: We've designed extra database tables in database design in case we implement multiplayer features and need to store more details. Our priority will be single player though and will only use other tables if we need to store more for increasing the number of saves locations/states or for storing details that need to be shared with a party.
 
@@ -430,7 +430,7 @@ The database follows a **relational structure** and adheres to **third normal fo
 
 The Database Schema is defined by this diagram. Note: Underline denotes primary keys and italics denotes foreign key (these are not mutually exclusive). Two primary keys indicate a composite primary key. 
 
-![Database Schema](/Design/LowLevel/frontendlowlevelimages/DatabaseSchemaDefinition.png)
+![Database Schema](/images/designimages/DatabaseSchemaDefinition.png)
 
 
 #### 2.1 Tables
@@ -1001,7 +1001,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 ### 1. Login Screen
 
-![Login Screen](./LowLevel/frontendlowlevelimages/Login.png)
+![Login Screen](/Design/LowLevel/frontendlowlevelimages/Login.png)
 
 **Purpose:**
 - Provide users with a straightforward way to log in or register.
@@ -1020,7 +1020,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 ### 2. Character Creation
 
-![Character Creation](./LowLevel/frontendlowlevelimages/Caracter.png "Character Creation screen with difficulty selection, game mode, and AI-generated avatar")
+![Character Creation](/Design/LowLevel/frontendlowlevelimages/Caracter.png "Character Creation screen with difficulty selection, game mode, and AI-generated avatar")
 
 **Purpose:**
 - Allow players to customize their game experience before starting.
@@ -1042,7 +1042,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 ### 3. Deck View
 
-![Deck View](./LowLevel/frontendlowlevelimages/Deck.png "Deck View showing four example cards")
+![Deck View](/Design/LowLevel/frontendlowlevelimages/Deck.png "Deck View showing four example cards")
 
 **Purpose:**
 - Display the user’s current collection of cards.
@@ -1062,7 +1062,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 ### 4. Chest Opening
 
-![Chest Opening](./LowLevel/frontendlowlevelimages/Chest.png "Chest opening screen with three card choices")
+![Chest Opening](/Design/LowLevel/frontendlowlevelimages/Chest.png "Chest opening screen with three card choices")
 
 **Purpose:**
 - Present a reward or loot screen where the user can pick one new card to add to their deck.
@@ -1082,7 +1082,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 ### 5. Battle View
 
-![Battle View](./LowLevel/frontendlowlevelimages/Battle.png "Battle interface with player and enemy portraits, chosen cards, and health/mana bars")
+![Battle View](/Design/LowLevel/frontendlowlevelimages/Battle.png "Battle interface with player and enemy portraits, chosen cards, and health/mana bars")
 
 **Purpose:**
 - Facilitate real-time or turn-based combat against bosses or other players (1v1 or multiplayer co-op).
@@ -1121,7 +1121,7 @@ All images shown are prototypes and subject to change based on ongoing user test
 
 
 UserFlow:
-![User Flow](./UserFlow.png "User Flow")
+![User Flow](/images/designimages/UserFlow.png "User Flow")
 
 ---
 
@@ -1304,17 +1304,17 @@ The following categories of AI generated content will not require finetuning:
 **Example 1**
 
 `Prompt: Generate an image of a [plasma blade] that has the description: [Deal 24 damage.]`
-![`Output:`](../doc/images/Plasma_Blade.png)
+![`Output:`](/images/Plasma_Blade.png)
 
 **Example 2**
 
 `Prompt: Generate an image of this moment in a story: [You see before you a path branching in two directions through the dark forest. Down the left fork of the path, you can hear distant, eerie chattering, as if there is something waiting for you. Down the right fork, you see faint lights drifting through the trees, obscured by the foliage just enough that it is impossible to tell what exactly is producing them.]`
-![`Output:`](../doc/images/Branching_Paths.png)
+![`Output:`](/images/Branching_Paths.png)
 
 **Example 3**
 
 `Prompt: Generate an image of a [Balrog] boss. It is described as: [A demonic being of pure evil, shrouded in fire, and holding a long, flaming whip.]`
-![`Output:`](../doc/images/Balrog.png)
+![`Output:`](/images/Balrog.png)
 
 
 ##### Finetuning technologies
