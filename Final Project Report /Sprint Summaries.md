@@ -131,19 +131,33 @@ Here is a summary of the tasks/activities each person completed during each spri
 **Tasks:**
 - **Kade**
    * Team Lead
+   * OAuth (took a minute to narrow down the issue)
+   * deployment
+   * CI pipeline
 
 - **Samuel**:
- 
+   * helping Kade with github issues (did you know you can only have one admin in a personal repository? You have to make an organization to let multiple people add and modify secrets)
+   * image loading screen generation
+   * Making cards look the same
+   * Getting boss fight to work
+   * Only five cards show and repopulate once you cycle through them
     
 - **Jaden:**
+   * implementing and fixing sound effects for cards
+   * implementing and fixing background music on backend and frontend
+   * setting up and fixing token based authentication in backend and front end.
+   * trying to set up tests for character and cards endpoints
 
 - **Carson**
-
-- **Kade**
+   * Frontend logic and UI for cards
+   * Minor styling polish and interaction fixes 
 
 - **Andy**
+   * DB Table modifications
 
 - **Justin**
+   * Story generation and DB config
+   * Boss fight planning 
 
 
 ## Sprint 5: Testing Phase
