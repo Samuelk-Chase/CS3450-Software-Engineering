@@ -551,7 +551,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 We divided our project into these interfaces to separate logic and ensure flexibility. This modular approach will make debugging easier and provide a solid foundation for future feature additions. Each interface is designed to handle a specific concern, ensuring that the overall system remains organized and adaptable.
 
 ***Interface Interaction Overview***
-![alt text](InterfaceInteractionOverview.png "Main Interface Interactions Overview")
+![alt text](/images/designimages/InterfaceInteractionOverview.png "Main Interface Interactions Overview")
 
 
 
@@ -839,7 +839,7 @@ Manages all **persistent game data**, integrating with [Supabase](https://supaba
 - **Notes:**  
   - The **Payment Interface** writes to this table upon receiving success/fail from Stripe.  
 ### Visualization of Tables
-!["Database Layout"](databaseRoughLayout.png "Database Layout")
+!["Database Layout"](/images/designimages/databaseRoughLayout.png "Database Layout")
 
 ---
 
@@ -949,7 +949,7 @@ The security strategy outlined above ensures **robust protection against cyber t
 
 **Logo**
 
-!["Logo"](../doc/images/main_logo.jpeg "Logo")
+!["Logo"](/images/main_logo.jpeg "Logo")
 
 
 
