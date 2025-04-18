@@ -2427,7 +2427,7 @@ This document highlights the differences between the original design document an
   - `generateCharacterImageAndUploadToS3(characterName string, prompt string)`: Generates and uploads a character image.
   - `generateImageAndUploadToS3(card db.Card, prompt string)`: Generates and uploads a card image.
 - **Differences**:
-  - The current implementation integrates image generation directly into character and card management.
+  - The current implementation integrates image generation directly into character and card management. Instead of having a separate interface module for image generation, the cards manager(cards.go) and the character manager (character.go) implement image generation based on the card/character.
   - Images are uploaded to an S3 bucket for storage.
 
 ---
@@ -2447,8 +2447,9 @@ This document highlights the differences between the original design document an
   - `generateIntro(w http.ResponseWriter, r *http.Request)`: Generates an introductory story.
   - `getBoss(w http.ResponseWriter, r *http.Request)`: Generates a boss object.
 - **Differences**:
-  - The current implementation focuses on generating stories and bosses. Item generation and parsing are not implemented.
-  - Story generation uses OpenAI's API with custom prompts.
+  - The current implementation focuses on generating stories and bosses. Item generation and parsing are not implemented. Instead, the card management(cards.go) will create cards based on a boss or character description. We did this to simplify what we needed to pass to the backend, so instead of generating possible items that a user could win/earn, then passing it to the front end, and when the user wins a battle pass an item description back. Now, when a user wins a battle we pass boss description to card endpoint to create an item based off the boss. This makes the number of requests and the flow of information a little simpler.
+  - We don't explicitly have separate modules for llm entity generation for boss and character. Instead, we have a boss module(boss.go) that generates a boss with ai, and our character manager that also handles character images(character.go) also handles generating a character. We found it was easier to organize all the character functionality under a character manager instead of splitting it into other managment systems.
+  - Story generation uses OpenAI's API with custom prompts, which wasn't explicitly decided upon in our original design.
 
 ---
 
@@ -2471,7 +2472,7 @@ This document highlights the differences between the original design document an
 ---
 
 ## **Conclusion**
-The current implementation simplifies the original design by focusing on modular API endpoints rather than subsystems. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is well-defined and operational. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
+The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
 
 
 
