@@ -2674,8 +2674,6 @@ This document highlights the differences between the original design document an
 
 ---
 
----
-
 ### **Other Changes**
 ### Audio
 #### **Original Design**
@@ -2686,19 +2684,22 @@ This document highlights the differences between the original design document an
 - **Implemented**: We implemented both background audio and sound effect audio in Audio.go. It has 2 functions, one for game audio(ServeWav) and another that serves sound effect audio(ServeSoundEffects). The card manager is responsible for assigning a sound effect name to a card. The ServeSoundEffect endpoint serves back an audio file if the name of the sound effect matches the name of an audio file. We included this because we thought it added to the user experience by providing background music and made card battles more engaging by playing card sounds.
 ----
 
-## **Conclusion**
-The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
+#### **Conclusion**
+The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
 
 
-
+--- 
 ### External Interfaces
+**AI:** Our original design and current implementation are pretty much the same as far as external interfaces go. We decided to use OpenAI's api with chatgpt04-mini for story generation and for generating descriptions for bosses and characters, and DALL-E for image generation. We didn't, however, get to fine-tune the models for our purposes, which we mentioned in our original design. Instead, we just relied on the base models to generate content.
 
+**Supabase**: We used Supabase for the database, as we did in our original design. 
 
-
-### Database
+**Stripe**: We did not use Stripe since we were focused on gameplay and it wasn't a priority. Stripe implementation could be for version 2.0 after the game is better polished and has more features.
 
 
 ### Security
+We followed the general spirit of our security design, but our current implementation is not as robust as we had originally designed. We are using token-based authentication in our backend, which works with both Supabase OAuth and email and password sign-in. This protects important routes involving user data. We are also hashing and salting passwords to help protect users' credentials. We didn't, however, implement all the database security features, such as SQL sanitization for our database functions, as we were focused on getting everything to work first. Also, while we considered encrypting information such as story elements to protect any information the user may share with AI, our implementation does not currently encrypt story/object data belonging to the user. In this development cycle, we were mostly concerned with core gameplay, so we only implemented basic security measures to protect the game. More security measures will have to be taken for version 2.0 to ensure the security of user data.
 
+### Database
 
 ### Frontend
