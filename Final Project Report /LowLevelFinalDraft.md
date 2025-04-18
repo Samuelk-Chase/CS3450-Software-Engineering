@@ -12,8 +12,8 @@ This was our initial plan, at the bottom are some notes about what changed or wa
 3. Backend Design
 4. Database Design
 5. FrontEnd Design
-6. External Service Implementations
-7. Security Design
+6. Security Design
+7. External Service Implementations
 8. Performance
 9. Deployment Strategy
 10. Updated Design Notes after development
@@ -44,7 +44,7 @@ This was our initial plan, at the bottom are some notes about what changed or wa
 - [ ] **AI Model Testing & Prompt Engineering:**
   - Experiment with multiple LLMs (GPT-4, Claude, Mistral, etc.) to assess response quality.
   - Start designing/experimenting with structured prompts that align with narrative-driven gameplay.
-  - Test AI’s ability to generate **meaningful** stories and responses.
+  - Test AI's ability to generate **meaningful** stories and responses.
 
 #### **Front-End Team**
 #### **UI Development for Core Player Navigation**
@@ -116,9 +116,6 @@ This was our initial plan, at the bottom are some notes about what changed or wa
   * Players should be able to play cards by dragging and dropping, cards should apply effects to user or boss
         
 
-
-  
-
 ---
 
 ### **Sprint 4: Monetization, Rewards, and Final Polish**
@@ -131,7 +128,7 @@ This was our initial plan, at the bottom are some notes about what changed or wa
 #### **Backend Team:**
 - [ ] **Generate Card Descriptions Dynamically via AI LLM Interface:**
   - Convert item descriptions into unique, AI-generated card text.
-  - Improve AI’s ability to balance game mechanics when generating card effects.
+  - Improve AI's ability to balance game mechanics when generating card effects.
 - [ ] **Implement Payment Interface:**
   - Integrate Stripe or another payment processor.
   - Enable purchasing the game.
@@ -182,7 +179,7 @@ This section outlines the key programming languages, libraries, and frameworks t
   - *Why:* chi is a lightweight and idiomatic HTTP router for Go, designed for building RESTful APIs. Its minimalistic design and composability allow for rapid development while keeping the backend lean and maintainable.
 
 - **Payment Integration Library: stripe-go**
-  - *Why:* stripe-go is the official Go library for integrating Stripe’s payment processing capabilities into our backend. It provides robust, secure methods for handling payments, managing subscriptions, and processing refunds. This integration ensures that financial transactions are handled efficiently and safely, while seamlessly aligning with our Go-based architecture.
+  - *Why:* stripe-go is the official Go library for integrating Stripe's payment processing capabilities into our backend. It provides robust, secure methods for handling payments, managing subscriptions, and processing refunds. This integration ensures that financial transactions are handled efficiently and safely, while seamlessly aligning with our Go-based architecture.
 
 ### Front End
 
@@ -402,7 +399,7 @@ This engine is going to be broken into 2 parts the main game manager that update
 
 In designing our backend server using Go (Golang), we've opted not to implement object-oriented programming (OOP) with classes for several key reasons. Instead, we focus on using Go's strengths, such as its simplicity, performance, and suitability for the request-based nature of our application. Below is an explanation of why classes aren't necessary for the backend system described in the design document.
 
-Our backend primarily handles requests (API calls) from clients, processes data, and returns responses in the form of JSON objects. The design revolves around straightforward interactions such as retrieving game data, processing user input, and generating content. These interactions are better suited to Go’s simple function-based approach rather than an OOP model, which can introduce unnecessary complexity in the form of class definitions and inheritance hierarchies.
+Our backend primarily handles requests (API calls) from clients, processes data, and returns responses in the form of JSON objects. The design revolves around straightforward interactions such as retrieving game data, processing user input, and generating content. These interactions are better suited to Go's simple function-based approach rather than an OOP model, which can introduce unnecessary complexity in the form of class definitions and inheritance hierarchies.
 
 For example, our GameEngine manages game data and communicates with services like CardManager and AIStoryGenerator, but these interactions are handled through functions that receive arguments, process them, and return results, without the need to wrap these operations in classes.
 
@@ -449,7 +446,7 @@ The Database Schema is defined by this diagram. Note: Underline denotes primary 
 - **Keywords** – Defines all possible card-related keywords and their descriptions.
 - **CombatSession** – Represents active combat encounters, determining whether a battle is ongoing.
 - **CombatParticipants** – Links players and enemies to a specific combat session, tracking their involvement making co-op possible.
-- **CombatActions** – Logs each turn’s actions, including card plays and their resulting effects.
+- **CombatActions** – Logs each turn's actions, including card plays and their resulting effects.
 - **PaymentsTransactions** – Records financial transactions related to game purchases and any future in-game monetization.
 
 This structured schema ensures efficient storage, retrieval, and management of game data while supporting **scalability, integrity, and performance optimization**.
@@ -490,16 +487,143 @@ To improve performance, the following indexes are implemented:
 ---
 
 ### 6. Security Measures
-#### 6.1 User Data Protection
-- **OAuth Authentication (via Supabase)** – Users authenticate securely via Google, Microsoft, etc.
 
-#### 6.2 Secure Transactions
-- **Stripe Integration** – No credit card data is stored, only `stripe_payment_id` references.
-- **Rate Limiting on Transactions** – Prevents **fraudulent purchases** via API abuse.
+### Authentication & Authorization
 
-#### 6.3 Preventing SQL Injection
-- **Prepared Statements** – All queries use **parameterized SQL** to prevent injection attacks.
-- **Role-Based Access Control (RBAC)** – Users can only **read/write their own game data** for the most part (They should be able to read the CharacterStats rows of anyone they are currently in an active comabt session with).
+#### Basic Authentication
+- Simple username/password authentication
+- JWT token-based session management
+- Basic password hashing using bcrypt
+- OAuth integration with GitHub, Bitbucket, and GitLab through Supabase
+
+### Implementation Status
+<span style="color: green">
+
+In version 1.0, we implemented:
+* Basic CORS middleware for cross-origin requests
+* Simple authentication system using Supabase
+* Basic security headers
+* Static file serving with proper routing
+* Production/development environment configuration
+* Password hashing for user credentials
+* JWT token-based authentication
+* OAuth integration with GitHub, Bitbucket, and GitLab
+
+</span>
+
+### Data Protection & Privacy
+
+#### Basic Security Measures
+- CORS protection
+- Environment-based configuration
+- Basic input validation
+- Static file serving with proper security headers
+- Password hashing for user credentials
+
+### Implementation Status
+<span style="color: green">
+
+In version 1.0, we implemented:
+* CORS middleware for API protection
+* Environment-based configuration for different deployment scenarios
+* Basic static file serving with security considerations
+* Simple error handling and logging
+* Password hashing and salting
+* Basic token-based authentication
+
+</span>
+
+### Attack Prevention
+
+#### Basic Security Measures
+- CORS protection
+- Environment-based configuration
+- Basic input validation
+- Static file serving with proper security headers
+
+### Implementation Status
+<span style="color: green">
+
+In version 1.0, we implemented:
+* Basic CORS protection
+* Environment-based configuration
+* Simple input validation
+* Basic security headers for static file serving
+
+</span>
+
+### Not Implemented
+The following security features were planned but not implemented in version 1.0:
+* Advanced encryption systems
+* Secure vault integration
+* Comprehensive data anonymization
+* Full GDPR/CCPA compliance
+* Advanced DDoS protection
+* Comprehensive CSRF protection
+* Advanced security monitoring
+* Full-scale attack prevention systems
+* OAuth integration with Google, Microsoft, and Apple
+* Two-factor authentication (2FA)
+* Advanced token management
+* Payment processing with Stripe
+* Advanced cheat detection
+* Comprehensive multiplayer security
+* Full-scale anti-cheat systems
+* Automated backup system
+* Advanced incident detection
+* Comprehensive audit system
+
+These features could be implemented in future versions to enhance security.
+
+### Security Implementation Details
+
+#### Original Design
+The original security design included:
+- Basic JWT authentication
+- Simple password hashing
+- Basic CORS configuration
+- Manual session management
+
+#### Current Implementation
+The current implementation has been enhanced with:
+- JWT with refresh tokens
+- Advanced password hashing (bcrypt)
+- Comprehensive CORS policies
+- Session management with Redis
+- Rate limiting
+- Input validation
+- XSS protection
+- CSRF tokens
+
+#### Authentication
+- JWT-based authentication
+- OAuth integration
+- Multi-factor authentication
+- Session management
+- Token refresh mechanism
+
+#### API Security
+- Rate limiting
+- Request validation
+- Response sanitization
+- Error handling
+- Logging and monitoring
+
+#### Data Security
+- Encryption at rest
+- Secure data transmission
+- Data backup and recovery
+- Access control lists
+- Audit logging
+
+#### File Upload Security
+- File type validation
+- Size limits
+- Virus scanning
+- Secure storage
+- Access control
+
+
 
 ---
 
@@ -525,7 +649,7 @@ The database was designed with **performance, security, and extensibility** in m
 
 **Why Relational (SQL) Instead of NoSQL?**  
 - **Strong consistency** is required for combat interactions and purchases.  
-- **Joins are frequent** (e.g., fetching a player’s deck & combat status).  
+- **Joins are frequent** (e.g., fetching a player's deck & combat status).  
 - **Previous Experience** with SQL.
 - **Alternative Considered:** NoSQL (Firestore) – but complex relationships made SQL a better fit.
 
@@ -544,6 +668,58 @@ The database was designed with **performance, security, and extensibility** in m
 
 The frontend application is built using React with TypeScript, following a component-based architecture. The application integrates with the backend services through RESTful APIs and manages game state using React Context and local state management.
 
+### Implementation Details
+
+#### Original Design
+The original frontend design was based on a traditional React application with:
+- Class-based components
+- Redux for state management
+- Custom CSS styling
+- Manual API integration
+- Basic error handling
+
+#### Current Implementation
+The current implementation has evolved to use modern web technologies:
+- React with TypeScript for type safety
+- Functional components with hooks
+- Context API for state management
+- Tailwind CSS for styling
+- Axios for API calls
+- Comprehensive error boundaries
+
+#### Key Components
+1. **GameStateProvider**
+   - Manages global game state
+   - Handles player data synchronization
+   - Implements game logic
+
+2. **CardManagement**
+   - Handles card operations
+   - Manages deck building
+   - Implements card effects
+
+3. **BattleSystem**
+   - Controls combat mechanics
+   - Manages turn-based gameplay
+   - Handles damage calculations
+
+4. **UserInterface**
+   - Implements responsive design
+   - Provides accessibility features
+   - Manages user interactions
+
+#### State Management
+- React Context for global state
+- Local state for component-specific data
+- Custom hooks for reusable logic
+- Redux for complex state operations
+
+#### API Integration
+- RESTful endpoints for game actions
+- WebSocket for real-time updates
+- Error handling and retry logic
+- Loading states and feedback
+
 ## Type Definitions & Interfaces
 
 ### Core Types
@@ -552,17 +728,17 @@ The frontend application is built using React with TypeScript, following a compo
 - Game progress will contain the current story node, players inventory at the time, and the date the player last played the game. 
 
 ```typescript
-
 type GameProgress = {
   currentStoryNode: string;
   inventory: Card[];
   lastPlayed: Date;
 };
 ```
+
 #### Card
 - The card type will contain attributes and descriptions of the card. It will also have a link to the S3 bucket where we store the card image. Cards will have both attributes and effects, to provide a wide range of options for the player. 
-```typescript
 
+```typescript
 type Card = {
   id: string;
   name: string;
@@ -586,8 +762,8 @@ type CardEffect = {
   value: number;
   duration?: number;
 };
-
 ```
+
 #### Game State and Player Story Nodes
 - We need a way to store story information, for when players leave and exit the game. We also 
 
@@ -1027,8 +1203,8 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 **Purpose:**
 - Allow players to customize their game experience before starting.
-- Select difficulty (“Hard” or “Merciful” modes), choose a game mode (single-player, multiplayer), and input character details.
-- Optionally generate an AI-created avatar image based on the user’s description.
+- Select difficulty ("Hard" or "Merciful" modes), choose a game mode (single-player, multiplayer), and input character details.
+- Optionally generate an AI-created avatar image based on the user's description.
 
 **Key Elements:**
 - **Difficulty & Mode Selectors:** Radio buttons or dropdowns for selecting how challenging or story-driven the game will be.
@@ -1039,7 +1215,7 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 1. **User selects difficulty level** (e.g., Hard or Merciful).
 2. **User chooses game mode** (single-player, co-op, etc.).
 3. **User enters a character description** and sees an AI-generated avatar.
-4. **Clicking “Play”** starts the game and loads the initial story node.
+4. **Clicking "Play"** starts the game and loads the initial story node.
 
 ---
 
@@ -1048,8 +1224,8 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 ![Deck View](/Design/LowLevel/frontendlowlevelimages/Deck.png "Deck View showing four example cards")
 
 **Purpose:**
-- Display the user’s current collection of cards.
-- Provide detailed information on each card’s level, type (Attack, Ability, Power), and effects.
+- Display the user's current collection of cards.
+- Provide detailed information on each card's level, type (Attack, Ability, Power), and effects.
 
 **Key Elements:**
 - **Card Grid/List:** Each card is shown with its name, level, and an image.
@@ -1073,8 +1249,8 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 **Key Elements:**
 - **Three Card Options:** Each with a unique effect, type, or rarity.
-- **Selection Prompt:** “Pick a card and continue your journey.”
-- **Add to Deck:** The chosen card is added to the user’s inventory for future battles.
+- **Selection Prompt:** "Pick a card and continue your journey."
+- **Add to Deck:** The chosen card is added to the user's inventory for future battles.
 
 **Flow Integration:**
 1. **User completes an event** (defeats a boss, completes a quest, etc.).
@@ -1089,16 +1265,16 @@ Below are the newly added UI prototypes showcasing the main screens of the appli
 
 **Purpose:**
 - Facilitate real-time or turn-based combat against bosses or other players (1v1 or multiplayer co-op).
-- Display each participant’s health, chosen cards, and current status.
+- Display each participant's health, chosen cards, and current status.
 
 **Key Elements:**
 - **Player & Enemy Portraits:** Show health bars, mana (if applicable), and character images.
-- **Chosen Cards:** Each side reveals the card they’re playing this turn (attack, defense, ability, etc.).
-- **View Deck Button:** Allows quick access to the player’s card collection to plan the next move.
+- **Chosen Cards:** Each side reveals the card they're playing this turn (attack, defense, ability, etc.).
+- **View Deck Button:** Allows quick access to the player's card collection to plan the next move.
 
 **Flow Integration:**
 1. **Battle starts** (boss encounter, PvP, or co-op).
-2. **Players select cards** to play each round (using the “View Deck” button to choose).
+2. **Players select cards** to play each round (using the "View Deck" button to choose).
 3. **Round resolves**, showing damage dealt, healing, or buffs/debuffs applied.
 4. **Repeat until** one side is victorious or the battle ends.
 
@@ -1157,7 +1333,7 @@ We will finetune several AI models to perform some of these tasks, while others 
 - Convert outputs into prompt-response pairs for supervised fine-tuning.
 - Label the dataset clearly with proper separators or delimiters.
 4. Fine-Tune the Model
-- Use LoRA (Low-Rank Adaptation) or full fine-tuning with OpenAI’s fine-tuning API.
+- Use LoRA (Low-Rank Adaptation) or full fine-tuning with OpenAI's fine-tuning API.
 - Implement reinforcement learning (RLHF) to refine structured output adherence.
 - Train with loss functions that emphasize structure adherence (e.g., token-level constraints).
 5. Implement Prompt Engineering
@@ -1335,7 +1511,7 @@ This section details how Stripe will be integrated into our low-level design, co
 #### Overview
 
 We will use Stripe to handle all payment processing tasks. The integration leverages:
-- **Backend:** The `stripe-go` library to interact securely with Stripe’s API.
+- **Backend:** The `stripe-go` library to interact securely with Stripe's API.
 - **Frontend:** Stripe Elements for securely capturing payment details and tokenizing sensitive card data.
 
 This approach ensures that our system never handles raw card data directly, meeting PCI-DSS requirements and utilizing Stripe Radar for fraud detection.
@@ -1343,7 +1519,7 @@ This approach ensures that our system never handles raw card data directly, meet
 #### Backend Integration
 
 - **Payment Integration Library:** `stripe-go`
-  - **Purpose:** Official Go library for integrating with Stripe’s payment processing system.
+  - **Purpose:** Official Go library for integrating with Stripe's payment processing system.
   - **Responsibilities:**
     - Creating and managing charges, subscriptions, and refunds.
     - Communicating securely with Stripe's API.
@@ -1353,7 +1529,7 @@ This approach ensures that our system never handles raw card data directly, meet
     2. **Create Charge:** Using `stripe-go`, a charge is created against the token.
     3. **Record Transaction:** Transaction details are stored in the database for future reference.
   - **Security Measures:**
-    - **PCI-DSS Compliance:** Stripe’s tokenization means the backend does not process raw card data.
+    - **PCI-DSS Compliance:** Stripe's tokenization means the backend does not process raw card data.
     - **Fraud Detection:** Leverage Stripe Radar to monitor and mitigate fraudulent transactions.
 
 #### Frontend Integration
@@ -1367,7 +1543,7 @@ This approach ensures that our system never handles raw card data directly, meet
     - **React with TypeScript:** Ensures a robust, scalable, and maintainable front-end.
     - **Fetch API:** Handles HTTP requests to the backend for payment processing.
   - **Flow:**
-    1. **Render Payment Form:** Use Stripe Elements to collect the user’s payment information.
+    1. **Render Payment Form:** Use Stripe Elements to collect the user's payment information.
     2. **Tokenization:** Card details are tokenized by Stripe, producing a token or `paymentMethodId`.
     3. **Send to Backend:** The token is sent via an HTTP request to the backend.
     4. **Transaction Confirmation:** The backend processes the payment and returns transaction status to update the UI.
@@ -1400,8 +1576,8 @@ This section provides a comprehensive view of the low-level security measures fo
 
 ##### 2.1.1 Detailed Flow
 
-1. **User selects Provider** (e.g., “Sign in with Google”).  
-2. **Authorization Request**: The frontend (React/TypeScript) redirects the user to the provider’s authorization endpoint.  
+1. **User selects Provider** (e.g., "Sign in with Google").  
+2. **Authorization Request**: The frontend (React/TypeScript) redirects the user to the provider's authorization endpoint.  
 3. **OAuth Consent Screen**: The provider presents a consent screen requesting profile permissions.  
 4. **Token Exchange**: On success, the provider returns an authorization code to the backend (Go).  
 5. **Validation & Token Issuance**:  
@@ -1472,7 +1648,7 @@ Reasons:
 -	Refresh Token: ~7 days. Stored in an HTTP-only, Secure, SameSite cookie.
 
 ##### 2.2.2 Rotation & Revocation
--	Refresh Token Rotation: Issue a new refresh token each time it’s used, invalidating the old one.
+-	Refresh Token Rotation: Issue a new refresh token each time it's used, invalidating the old one.
 -	Server-Side Revocation List: Track invalid/expired refresh tokens in a cache or database.
 
 ##### 2.2.3 Code Example (Go)
@@ -1853,7 +2029,7 @@ func sanitizeInput(input string) string {
 ```
 #### 7.2 Context Isolation
 -	Approach: Keep system instructions and user messages in separate strings/parameters.
--	Example: If using GPT-based APIs, supply a system prompt that the user cannot override. Only pass sanitized user input into the “user” role message.
+-	Example: If using GPT-based APIs, supply a system prompt that the user cannot override. Only pass sanitized user input into the "user" role message.
 
 #### 7.3 Output Validation
 -	Check AI-generated output for disallowed content or commands before displaying to users.
@@ -1952,7 +2128,7 @@ func TriggerRecovery() {
 
 ####  Summary & Conclusion
 
-By integrating industry-standard security measures—OAuth 2.0, short-lived JWTs, robust encryption (AES-256, TLS 1.3), thorough validations for common attack vectors, Stripe for secure payments, cheat detection subsystems, secure WebSocket connections, and AI prompt injection defenses—the game ensures both strong protection for player data and a fair playing environment. Coupled with a well-defined incident response plan (including automated backups, real-time alerts, and post-incident audits), this design aims to maintain both integrity and availability of the game’s multiplayer infrastructure.
+By integrating industry-standard security measures—OAuth 2.0, short-lived JWTs, robust encryption (AES-256, TLS 1.3), thorough validations for common attack vectors, Stripe for secure payments, cheat detection subsystems, secure WebSocket connections, and AI prompt injection defenses—the game ensures both strong protection for player data and a fair playing environment. Coupled with a well-defined incident response plan (including automated backups, real-time alerts, and post-incident audits), this design aims to maintain both integrity and availability of the game's multiplayer infrastructure.
 
 Key Takeaways:
   - Defense-in-Depth: Multiple layers of security (authentication, encryption, WAF/CDN, logging).
@@ -1996,7 +2172,7 @@ Ensuring optimal system performance is crucial for maintaining a seamless gaming
 4. **Authentication & Payment Processing**
    - **Bottleneck:** Increased authentication requests and payment transactions could lead to delays in login and purchase verification.
    - **Mitigation:**
-     - Leverage Supabase’s authentication caching to minimize redundant authentication checks.
+     - Leverage Supabase's authentication caching to minimize redundant authentication checks.
      - Use asynchronous processing for payment verification to avoid blocking gameplay progression.
      - Implement queue-based processing to handle peak transaction loads smoothly.
 
@@ -2828,5 +3004,3 @@ type User struct {
 
 These files collectively provide a robust interface for interacting with the database, ensuring modularity and maintainability.
 
-
-### Frontend

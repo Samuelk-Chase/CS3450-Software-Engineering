@@ -179,9 +179,10 @@ Here is a summary of the tasks/activities each person completed during each spri
 **Tasks:**
 - **Samuel**:
   * Team Lead
-  * 
+  * Worked on getting final document put together 
     
 - **Jaden:**
+  * Worked on refining Final document and making summaries uniform and the same 
 
 - **Carson**
 
