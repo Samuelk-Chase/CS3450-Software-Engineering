@@ -2145,20 +2145,561 @@ server {
 }
 ```
 
-##  10. What Changed after Development
+#  10. What Changed after Development
 
-### Backend
+## Backend
+
+
+## Overview
+
+The backend for "The Last Game" is implemented in Go and uses the `chi` router for routing. It provides RESTful endpoints for managing game features such as user authentication, character management, story generation, and more. Middleware is used to handle authentication and other cross-cutting concerns. The backend interacts with a database (e.g., Supabase) for persistent storage and external services like open-ai api for AI-driven features.
+
+We will first go over the main design, then explain some of the differences between our original design and this design.
+
+---
+
+## Key Components
+
+### 1. **API Layer**
+The API layer defines the routes and handlers for the backend. It uses the `chi` router to organize endpoints and middleware.
+
+### 2. **Middleware**
+Middleware, such as `KeyAuth`, is used to enforce authentication and handle other shared logic across routes.
+
+### 3. **Database Interface**
+The backend interacts with a database to store and retrieve data such as user accounts, characters, cards, and story history.
+
+### 4. **External Services**
+- **AI Services**: Used for generating stories, images, and bosses.
+- **Supabase**: Handles user authentication and database storage.
+
+---
+
+## Endpoints
+
+### Public Endpoints (No Authentication Required)
+1. **`POST /signup`**
+   - **Purpose**: Registers a new user.
+   - **Handler**: `createUser`
+
+2. **`POST /login`**
+   - **Purpose**: Authenticates a user and issues a JWT.
+   - **Handler**: `loginUser`
+
+3. **`GET /backgroundaudio`**
+   - **Purpose**: Serves background audio for the game.
+   - **Handler**: `ServeWAV`
+
+4. **`GET /soundeffect`**
+   - **Purpose**: Serves sound effects for the game.
+   - **Handler**: `ServeSoundEffect`
+
+---
+
+### Protected Endpoints (Require Authentication)
+Protected routes are secured using the `KeyAuth` middleware, which checks that a valid token is given.
+
+#### Character Management
+1. **`GET /character/{id}`**
+   - **Purpose**: Fetches a specific character by ID.
+   - **Handler**: `GetCharacter`
+
+2. **`GET /characters`**
+   - **Purpose**: Fetches all characters for the authenticated user.
+   - **Handler**: `GetCharacters`
+
+3. **`POST /getNewCharacter`**
+   - **Purpose**: Creates a new character for the user.
+   - **Handler**: `getNewCharacter`
+
+4. **`POST /deleteCharacter`**
+   - **Purpose**: Deletes a character.
+   - **Handler**: `deleteCharacter`
+
+#### Card Management
+1. **`GET /cards/{id}`**
+   - **Purpose**: Fetches all cards for a specific character.
+   - **Handler**: `getCards`
+
+2. **`POST /card`**
+   - **Purpose**: Creates a new card.
+   - **Handler**: `getCard`
+
+#### Story and Gameplay
+1. **`POST /story`**
+   - **Purpose**: Generates a new story based on user input.
+   - **Handler**: `generateStory`
+
+2. **`POST /storyHistory`**
+   - **Purpose**: Fetches the story history for the user.
+   - **Handler**: `getStoryHistory`
+
+3. **`POST /intro`**
+   - **Purpose**: Generates an introduction story.
+   - **Handler**: `generateIntro`
+
+#### Boss Management
+1. **`POST /boss`**
+   - **Purpose**: Generates a boss for the game.
+   - **Handler**: `getBoss`
+
+#### Images(some are technically part of character mangagement)
+2. **`POST /image`**
+   - **Purpose**: Generates an image for a character or card.
+   - **Handler**: `generateImage`
+
+3. **`POST /uploadCharacterImage`**
+   - **Purpose**: Uploads a custom character image.
+   - **Handler**: `uploadCharacterImage`
+
+4. **`GET /character_image/{name}`**
+   - **Purpose**: Serves character images.
+   - **Handler**: Inline function that dynamically serves images from the `character_images` directory.
+
+---
+
+## Middleware
+
+### 1. **KeyAuth**
+- **Purpose**: Validates JWT tokens to ensure only authenticated users can access protected routes.
+- **Implementation**:
+  - Extracts the `Authorization` header.
+  - Verifies the token using the secret key.
+  - Adds the `user_id` to the request context for downstream handlers.
+
+### 2. **EnableCORS**
+- **Purpose**: Enables Cross-Origin Resource Sharing (CORS) for frontend-backend communication.
+- **Implementation**:
+  - Sets headers to allow all origins, methods, and headers.
+  - Handles preflight (OPTIONS) requests.
+
+---
+
+## Database Interaction
+
+The backend interacts with a database to store and retrieve persistent data. Key tables include:
+
+1. **Users**
+   - Stores user credentials and profile information.
+
+2. **Characters**
+   - Stores character data, including stats and progress, and retrieves characters
+
+3. **Cards**
+   - Stores card data, including attributes and effects, and retrieves cards.
+
+4. **Story History**
+   - Stores story progress and user decisions and retrieves stories.
 
 
 
+---
+
+## Interactions
+
+### Example Flow: Generating a Story
+1. **Frontend**: Sends a POST request to `/story` with user input.
+2. **Middleware**: `KeyAuth` validates the user's JWT and extracts the `user_id`.
+3. **Handler**: `generateStory` processes the request.
+   - Calls the AI service to generate story content.
+   - Logs the story in the database.
+4. **Response**: Returns the generated story to the frontend.
+
+### Example Flow: Fetching Cards
+1. **Frontend**: Sends a GET request to `/cards/{id}`.
+2. **Middleware**: `KeyAuth` validates the user's JWT.
+3. **Handler**: `getCards` retrieves card data from the database.
+4. **Response**: Returns the card data as JSON.
+
+---
+
+## Security Measures
+
+1. **JWT Authentication**
+   - Short-lived access tokens with refresh tokens managed by Supabase.
+   - Tokens are validated in the `KeyAuth` middleware.
+
+2. **Input Validation**
+   - All inputs are sanitized to prevent SQL injection and XSS attacks.
+
+
+3. **CORS**
+   - Ensures secure communication between the frontend and backend.
+
+---
+
+## Module/Interface design(go files)
+
+
+---
+Here is a more in-depth look of each of the modules and their functions
+
+### **Endpoints - File: v1.go**
+This file defines the main routing logic for the backend API. It organizes endpoints into public and protected routes and applies middleware for authentication.
+
+#### **Functions**
+1. **`Routes()`**
+   - Initializes the `chi` router and sets up all API routes.
+   - **Public Routes**:
+     - `/signup`: Calls `createUser` to register a new user.
+     - `/login`: Calls `loginUser` to authenticate a user.
+     - `/backgroundaudio`: Calls `ServeWAV` to serve background audio.
+     - `/soundeffect`: Calls `ServeSoundEffect` to serve sound effects.
+   - **Protected Routes** (require `KeyAuth` middleware):
+     - Character-related routes (`/character/{id}`, `/characters`, etc.) interact with the character management logic.
+     - Card-related routes (`/cards/{id}`, `/card`) interact with card management logic.
+     - Story-related routes (`/story`, `/storyHistory`, `/intro`) interact with story generation and history.
+     - Image-related routes (`/image`, `/uploadCharacterImage`, `/character_image/{name}`) handle image generation and serving.
+   - **Middleware**: Applies `KeyAuth` to ensure only authenticated users can access protected routes.
+
+---
+
+### **User Management and authentication - File: authenticate.go**
+Handles user authentication, including user creation and login.
+
+#### **Functions**
+1. **`GenerateJWT(userID int)`**
+   - Generates a JWT token with the user's ID as a claim.
+   - Used for authenticating users after login or signup.
+
+2. **`loginUser(w http.ResponseWriter, r *http.Request)`**
+   - Verifies user credentials (email and password) against the database.
+   - If valid, generates a JWT token and returns it along with the user ID.
+
+3. **`createUser(w http.ResponseWriter, r *http.Request)`**
+   - Creates a new user by hashing the password and storing it in the database.
+   - Generates a JWT token for the new user and returns it.
+
+4. **`hashAndSalt(password string)`**
+   - Hashes and salts a password using bcrypt for secure storage.
+
+5. **`CheckPasswordHash(password, hash string)`**
+   - Compares a plaintext password with a hashed password for authentication.
+
+---
+
+### **Boss Management - File: boss.go**
+Handles boss generation using AI.
+
+#### **Functions**
+1. **`getBoss(w http.ResponseWriter, r *http.Request)`**
+   - Accepts a prompt from the user to generate a boss.
+   - Calls OpenAI's API to generate boss details (name, health, mana, description).
+   - Parses the AI response and returns a `Boss` object as JSON.
+
+---
+
+### **Card Management - File: cards.go**
+Manages card generation and retrieval.
+
+#### **Functions**
+1. **`generateCard(prompt string, characterID int)`**
+   - Generates a card using OpenAI's API based on a user-provided prompt.
+   - Determines the card type based on keywords in the AI response.
+   - Uploads the card image to S3 and stores the card in the database.
+
+2. **`generateImageAndUploadToS3(card db.Card, prompt string)`**
+   - Generates an image for the card using OpenAI's image generation API.
+   - Uploads the image to an S3 bucket and returns the image URL.
+
+3. **`generateSoundEffect(name, description string)`**
+   - Generates a sound effect for the card using OpenAI's API.
+
+4. **`getCards(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves all cards associated with a specific character from the database.
+
+5. **`getCard(w http.ResponseWriter, r *http.Request)`**
+   - Generates a new card for a character based on a user-provided prompt.
+
+---
+
+### **Character Management - File: character.go**
+Handles character creation, retrieval, and deletion.
+
+#### **Functions**
+1. **`generateCharacterLLM(userID int, name string, gameMode int)`**
+   - Generates a character using OpenAI's API based on the user's input.
+   - Uploads the character's image to S3 and stores the character in the database.
+
+2. **`generateCharacterImageAndUploadToS3(characterName string, prompt string)`**
+   - Generates a character image using OpenAI's image generation API.
+   - Uploads the image to S3 and returns the image URL.
+
+3. **`getIntroForCharacter(characterID int, adventureDescription string)`**
+   - Generates an introductory story for a character using OpenAI's API.
+   - Stores the story in the database.
+
+4. **`getNewCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Handles the creation of a new character and generates an introductory story.
+   - Returns the character and intro as JSON.
+
+5. **`GetCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves a specific character by ID from the database.
+
+6. **`GetCharacters(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves all characters associated with a user.
+
+7. **`deleteCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Deletes a character by ID from the database.
+
+---
+
+### **Image Handling - File: image.go**
+Handles image generation.
+
+#### **Functions**
+1. **`generateImage(w http.ResponseWriter, r *http.Request)`**
+   - Generates an image based on a user-provided prompt using OpenAI's API.
+   - Returns the generated image as a Base64-encoded string.
+
+2. **`saveBase64Image(base64String, filename string)`**
+   - Decodes a Base64 string and saves it as an image file.
+
+---
+
+### **Story Management - File: story.go**
+Manages story generation and history.
+
+#### **Functions**
+1. **`generateStory(w http.ResponseWriter, r *http.Request)`**
+   - Generates a story based on a user-provided prompt and the character's story history.
+   - Calls OpenAI's API and stores the generated story in the database.
+
+2. **`generateIntro(w http.ResponseWriter, r *http.Request)`**
+   - Generates an introductory story for a character using OpenAI's API.
+   - Stores the intro in the database.
+
+3. **`getStoryHistory(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves the story history for a character from the database.
+
+---
+
+### **Image Handling - File: uploadCharacterImage.go**
+Handles uploading custom character images.
+
+#### **Functions**
+1. **`uploadCharacterImage(w http.ResponseWriter, r *http.Request)`**
+   - Accepts an image file and a character name from the user.
+   - Saves the image to the `character_images` directory with a sanitized file name.
+
+---
+
+### **Audio Management - File: audio.go**
+Serves audio files for the game.
+
+#### **Functions**
+1. **`ServeWAV(w http.ResponseWriter, r *http.Request)`**
+   - Serves a WAV audio file (e.g., background music) to the client.
+
+2. **`ServeSoundEffect(w http.ResponseWriter, r *http.Request)`**
+   - Serves an MP3 sound effect file based on the requested name.
+   - Falls back to a default sound effect if the requested file is not found.
+
+---
+
+### Overview
+
+1. **Authentication (`authenticate.go`)**
+   - Handles user login and signup, generating JWT tokens for authentication.
+   - Tokens are validated by the `KeyAuth` middleware in v1.go.
+
+2. **Character Management (`character.go`)**
+   - Allows users to create, retrieve, and delete characters.
+   - Generated characters are linked to users via their user ID.
+
+3. **Card Management (`cards.go`)**
+   - Allows users to generate and retrieve cards for their characters.
+   - Cards are linked to characters via their character ID.
+
+4. **Story Management (`story.go`)**
+   - Generates stories and intros for characters.
+   - Uses story history to provide context for new stories.
+
+5. **Boss Generation (`boss.go`)**
+   - Generates bosses for encounters using AI.
+
+6. **Image Handling (`image.go`, uploadCharacterImage.go)**
+   - Generates images for characters and cards using AI.
+   - Allows users to upload custom character images.
+
+7. **Audio Handling (`audio.go`)**
+   - Serves background music and sound effects for the game.
+
+8. **Routing (`v1.go`)**
+   - Organizes all endpoints and applies middleware for authentication and other shared logic.
+
+By combining these components, the backend provides a cohesive API for managing user accounts, characters, cards, stories, bosses, images, and audio.
+
+
+# Design Comparison: Original vs. Current Backend Implementation
+
+This document highlights the differences between the original design document and the current backend implementation. It explains how functions with similar purposes have been renamed or restructured, how interactions differ, and how the overall design has evolved.
+
+---
+
+## **Key Differences**
+
+### **1. General Approach**
+- **Original Design**: Focused on breaking the backend into subsystems like `AuthService`, `GameEngine`, `CardManager`, and AI interfaces. These subsystems were described with specific functions and responsibilities.
+- **Current Implementation**: The backend is implemented as a collection of RESTful API endpoints grouped by functionality (e.g., authentication, character management, card management). Instead of subsystems, the backend relies on Go's function-based approach and modular file organization.
+
+---
+
+## **Subsystems and Functions**
+
+### **User Authentication & Authorization**
+#### **Original Design**
+- Functions:
+  - `validate_token(token: str) -> bool`: Validates a token.
+  - `get_user_data(user_id: str) -> dict`: Retrieves user data.
+  - `check_purchase_status(user_id: str) -> bool`: Confirms game purchase.
+
+#### **Current Implementation**
+- Functions:
+  - `GenerateJWT(userID int)`: Generates a JWT token for authentication. We use middleware to validate the token.
+  - `loginUser(w http.ResponseWriter, r *http.Request)`: Authenticates a user and returns a JWT token.
+  - `createUser(w http.ResponseWriter, r *http.Request)`: Creates a new user and returns a JWT token.
+- **Differences**:
+  - The current implementation combines token validation and user data retrieval into middleware (`KeyAuth`) and endpoint handlers.
+  - Purchase status checks are not implemented in the current backend.
+
+---
+
+### **Game Engine**
+#### **Original Design**
+- Functions:
+  - `get_character_state(user_id: str, char_id: str) -> JSON`: Retrieves character state.
+  - `get_cards(user_id: str, char_id: str) -> JSON`: Retrieves a character's cards.
+  - `generate_story(player_input: str) -> JSON`: Generates the next story segment.
+  - `create_character(char_description) -> JSON`: Creates a new character.
+  - `create_boss_battle(player_id: str) -> JSON`: Generates a boss battle.
+  - `finalize_battle(player_id: str, outcome: str, player_stats: str) -> JSON`: Finalizes a battle and generates rewards.
+
+#### **Current Implementation**
+- Functions:
+  - **Character Management**:
+    - `GetCharacter(w http.ResponseWriter, r *http.Request)`: Retrieves a character by ID.
+    - `GetCharacters(w http.ResponseWriter, r *http.Request)`: Retrieves all characters for a user.
+    - `getNewCharacter(w http.ResponseWriter, r *http.Request)`: Creates a new character.
+    - `deleteCharacter(w http.ResponseWriter, r *http.Request)`: Deletes a character.
+  - **Card Management**:
+    - `getCards(w http.ResponseWriter, r *http.Request)`: Retrieves cards for a character.
+    - `getCard(w http.ResponseWriter, r *http.Request)`: Creates a new card.
+  - **Story Management**:
+    - `generateStory(w http.ResponseWriter, r *http.Request)`: Generates a story segment.
+    - `generateIntro(w http.ResponseWriter, r *http.Request)`: Generates an introductory story.
+    - `getStoryHistory(w http.ResponseWriter, r *http.Request)`: Retrieves story history.
+  - **Boss Management**:
+    - `getBoss(w http.ResponseWriter, r *http.Request)`: Generates a boss object.
+- **Differences**:
+  - The current implementation splits the game engine into smaller, modular components (e.g., character, card, story, and boss management). The v1.go still serves as an entry point for the game and can be seen as the game manager, but we have largely moved the functionality to more specific modules. So the purpose of the game engine is basically just a router to direct requests. Most of the game logic we decided to move to the front end, as we thought that would be better than making requests for the backend to manage game state. The backend is now responsible for creating things, including AI content and storing it, and sending back information from the database. It doesn't manage the game state as our previous design did; it manages content creation, authentication, and the database.
+  - Functions like `finalize_battle` and `save_game_state` are not explicitly implemented; instead, when new cards, images, characters, and story are created, we decided to just save it to the database so the user never has to worry about saving.
+  - Interactions with the database are handled directly within endpoint handlers.
+
+---
+
+### **Card Management**
+#### **Original Design**
+- Functions:
+  - `generate_card(item_description: dict, player_id: str) -> dict`: Creates and saves a card.
+  - `get_player_cards(player_id: str) -> list`: Retrieves a player's cards.
+  - `use_card(card_id: str, player_id: str) -> dict`: Uses a card in battle.
+  - `upgrade_card(card_id: str, player_id: str) -> dict`: Upgrades a card.
+
+#### **Current Implementation**
+- Functions:
+  - `generateCard(prompt string, characterID int)`: Generates a card using AI.
+  - `getCards(w http.ResponseWriter, r *http.Request)`: Retrieves cards for a character.
+  - `getCard(w http.ResponseWriter, r *http.Request)`: Creates and returns a new card, uses generateCard to get the AI-generated card.
+- **Differences**:
+  - The current implementation focuses on card generation and retrieval. Features like `use_card` and `upgrade_card` are not implemented as we decided not to allow upgrades and moved the card gameplay logic to the front end.
+  - Card generation uses OpenAI's API for dynamic content creation which was not explicitly stated in our original design.
+
+---
+
+### **AI Image Generator Interface**
+#### **Original Design**
+- Functions:
+  - `generate_card_image(description: str) -> str`: Generates a card image.
+  - `generate_boss_image(description: str) -> str`: Generates a boss image.
+  - `generate_character_image(description: str) -> str`: Generates a character image.
+
+#### **Current Implementation**
+- Functions:
+  - `generateImage(w http.ResponseWriter, r *http.Request)`: Generates an image based on a prompt.
+  - `generateCharacterImageAndUploadToS3(characterName string, prompt string)`: Generates and uploads a character image.
+  - `generateImageAndUploadToS3(card db.Card, prompt string)`: Generates and uploads a card image.
+- **Differences**:
+  - The current implementation integrates image generation directly into character and card management. Instead of having a separate interface module for image generation, the cards manager(cards.go) and the character manager (character.go) implement image generation based on the card/character.
+  - Images are uploaded to an S3 bucket for storage.
+
+---
+
+### **AI Language Model Interface**
+#### **Original Design**
+- Functions:
+  - `generate_story_text(user_prompt: str) -> str`: Generates story content.
+  - `generate_boss_encounter_story(user_input: str) -> str`: Generates a boss encounter story.
+  - `summarize_story(story_data: list) -> str`: Summarizes a story.
+  - `generate_item_options(AI_Text: str) -> str`: Generates item options.
+  - `parse_items(item_descriptions: str) -> dict`: Parses item descriptions.
+
+#### **Current Implementation**
+- Functions:
+  - `generateStory(w http.ResponseWriter, r *http.Request)`: Generates a story segment.
+  - `generateIntro(w http.ResponseWriter, r *http.Request)`: Generates an introductory story.
+  - `getBoss(w http.ResponseWriter, r *http.Request)`: Generates a boss object.
+- **Differences**:
+  - The current implementation focuses on generating stories and bosses. Item generation and parsing are not implemented. Instead, the card management(cards.go) will create cards based on a boss or character description. We did this to simplify what we needed to pass to the backend, so instead of generating possible items that a user could win/earn, then passing it to the front end, and when the user wins a battle pass, an item description is returned. Now, when a user wins a battle, we pass the  boss description to the card endpoint to create an item based on the boss. This makes the number of requests and the flow of information a little simpler.
+  - We don't explicitly have separate modules for llm entity generation for the boss and the character. Instead, we have a boss module(boss.go) that generates a boss with AI, and our character manager that also handles character images(character.go) also handles generating a character. We found it was easier to organize all the character functionality under a character manager instead of splitting it into other management systems.
+  - Story generation uses OpenAI's API with custom prompts, which wasn't explicitly decided upon in our original design.
+
+---
+
+### **Payment Interface**
+#### **Original Design**
+- Functions:
+  - `process_payment(user_id: str, amount: float) -> dict`: Processes payments.
+  - `save_transaction(user_id: str, transaction: dict)`: Saves a transaction.
+  - `get_transaction_history(user_id: str) -> list`: Retrieves transaction history.
+
+#### **Current Implementation**
+- **Not Implemented**: Payment functionality is not present in the current backend, we decided to prioritize gameplay and did not have enough time to implement purchasing the game.
+
+---
+
+## **Interactions**
+- **Original Design**: Interactions were described as subsystems communicating through well-defined functions.
+- **Current Implementation**: Interactions occur through RESTful API endpoints. Middleware (`KeyAuth`) ensures authentication, and handlers directly interact with the database and external services.
+
+---
+
+### **Other Changes**
+### Audio
+#### **Original Design**
+- **Not included**: Our original design didn't include game and sound effect audio.
+  
+
+#### **Current Implementation**
+- **Implemented**: We implemented both background audio and sound effect audio in Audio.go. It has 2 functions, one for game audio(ServeWav) and another that serves sound effect audio(ServeSoundEffects). The card manager is responsible for assigning a sound effect name to a card. The ServeSoundEffect endpoint serves back an audio file if the name of the sound effect matches the name of an audio file. We included this because we thought it added to the user experience by providing background music and made card battles more engaging by playing card sounds.
+----
+
+#### **Conclusion**
+The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
+
+
+--- 
 ### External Interfaces
+**AI:** Our original design and current implementation are pretty much the same as far as external interfaces go. We decided to use OpenAI's api with chatgpt04-mini for story generation and for generating descriptions for bosses and characters, and DALL-E for image generation. We didn't, however, get to fine-tune the models for our purposes, which we mentioned in our original design. Instead, we just relied on the base models to generate content.
 
+**Supabase**: We used Supabase for the database, as we did in our original design. 
 
-
-### Database
+**Stripe**: We did not use Stripe since we were focused on gameplay and it wasn't a priority. Stripe implementation could be for version 2.0 after the game is better polished and has more features.
 
 
 ### Security
+We followed the general spirit of our security design, but our current implementation is not as robust as we had originally designed. We are using token-based authentication in our backend, which works with both Supabase OAuth and email and password sign-in. This protects important routes involving user data. We are also hashing and salting passwords to help protect users' credentials. We didn't, however, implement all the database security features, such as SQL sanitization for our database functions, as we were focused on getting everything to work first. Also, while we considered encrypting information such as story elements to protect any information the user may share with AI, our implementation does not currently encrypt story/object data belonging to the user. In this development cycle, we were mostly concerned with core gameplay, so we only implemented basic security measures to protect the game. More security measures will have to be taken for version 2.0 to ensure the security of user data.
 
+### Database
 
 ### Frontend
