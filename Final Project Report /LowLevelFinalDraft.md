@@ -2145,9 +2145,9 @@ server {
 }
 ```
 
-##  10. What Changed after Development
+#  10. What Changed after Development
 
-### Backend
+## Backend
 
 
 ## Overview
@@ -2295,7 +2295,7 @@ The backend interacts with a database to store and retrieve persistent data. Key
 
 ---
 
-## Component Interaction
+## Interactions
 
 ### Example Flow: Generating a Story
 1. **Frontend**: Sends a POST request to `/story` with user input.
@@ -2327,6 +2327,209 @@ The backend interacts with a database to store and retrieve persistent data. Key
    - Ensures secure communication between the frontend and backend.
 
 ---
+
+## Module/Interface design(go files)
+
+
+---
+Here is a more in-depth look of each of the modules and their functions
+
+### **Endpoints - File: v1.go**
+This file defines the main routing logic for the backend API. It organizes endpoints into public and protected routes and applies middleware for authentication.
+
+#### **Functions**
+1. **`Routes()`**
+   - Initializes the `chi` router and sets up all API routes.
+   - **Public Routes**:
+     - `/signup`: Calls `createUser` to register a new user.
+     - `/login`: Calls `loginUser` to authenticate a user.
+     - `/backgroundaudio`: Calls `ServeWAV` to serve background audio.
+     - `/soundeffect`: Calls `ServeSoundEffect` to serve sound effects.
+   - **Protected Routes** (require `KeyAuth` middleware):
+     - Character-related routes (`/character/{id}`, `/characters`, etc.) interact with the character management logic.
+     - Card-related routes (`/cards/{id}`, `/card`) interact with card management logic.
+     - Story-related routes (`/story`, `/storyHistory`, `/intro`) interact with story generation and history.
+     - Image-related routes (`/image`, `/uploadCharacterImage`, `/character_image/{name}`) handle image generation and serving.
+   - **Middleware**: Applies `KeyAuth` to ensure only authenticated users can access protected routes.
+
+---
+
+### **User Management and authentication - File: authenticate.go**
+Handles user authentication, including user creation and login.
+
+#### **Functions**
+1. **`GenerateJWT(userID int)`**
+   - Generates a JWT token with the user's ID as a claim.
+   - Used for authenticating users after login or signup.
+
+2. **`loginUser(w http.ResponseWriter, r *http.Request)`**
+   - Verifies user credentials (email and password) against the database.
+   - If valid, generates a JWT token and returns it along with the user ID.
+
+3. **`createUser(w http.ResponseWriter, r *http.Request)`**
+   - Creates a new user by hashing the password and storing it in the database.
+   - Generates a JWT token for the new user and returns it.
+
+4. **`hashAndSalt(password string)`**
+   - Hashes and salts a password using bcrypt for secure storage.
+
+5. **`CheckPasswordHash(password, hash string)`**
+   - Compares a plaintext password with a hashed password for authentication.
+
+---
+
+### **Boss Management - File: boss.go**
+Handles boss generation using AI.
+
+#### **Functions**
+1. **`getBoss(w http.ResponseWriter, r *http.Request)`**
+   - Accepts a prompt from the user to generate a boss.
+   - Calls OpenAI's API to generate boss details (name, health, mana, description).
+   - Parses the AI response and returns a `Boss` object as JSON.
+
+---
+
+### **Card Management - File: cards.go**
+Manages card generation and retrieval.
+
+#### **Functions**
+1. **`generateCard(prompt string, characterID int)`**
+   - Generates a card using OpenAI's API based on a user-provided prompt.
+   - Determines the card type based on keywords in the AI response.
+   - Uploads the card image to S3 and stores the card in the database.
+
+2. **`generateImageAndUploadToS3(card db.Card, prompt string)`**
+   - Generates an image for the card using OpenAI's image generation API.
+   - Uploads the image to an S3 bucket and returns the image URL.
+
+3. **`generateSoundEffect(name, description string)`**
+   - Generates a sound effect for the card using OpenAI's API.
+
+4. **`getCards(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves all cards associated with a specific character from the database.
+
+5. **`getCard(w http.ResponseWriter, r *http.Request)`**
+   - Generates a new card for a character based on a user-provided prompt.
+
+---
+
+### **Character Management - File: character.go**
+Handles character creation, retrieval, and deletion.
+
+#### **Functions**
+1. **`generateCharacterLLM(userID int, name string, gameMode int)`**
+   - Generates a character using OpenAI's API based on the user's input.
+   - Uploads the character's image to S3 and stores the character in the database.
+
+2. **`generateCharacterImageAndUploadToS3(characterName string, prompt string)`**
+   - Generates a character image using OpenAI's image generation API.
+   - Uploads the image to S3 and returns the image URL.
+
+3. **`getIntroForCharacter(characterID int, adventureDescription string)`**
+   - Generates an introductory story for a character using OpenAI's API.
+   - Stores the story in the database.
+
+4. **`getNewCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Handles the creation of a new character and generates an introductory story.
+   - Returns the character and intro as JSON.
+
+5. **`GetCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves a specific character by ID from the database.
+
+6. **`GetCharacters(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves all characters associated with a user.
+
+7. **`deleteCharacter(w http.ResponseWriter, r *http.Request)`**
+   - Deletes a character by ID from the database.
+
+---
+
+### **Image Handling - File: image.go**
+Handles image generation.
+
+#### **Functions**
+1. **`generateImage(w http.ResponseWriter, r *http.Request)`**
+   - Generates an image based on a user-provided prompt using OpenAI's API.
+   - Returns the generated image as a Base64-encoded string.
+
+2. **`saveBase64Image(base64String, filename string)`**
+   - Decodes a Base64 string and saves it as an image file.
+
+---
+
+### **Story Management - File: story.go**
+Manages story generation and history.
+
+#### **Functions**
+1. **`generateStory(w http.ResponseWriter, r *http.Request)`**
+   - Generates a story based on a user-provided prompt and the character's story history.
+   - Calls OpenAI's API and stores the generated story in the database.
+
+2. **`generateIntro(w http.ResponseWriter, r *http.Request)`**
+   - Generates an introductory story for a character using OpenAI's API.
+   - Stores the intro in the database.
+
+3. **`getStoryHistory(w http.ResponseWriter, r *http.Request)`**
+   - Retrieves the story history for a character from the database.
+
+---
+
+### **Image Handling - File: uploadCharacterImage.go**
+Handles uploading custom character images.
+
+#### **Functions**
+1. **`uploadCharacterImage(w http.ResponseWriter, r *http.Request)`**
+   - Accepts an image file and a character name from the user.
+   - Saves the image to the `character_images` directory with a sanitized file name.
+
+---
+
+### **Audio Management - File: audio.go**
+Serves audio files for the game.
+
+#### **Functions**
+1. **`ServeWAV(w http.ResponseWriter, r *http.Request)`**
+   - Serves a WAV audio file (e.g., background music) to the client.
+
+2. **`ServeSoundEffect(w http.ResponseWriter, r *http.Request)`**
+   - Serves an MP3 sound effect file based on the requested name.
+   - Falls back to a default sound effect if the requested file is not found.
+
+---
+
+### Overview
+
+1. **Authentication (`authenticate.go`)**
+   - Handles user login and signup, generating JWT tokens for authentication.
+   - Tokens are validated by the `KeyAuth` middleware in v1.go.
+
+2. **Character Management (`character.go`)**
+   - Allows users to create, retrieve, and delete characters.
+   - Generated characters are linked to users via their user ID.
+
+3. **Card Management (`cards.go`)**
+   - Allows users to generate and retrieve cards for their characters.
+   - Cards are linked to characters via their character ID.
+
+4. **Story Management (`story.go`)**
+   - Generates stories and intros for characters.
+   - Uses story history to provide context for new stories.
+
+5. **Boss Generation (`boss.go`)**
+   - Generates bosses for encounters using AI.
+
+6. **Image Handling (`image.go`, uploadCharacterImage.go)**
+   - Generates images for characters and cards using AI.
+   - Allows users to upload custom character images.
+
+7. **Audio Handling (`audio.go`)**
+   - Serves background music and sound effects for the game.
+
+8. **Routing (`v1.go`)**
+   - Organizes all endpoints and applies middleware for authentication and other shared logic.
+
+By combining these components, the backend provides a cohesive API for managing user accounts, characters, cards, stories, bosses, images, and audio.
+
 
 # Design Comparison: Original vs. Current Backend Implementation
 
