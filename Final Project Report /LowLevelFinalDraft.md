@@ -2154,7 +2154,7 @@ server {
 
 The backend for "The Last Game" is implemented in Go and uses the `chi` router for routing. It provides RESTful endpoints for managing game features such as user authentication, character management, story generation, and more. Middleware is used to handle authentication and other cross-cutting concerns. The backend interacts with a database (e.g., Supabase) for persistent storage and external services like open-ai api for AI-driven features.
 
-We will first go over the main design, then explain some of the differences between our original design and this design.
+We will first go over the main design, then explain some of the differences between our original design and this design. Note: Most of our functions are set up, but a few are currently not in use for our current implementation, but may still be used in the future to improve the design and modularity of the code.
 
 ---
 
@@ -2332,7 +2332,7 @@ The backend interacts with a database to store and retrieve persistent data. Key
 
 
 ---
-Here is a more in-depth look of each of the modules and their functions
+Here is a more in-depth look at each of the modules and their functions
 
 ### **Endpoints - File: v1.go**
 This file defines the main routing logic for the backend API. It organizes endpoints into public and protected routes and applies middleware for authentication.
@@ -2449,7 +2449,7 @@ Handles image generation.
 
 #### **Functions**
 1. **`generateImage(w http.ResponseWriter, r *http.Request)`**
-   - Generates an image based on a user-provided prompt using OpenAI's API.
+   - Generates an image based on a user-provided prompt using OpenAI's API. Uses for when we want to send a special prompt that isn't a unique prompt used for card/character image generation
    - Returns the generated image as a Base64-encoded string.
 
 2. **`saveBase64Image(base64String, filename string)`**
@@ -2480,7 +2480,7 @@ Handles uploading custom character images.
 #### **Functions**
 1. **`uploadCharacterImage(w http.ResponseWriter, r *http.Request)`**
    - Accepts an image file and a character name from the user.
-   - Saves the image to the `character_images` directory with a sanitized file name.
+   - Saves the image to the `character_images` directory with a sanitized file name.(not currently in use for our implementation as we are now using s3, but we kept it incase we wanted to store images locally)
 
 ---
 
@@ -2520,7 +2520,7 @@ Serves audio files for the game.
 
 6. **Image Handling (`image.go`, uploadCharacterImage.go)**
    - Generates images for characters and cards using AI.
-   - Allows users to upload custom character images.
+   - Allows users to upload custom character images to save on file(not currently in use for our implementation, but could be used to store files on computer).
 
 7. **Audio Handling (`audio.go`)**
    - Serves background music and sound effects for the game.
@@ -2626,9 +2626,9 @@ This document highlights the differences between the original design document an
 
 #### **Current Implementation**
 - Functions:
-  - `generateImage(w http.ResponseWriter, r *http.Request)`: Generates an image based on a prompt.
-  - `generateCharacterImageAndUploadToS3(characterName string, prompt string)`: Generates and uploads a character image.
-  - `generateImageAndUploadToS3(card db.Card, prompt string)`: Generates and uploads a card image.
+  - `generateImage(w http.ResponseWriter, r *http.Request)`: Generates an image based on a prompt(this is so the client can pass any prompt not a specialized version for cards/character).
+  - `generateCharacterImageAndUploadToS3(characterName string, prompt string)`: Generates and uploads a character image to s3 bucket.
+  - `generateImageAndUploadToS3(card db.Card, prompt string)`: Generates and uploads a card image to s3 bucket.
 - **Differences**:
   - The current implementation integrates image generation directly into character and card management. Instead of having a separate interface module for image generation, the cards manager(cards.go) and the character manager (character.go) implement image generation based on the card/character.
   - Images are uploaded to an S3 bucket for storage.
@@ -2678,14 +2678,21 @@ This document highlights the differences between the original design document an
 ### Audio
 #### **Original Design**
 - **Not included**: Our original design didn't include game and sound effect audio.
+
+
   
 
 #### **Current Implementation**
 - **Implemented**: We implemented both background audio and sound effect audio in Audio.go. It has 2 functions, one for game audio(ServeWav) and another that serves sound effect audio(ServeSoundEffects). The card manager is responsible for assigning a sound effect name to a card. The ServeSoundEffect endpoint serves back an audio file if the name of the sound effect matches the name of an audio file. We included this because we thought it added to the user experience by providing background music and made card battles more engaging by playing card sounds.
+
+**Database:** We implemented modules to manage making requests to Supabase for retrieving and saving data. Every endpoint that saves data uses these modules/functions to save and retrieve data from Supabase. See more details in Database section below
+
 ----
+![User Flow](/images/designimages/Updatedchart.png "design overview/interaction")
+
 
 #### **Conclusion**
-The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components.
+The current implementation simplifies the original design by focusing on modular API endpoints. We moved more of the game state management to the front end, so the front end implements the gameplay, and the backend is used to store, retrieve, and create new content. While some features (e.g., payment processing, item parsing) are not implemented, the core functionality (authentication, character management, story generation) is fairly similar to the original design, but endpoint and function names and organization are different, as well as some new features. The use of AI for dynamic content creation remains a key feature, integrated into multiple components. There are aspects of our current design that could be much improved on, though, for example, we probably should create a module solely devoted to image generation and text generation like we originally planned to. We didn't do this development cycle because we were still learning how to set everything up, but for version 2.0, we believe that would be a good change to make our code more modular and extensible.
 
 
 --- 
@@ -2694,6 +2701,8 @@ The current implementation simplifies the original design by focusing on modular
 
 **Supabase**: We used Supabase for the database, as we did in our original design. 
 
+**Oauth**: We still used Supabase for OAuth, but instead of using Google, Microsoft, and Apple as our OAuth providers, we chose GitHub, Bitbucket, and Gitlab because Google, Microsoft, and Apple were more expensive.
+
 **Stripe**: We did not use Stripe since we were focused on gameplay and it wasn't a priority. Stripe implementation could be for version 2.0 after the game is better polished and has more features.
 
 
@@ -2701,5 +2710,123 @@ The current implementation simplifies the original design by focusing on modular
 We followed the general spirit of our security design, but our current implementation is not as robust as we had originally designed. We are using token-based authentication in our backend, which works with both Supabase OAuth and email and password sign-in. This protects important routes involving user data. We are also hashing and salting passwords to help protect users' credentials. We didn't, however, implement all the database security features, such as SQL sanitization for our database functions, as we were focused on getting everything to work first. Also, while we considered encrypting information such as story elements to protect any information the user may share with AI, our implementation does not currently encrypt story/object data belonging to the user. In this development cycle, we were mostly concerned with core gameplay, so we only implemented basic security measures to protect the game. More security measures will have to be taken for version 2.0 to ensure the security of user data.
 
 ### Database
+In the backend, we implemented a database layer of modules that other functions in the backend could use to store and retrieve data from supabase. The database operations are primarily focused on managing **characters**, **cards**, **stories**, and **users** in the application. The backend interacts with a Supabase database using HTTP requests. Here is a brief overview of each of the functions.
+
+---
+
+### 1. **File: db.go**
+This file contains functions for managing **characters** and **users** in the database.
+
+#### **Functions**
+- **InsertCharacter(character Character) (int, error)**  
+  Inserts a new character into the database. Returns the `character_id` of the newly created character or an error if the operation fails.
+
+- **GetCharacterByID(characterID int) (Character, error)**  
+  Retrieves a character by its `character_id`. Returns the character object or an error if not found.
+
+- **GetUserCharacters(userID int) ([]Character, error)**  
+  Fetches all characters associated with a specific user (`user_id`). Returns a list of characters or an error.
+
+- **DeleteCharacter(characterID int) error**  
+  Deletes a character from the database by its `character_id`. Returns an error if the operation fails.
+
+- **GetUserPasswordHash(email string) (int, string, error)**  
+  Retrieves the `user_id` and hashed password for a given email. Returns an error if the user is not found.
+
+- **InsertUser(email, hashedPassword string) (int, error)**  
+  Adds a new user to the database. Validates the email format and password length. Returns the `user_id` of the newly created user or an error.
+
+---
+
+### 2. **File: card_db.go**
+This file handles operations related to **cards** in the database.
+
+#### **Functions**
+- **InsertCard(card Card) (int, error)**  
+  Inserts a new card into the database. Returns the `card_id` of the newly created card or an error.
+
+- **GetCardByID(cardID int) (Card, error)**  
+  Retrieves a card by its `card_id`. Returns the card object or an error if not found.
+
+- **GetCardsByCharacterID(characterID int) ([]Card, error)**  
+  Fetches all cards associated with a specific character (`character_id`). Returns a list of cards or an error.
+
+---
+
+### 3. **File: story_db.go**
+This file manages **stories** associated with characters.
+
+#### **Functions**
+- **InsertStory(story Story) error**  
+  Inserts a new story into the database. Validates the `prompt` and `character_id` before insertion. Returns an error if the operation fails.
+
+- **GetStoriesByCharacterID(characterID int, numEntries int) ([]Story, error)**  
+  Retrieves the most recent stories for a specific character (`character_id`). The number of stories fetched is limited by `numEntries`. Returns a list of stories or an error.
+
+---
+
+### Data Models
+Each file uses specific data models to interact with the database. Below are the key models:
+
+#### **Character**
+```go
+type Character struct {
+	CharacterID   int    `json:"character_id"`
+	UserID        int    `json:"user_id"`
+	Name          string `json:"character_name"`
+	Description   string `json:"description"`
+	CurrentMana   int    `json:"current_mana"`
+	MaxMana       int    `json:"max_mana"`
+	CurrentHealth int    `json:"current_hp"`
+	MaxHealth     int    `json:"max_hp"`
+	ImageURL      string `json:"image_url"`
+	GameMode      int    `json:"game_mode"`
+}
+```
+
+#### **Card**
+```go
+type Card struct {
+	CardID          int    `json:"card_id,omitempty"`
+	TypeID          int    `json:"type_id"`
+	Title           string `json:"title"`
+	ManaCost        int    `json:"mana_cost"`
+	CardDescription string `json:"card_description"`
+	ImageURL        string `json:"image_url"`
+	PowerLevel      int    `json:"power_level"`
+	CharacterID     int    `json:"character_id"`
+	SoundEffect     string `json:"sound_effect"`
+}
+```
+
+#### **Story**
+```go
+type Story struct {
+	StoryID     int    `json:"story_id,omitempty"`
+	CharacterID int    `json:"character_id"`
+	Prompt      string `json:"prompt_text"`
+	Response    string `json:"response_text"`
+}
+```
+
+#### **User**
+```go
+type User struct {
+	UserID           int    `json:"user_id,omitempty"`
+	Email            string `json:"email"`
+	PasswordHash     string `json:"password_hash"`
+	PurchaseStatusID int    `json:"purchase_status_id"`
+}
+```
+
+---
+
+### Summary
+- **`db.go`**: Manages characters and users.
+- **`cardsdb/card_db.go`**: Handles card-related operations.
+- **`storydb/story_db.go`**: Focuses on story management.
+
+These files collectively provide a robust interface for interacting with the database, ensuring modularity and maintainability.
+
 
 ### Frontend
