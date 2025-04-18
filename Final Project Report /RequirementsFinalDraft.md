@@ -15,7 +15,7 @@ header-includes:
   The player is the primary user of the game, they can navigate through procedurally generated text-based rooms, battling enemies, collecting cards and shaping the world through their choices. The player can engage in different modes such as a single player roguelike runs, competetive battles and a multiplayer co-op mode.
 
 - **AI Bot**  
-  The AI bod would act as the game master, generating rooms, enemies, friends, and story elements dynamically. It also ensures that all game components, such as card interactions and enemy behaviors, remain balanced while maintaining thematic consistency across different settings.
+  The AI bot would act as the game master, generating rooms, enemies, friends, and story elements dynamically. It also ensures that all game components, such as card interactions and enemy behaviors, remain balanced while maintaining thematic consistency across different settings.
 
 ### Core Gameplay Mechanics
 
@@ -525,5 +525,29 @@ This diagram is a general overview of choices players can make and the data the 
 ### Won't Have:
 * 3D graphics
 
+## 5. Appendix (Post Development)
+
+The following features were fully implemented by the end of the project:
+
+- Deckbuilding and Roguelike Mechanics
+- AI-driven story generation
+- AI-driven card generation
+- AI-driven artwork generation
+- Battle UI
+- Text entry to control character's actions and prompt AI
+- AI generated theme based on player preferences
+- UI-based inventory
+
+
+The following features were not fully implemented by the end of the project:
+
+- Adaptive difficulty
+- Multiplayer Co-op mode
+- Persistent upgrades
+- PVP multiplayer
+- Dynamic map
+
+
+## Final Note
 
 This document was generated with the help of AI to generate some team requirements, user stories and MoSCoW methods. Chat-GPT was also used to generate some of the ideas for business requirements. In addition, it wrote a few requirements such as SEO requirements, Social media Campaigns, Accessibility, Language,  and a lot of user retention strategies.
