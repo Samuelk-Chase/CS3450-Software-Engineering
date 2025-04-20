@@ -191,18 +191,42 @@ Here is a summary of the tasks/activities each person completed during each spri
 
 ## Sprint 6: Maintenance Phase
 **Tasks:**
-- **Samuel**:
-  * Team Lead
-  * Worked on getting final document put together 
-    
-- **Jaden:**
-  * Worked on refining Final document and making summaries uniform and the same 
+
+- **Jayden**
+    - Supabase middleware bug
+    - manual
+    - final report 
+    - slides 
+    - final testing draft 
+    - fixing sprint summaryies 
+    - writing backend db design implementation 
+    - updates  to creating updated backend diagrams for final lowlevel design
+
+- **Samuel** 
+    - Story endpoint/bugfix
+    - Bossfight UI
+    -  Win loss UI
+    - Presentation slides
+    - manual
+    - Final report 
 
 - **Carson**
+    - Manual 
+    - Final report(low level)
 
-- **Kade**
-
-- **Andy**
+- **Kade**  
+    - deployment 
 
 - **Justin**
+    - Story endpoint/bugfix
+    - Bossfight endpoint characte deltion 
+    - Win Loss endpoint
+    - debuging 
+    - final docuemtion writing 
 
+- **Andy**  
+    - Win loss database edits
+    - Presentation slides
+    - sound effects for deployed version
+    - manual 
+    - update all database images/ descriptions
