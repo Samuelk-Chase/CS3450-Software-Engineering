@@ -476,8 +476,17 @@ To improve performance, the following indexes are implemented:
 
 ---
 
-### 5. Performance Considerations
-#### 5.1 Query Optimization
+### 5. What Changed
+
+Mainly what changed in this section was just table structure. Instead of rewriting every change, below I will give an updated schema structure. Maninly changes were made at the frontend and backend teams request, for missing attributes, aswell as cutting unnecessary tables. Some tables were not cut that could be, but we never expicitly said "hey we're cutting this" so in the hopes that we might get to implementing it, some unused tables were kept. 
+
+![Database Schema](/images/designimages/DatabaseSchemaDefinitionFinalSub.png)
+
+
+---
+
+## 5. Performance Considerations
+### 5.1 Query Optimization
 - **Lazy Loading for Combat Logs** – Only fetch the **last 10 turns** instead of all combat logs.
 - **Partitioning Transactions** – **Payment logs older than 1 year** are archived to reduce load.
 - **Asynchronous Writes for AI-Generated Data** – **AI-generated images/cards** are stored **after** gameplay, preventing UI delay.
@@ -486,7 +495,7 @@ To improve performance, the following indexes are implemented:
 
 ---
 
-### 6. Security Measures
+## 6. Security Measures
 
 ### Authentication & Authorization
 

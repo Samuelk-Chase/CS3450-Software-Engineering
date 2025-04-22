@@ -520,6 +520,7 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
     
     - **OAuth**: Will use OAuth providers to authenticate users.
 
+
       
 - **Communication**:
   - **Backend → Supabase**: Communicates for tasks like sign-up, sign-in, game progress, and transactions.
@@ -527,7 +528,8 @@ Client-Server separation ensures a clear division of responsibilities, allowing 
 
 
 - **Rationale**: Supabase provides a comprehensive, out-of-the-box solution for user management, session handling, and database interactions, allowing us to focus on game development. Its user authentication will allow us to focus on gameplay without sacrificing security. By using Supabase for data storage, we can focus on building out the game mechanics and user experience.
-  
+
+-**What changed**:  In the end we ended sticking with most of this, but the oAuth was atypical as we went with non standard oAuth clients, like bitbucket and GitHub. Also some communication with the frontend happened and we also used s3 Buckets 
 
 ---
 
